@@ -73,6 +73,10 @@ export const videoRepository = {
             video.availableResolutions = body.availableResolutions;
         }
     
+        if (body.canBeDownloaded) {
+            video.canBeDownloaded = body.canBeDownloaded
+        }
+
         if (body.minAgeRestriction) {
             video.minAgeRestriction = body.minAgeRestriction;
         }
