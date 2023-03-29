@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express"
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { APIErrorResult } from "../models/APIErrorModels"
 import { UpdateVideoModel } from "../models/UpdateVideoModel";
-import { validateAuthor, validateAvailableResolutions, validateCanBeDownloaded, validateMinAgeRestriction, validateTitle } from "../validate";
+import { validateAuthor, validateAvailableResolutions, validateCanBeDownloaded, validateMinAgeRestriction, validatePublicationDate, validateTitle } from "../validate";
 import { videoRepository } from "../db/db";
 
 export const routerVideos = Router()
@@ -51,6 +51,7 @@ routerVideos.put('/:id', (req: Request<{id: string},{}, UpdateVideoModel>, res: 
     validateMinAgeRestriction(body, errors)
     validateAvailableResolutions(body, errors)
     validateCanBeDownloaded(body, errors)
+    validatePublicationDate(body, errors)
 
     if (errors.errorsMessages.length > 0) {
         res.status(400).send(errors);

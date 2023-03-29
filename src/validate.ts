@@ -39,6 +39,12 @@ export function validateCanBeDownloaded(bodyReques: UpdateVideoModel, errors: AP
     }
 }
 
+export function validatePublicationDate(bodyReques: UpdateVideoModel, errors: APIErrorResult): void {
+    if (bodyReques.publicationDate && typeof bodyReques.publicationDate !== 'string') {
+        errors.errorsMessages.push(getErrorMessage('not correct publicationDate', 'publicationDate')) 
+    }
+}
+
 export function validateAvailableResolutions(bodyReques:CreateVideoModel | UpdateVideoModel, errors: APIErrorResult): void {
     if (!bodyReques.availableResolutions) {
         return
