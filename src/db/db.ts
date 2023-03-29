@@ -64,7 +64,7 @@ export const videoRepository = {
         const createVideo: VideoType = {
             id: +(new Date()),
             title: body.title,
-            author: body.title,
+            author: body.author,
             canBeDownloaded: false,
             minAgeRestriction: null,
             createdAt: createdAt.toISOString(),
@@ -76,12 +76,7 @@ export const videoRepository = {
 
         return createVideo
     }, 
-    updateProduct(id: string, body: UpdateVideoModel): void | null  {
-        const video = videoRepository.findVideo(id)
-        if (!video) {
-            return null
-        }
-
+    updateProduct(video: VideoType, body: UpdateVideoModel): void  {
         video.title = body.title
         video.author = body.author
 

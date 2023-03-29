@@ -3,4 +3,4 @@ export type FieldError = {
     field: string
 }
 
-export type APIErrorResult = FieldError[]
+export type APIErrorResult = {"errorsMessages": FieldError[]}
