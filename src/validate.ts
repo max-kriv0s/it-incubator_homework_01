@@ -45,7 +45,7 @@ export function validateAvailableResolutions(bodyReques:CreateVideoModel | Updat
     }
 
     for (let elem of bodyReques.availableResolutions) {
-        if (!Resolutions[elem]) {
+        if (Resolutions[elem] === undefined) {
             errors.errorsMessages.push(getErrorMessage('not correct availableResolutions', 'availableResolutions'))
             return 
         }
