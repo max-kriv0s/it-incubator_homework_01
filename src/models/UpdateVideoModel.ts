@@ -1,4 +1,4 @@
-import { Resolutions } from "./VideoViewModel"
+import { Resolutions } from "../db/db"
 
 export type UpdateVideoModel = {
     title: string

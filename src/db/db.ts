@@ -1,5 +1,5 @@
 import { CreateVideoModel } from "../models/CreateVideoModel"
-import { VideoViewModel } from "../models/VideoViewModel"
+import { UpdateVideoModel } from "../models/UpdateVideoModel"
 
 export enum Resolutions {
     'P144' = 'P144',
@@ -23,7 +23,7 @@ export type VideoType = {
     availableResolutions: Resolutions[]
 }
 
-const createdAt: Date = new Date();
+const createdAt: Date = new Date()
 
 const video: VideoType = {
     id: 0, 
@@ -37,9 +37,9 @@ const video: VideoType = {
 }
 
 export function publicationDate(createdAt: Date): string {
-    const newDate = createdAt;
-    newDate.setHours(newDate.getHours() + 24);
-    return newDate.toISOString();
+    const newDate = createdAt
+    newDate.setHours(newDate.getHours() + 24)
+    return newDate.toISOString()
 }
 
 let videos: VideoType[] = [video]
@@ -48,8 +48,18 @@ export const videoRepository = {
     getVideo(): VideoType[] {
         return videos
     },
+    getProduct(id: string): VideoType | null {
+        return videoRepository.findVideo(id)
+    },
     createProduct(body: CreateVideoModel): VideoType {
-        const createdAt: Date = new Date();
+        const createdAt: Date = new Date()
+
+        const availableResolutions = []
+        if (body.availableResolutions) {
+            for (const elem of body.availableResolutions) {
+                availableResolutions.push(Resolutions[elem])
+            }
+        }
 
         const createVideo: VideoType = {
             id: +(new Date()),
@@ -59,9 +69,52 @@ export const videoRepository = {
             minAgeRestriction: null,
             createdAt: createdAt.toISOString(),
             publicationDate: publicationDate(createdAt),
-            availableResolutions: []
+            availableResolutions: availableResolutions
         }
     
-        videos.push(createVideo);
+        videos.push(createVideo)
+
+        return createVideo
     }, 
+    updateProduct(id: string, body: UpdateVideoModel): void | null  {
+        const video = videoRepository.findVideo(id)
+        if (!video) {
+            return null
+        }
+
+        video.title = body.title
+        video.author = body.author
+
+        if (body.availableResolutions) {
+            video.availableResolutions = body.availableResolutions;
+        }
+    
+        if (body.minAgeRestriction) {
+            video.minAgeRestriction = body.minAgeRestriction;
+        }
+    
+        if (body.publicationDate){
+            video.publicationDate = body.publicationDate;
+        }
+    },
+    findVideo(id: string): VideoType | null {
+        const video = videos.find(v => v.id === +id);
+        if (video) {
+            return video
+        } else {
+            return null
+        }
+    },
+    deleteVideo(id: string): VideoType[] {
+        for (let i = 0; i < videos.length; i++) {
+            if (videos[i].id === +id){
+                const deleteVideos = videos.splice(i, 1);              
+                return deleteVideos;
+            }
+        }  
+        return []
+    },
+    deleteVideos(): void {
+        videos = []
+    }
 }
