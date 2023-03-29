@@ -1,17 +1,6 @@
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { UpdateVideoModel } from "../models/UpdateVideoModel"
 
-export enum Resolutions {
-    'P144' = 'P144',
-    'P240' = 'P240',
-    'P360' = 'P360', 
-    'P480' = 'P480', 
-    'P720' = 'P720', 
-    'P1080' = 'P1080', 
-    'P1440' = 'P1440', 
-    'P2160' = 'P2160'
-} 
-
 export type VideoType = {
     id: number
     title: string
@@ -20,7 +9,7 @@ export type VideoType = {
     minAgeRestriction: number | null
     createdAt: string
     publicationDate: string
-    availableResolutions: Resolutions[]
+    availableResolutions: string[]
 }
 
 const createdAt: Date = new Date()
@@ -33,7 +22,7 @@ const video: VideoType = {
     minAgeRestriction: null,
     createdAt: createdAt.toISOString(),
     publicationDate: publicationDate(createdAt),
-    availableResolutions: [Resolutions.P144]
+    availableResolutions: ["P144"]
 }
 
 export function publicationDate(createdAt: Date): string {
@@ -54,10 +43,10 @@ export const videoRepository = {
     createProduct(body: CreateVideoModel): VideoType {
         const createdAt: Date = new Date()
 
-        const availableResolutions = []
+        const availableResolutions: string[] = []
         if (body.availableResolutions) {
             for (const elem of body.availableResolutions) {
-                availableResolutions.push(Resolutions[elem])
+                availableResolutions.push(elem)
             }
         }
 

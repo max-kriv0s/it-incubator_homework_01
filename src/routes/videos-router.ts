@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express"
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { APIErrorResult } from "../models/APIErrorModels"
 import { UpdateVideoModel } from "../models/UpdateVideoModel";
-import { validateAuthor, validateMinAgeRestriction, validateTitle } from "../validate";
+import { validateAuthor, validateAvailableResolutions, validateMinAgeRestriction, validateTitle } from "../validate";
 import { videoRepository } from "../db/db";
 
 export const routerVideos = Router()
@@ -15,8 +15,9 @@ routerVideos.post('/', (req: Request<{},{}, CreateVideoModel>, res: Response) =>
     const errors: APIErrorResult = {errorsMessages: []}
     const body = req.body;
 
-    validateTitle(body, errors);
-    validateAuthor(body, errors);
+    validateTitle(body, errors)
+    validateAuthor(body, errors)
+    validateAvailableResolutions(body, errors)
 
     if (errors.errorsMessages.length > 0) {
         res.status(400).send(errors);
@@ -45,9 +46,10 @@ routerVideos.put('/:id', (req: Request<{id: string},{}, UpdateVideoModel>, res: 
         return;
     }
 
-    validateTitle(body, errors);
-    validateAuthor(body, errors);
-    validateMinAgeRestriction(body, errors);
+    validateTitle(body, errors)
+    validateAuthor(body, errors)
+    validateMinAgeRestriction(body, errors)
+    validateAvailableResolutions(body, errors)
 
     if (errors.errorsMessages.length > 0) {
         res.status(400).send(errors);

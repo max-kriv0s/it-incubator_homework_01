@@ -1,9 +1,8 @@
-import { Resolutions } from "../db/db"
 
 export type UpdateVideoModel = {
     title: string
     author: string
-    availableResolutions?: Resolutions[]
+    availableResolutions?: []
     canBeDownloaded?: boolean
     minAgeRestriction?: number
     publicationDate?: string
