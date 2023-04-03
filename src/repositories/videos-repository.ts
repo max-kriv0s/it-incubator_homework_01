@@ -1,13 +1,8 @@
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { UpdateVideoModel } from "../models/UpdateVideoModel"
 import { VideoViewModel } from "../models/VideoViewModel"
+import { publicationDate } from "../utils/utils"
 
-
-export function publicationDate(createdAt: Date): string {
-    const newDate = createdAt
-    newDate.setHours(newDate.getHours() + 24)
-    return newDate.toISOString()
-}
 
 const createdAt: Date = new Date()
 
