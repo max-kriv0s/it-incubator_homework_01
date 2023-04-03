@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express"
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { APIErrorResult } from "../models/APIErrorModels"
 import { UpdateVideoModel } from "../models/UpdateVideoModel";
-import { validateAuthor, validateAvailableResolutions, validateCanBeDownloaded, validateMinAgeRestriction, validatePublicationDate, validateTitle } from "../middlewares/validate";
-import { videoRepository } from "../db/db";
+import { validateAuthor, validateAvailableResolutions, validateCanBeDownloaded, validateMinAgeRestriction, validatePublicationDate, validateTitle } from "../middlewares/Video-validation-middleware";
+import { videoRepository } from "../repositories/videos-repository";
 
 export const routerVideos = Router()
 
@@ -40,7 +40,7 @@ routerVideos.put('/:id', (req: Request<{id: string},{}, UpdateVideoModel>, res: 
     const errors: APIErrorResult = {errorsMessages: []}
     const body = req.body;
 
-    const video = videoRepository.findVideo(req.params.id)
+    const video = videoRepository.getProduct(req.params.id)
     if (!video) {
         res.send(404);
         return;
@@ -63,11 +63,11 @@ routerVideos.put('/:id', (req: Request<{id: string},{}, UpdateVideoModel>, res: 
     res.send(204);
 })
 routerVideos.delete('/:id', (req: Request<{id: string}>, res:Response) => {
-    const videos = videoRepository.deleteVideo(req.params.id)
-    if (videos.length === 0) {
+    const isDeleted = videoRepository.deleteVideo(req.params.id)
+    if (isDeleted) {
+        res.send(204);
+    } else {
         res.send(404);
-    }
-
-    res.send(204);
+    } 
     
 })

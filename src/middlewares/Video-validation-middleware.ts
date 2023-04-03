@@ -2,16 +2,7 @@ import { APIErrorResult, FieldError } from "../models/APIErrorModels";
 import { CreateVideoModel } from "../models/CreateVideoModel";
 import { UpdateVideoModel } from "../models/UpdateVideoModel";
 
-enum Resolutions {
-    'P144',
-    'P240',
-    'P360', 
-    'P480', 
-    'P720', 
-    'P1080', 
-    'P1440', 
-    'P2160'
-} 
+const Resolutions: string[] = ['P144', 'P240', 'P360', 'P480', 'P720', 'P1080', 'P1440', 'P2160'] 
 
 export function validateTitle(bodyReques: CreateVideoModel | UpdateVideoModel, errors: APIErrorResult): void {
     if (!bodyReques.title || typeof bodyReques.title !== 'string' || bodyReques.title.length > 40) {
@@ -51,7 +42,7 @@ export function validateAvailableResolutions(bodyReques:CreateVideoModel | Updat
     }
 
     for (let elem of bodyReques.availableResolutions) {
-        if (Resolutions[elem] === undefined) {
+        if (!Resolutions.includes(elem)) {
             errors.errorsMessages.push(getErrorMessage('not correct availableResolutions', 'availableResolutions'))
             return 
         }

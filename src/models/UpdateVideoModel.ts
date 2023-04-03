@@ -2,7 +2,7 @@
 export type UpdateVideoModel = {
     title: string
     author: string
-    availableResolutions?: []
+    availableResolutions?: string[]
     canBeDownloaded?: boolean
     minAgeRestriction?: number
     publicationDate?: string

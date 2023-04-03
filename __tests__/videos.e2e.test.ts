@@ -1,8 +1,8 @@
 import request from "supertest";
-import { Resolutions, VideoType } from "../src/db/db";
 import { CreateVideoModel } from "../src/models/CreateVideoModel";
 import { UpdateVideoModel } from "../src/models/UpdateVideoModel";
 import { app } from "../src/setting"
+import { VideoViewModel } from "../src/models/VideoViewModel";
 
 function randomString(n: number) {
     let rnd = '';
@@ -24,7 +24,7 @@ describe('/videos', () => {
         await request(app).get('/videos/1').expect(404)
     })
 
-    let newVideo: VideoType = {
+    let newVideo: VideoViewModel = {
         id: 0,
         title: "",
         author: "",
@@ -80,7 +80,7 @@ describe('/videos', () => {
         const data: CreateVideoModel = {
             title: "new course it-incubator",
             author: "it-incubator",
-            availableResolutions: [Resolutions["P144"]]
+            availableResolutions: ["P144"]
         }     
         
         const res = await request(app).post('/videos').send(data).expect(201)

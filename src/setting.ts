@@ -8,8 +8,7 @@ import { routerPosts } from "./routes/posts-router";
 
 export const app = express()
 
-const parser = express.json()
-app.use(parser)
+app.use(express.json())
 
 app.use('/testing', routerTesting)
 app.use('/videos', routerVideos)

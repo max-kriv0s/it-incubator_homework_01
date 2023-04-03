@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { videoRepository } from "../db/db";
+import { videoRepository } from "../repositories/videos-repository";
 
 
 export const routerTesting = Router()

@@ -1,20 +1,17 @@
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { UpdateVideoModel } from "../models/UpdateVideoModel"
+import { VideoViewModel } from "../models/VideoViewModel"
 
-export type VideoType = {
-    id: number
-    title: string
-    author: string
-    canBeDownloaded: boolean
-    minAgeRestriction: number | null
-    createdAt: string
-    publicationDate: string
-    availableResolutions: string[]
+
+export function publicationDate(createdAt: Date): string {
+    const newDate = createdAt
+    newDate.setHours(newDate.getHours() + 24)
+    return newDate.toISOString()
 }
 
 const createdAt: Date = new Date()
 
-const video: VideoType = {
+const video: VideoViewModel = {
     id: 0, 
     title: "new video it-incubator",
     author: 'it-incubator',
@@ -25,32 +22,21 @@ const video: VideoType = {
     availableResolutions: ["P144"]
 }
 
-export function publicationDate(createdAt: Date): string {
-    const newDate = createdAt
-    newDate.setHours(newDate.getHours() + 24)
-    return newDate.toISOString()
-}
-
-let videos: VideoType[] = [video]
+let videos: VideoViewModel[] = [video]
 
 export const videoRepository = {
-    getVideo(): VideoType[] {
+    getVideo(): VideoViewModel[] {
         return videos
     },
-    getProduct(id: string): VideoType | null {
-        return videoRepository.findVideo(id)
+    getProduct(id: string): VideoViewModel | undefined {
+        return videos.find(v => v.id === +id);
     },
-    createProduct(body: CreateVideoModel): VideoType {
+    createProduct(body: CreateVideoModel): VideoViewModel {
         const createdAt: Date = new Date()
 
-        const availableResolutions: string[] = []
-        if (body.availableResolutions) {
-            for (const elem of body.availableResolutions) {
-                availableResolutions.push(elem)
-            }
-        }
+        const availableResolutions: string[] = body.availableResolutions ? [...body.availableResolutions] : []
 
-        const createVideo: VideoType = {
+        const createVideo: VideoViewModel = {
             id: +(new Date()),
             title: body.title,
             author: body.author,
@@ -65,7 +51,7 @@ export const videoRepository = {
 
         return createVideo
     }, 
-    updateProduct(video: VideoType, body: UpdateVideoModel): void  {
+    updateProduct(video: VideoViewModel, body: UpdateVideoModel): void  {
         video.title = body.title
         video.author = body.author
 
@@ -85,22 +71,14 @@ export const videoRepository = {
             video.publicationDate = body.publicationDate;
         }
     },
-    findVideo(id: string): VideoType | null {
-        const video = videos.find(v => v.id === +id);
-        if (video) {
-            return video
-        } else {
-            return null
-        }
-    },
-    deleteVideo(id: string): VideoType[] {
+    deleteVideo(id: string): boolean {
         for (let i = 0; i < videos.length; i++) {
             if (videos[i].id === +id){
                 const deleteVideos = videos.splice(i, 1);              
-                return deleteVideos;
+                return true;
             }
         }  
-        return []
+        return false
     },
     deleteVideos(): void {
         videos = []
