@@ -5,13 +5,7 @@ import { CreateVideoModel } from "../src/models/CreateVideoModel";
 import { UpdateVideoModel } from "../src/models/UpdateVideoModel";
 import { app } from "../src/setting"
 import { VideoViewModel } from "../src/models/VideoViewModel";
-
-function randomString(n: number) {
-    let rnd = '';
-    while (rnd.length < n) 
-        rnd += Math.random().toString(36).substring(2);
-    return rnd.substring(0, n);
-}
+import {randomString} from "../src/utils/utils"
 
 describe('/videos', () => {
    
