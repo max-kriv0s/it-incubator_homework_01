@@ -164,7 +164,7 @@ describe('/videos', () => {
         await request(app).delete('/videos/123').expect(StatusCodes.NOT_FOUND)
     })
     it('- DELETE video by ID with correct id', async () => {
-        await request(app).delete('/videos/' + newVideo.id).expect(StatusCodes.CREATED)
+        await request(app).delete('/videos/' + newVideo.id).expect(StatusCodes.NO_CONTENT)
 
         await request(app).get('/videos').expect(StatusCodes.OK, [])
     })
