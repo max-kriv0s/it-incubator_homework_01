@@ -1,4 +1,6 @@
 import request from "supertest";
+import { StatusCodes } from "http-status-codes";
+
 import { CreateVideoModel } from "../src/models/CreateVideoModel";
 import { UpdateVideoModel } from "../src/models/UpdateVideoModel";
 import { app } from "../src/setting"
@@ -14,14 +16,14 @@ function randomString(n: number) {
 describe('/videos', () => {
    
     beforeAll(async () => {
-        await request(app).delete('/testing/all-data').expect(204)
+        await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
     })
    
     it('- GET videos = []', async () => {
-        await request(app).get('/videos').expect(200, [])
+        await request(app).get('/videos').expect(StatusCodes.OK, [])
     })
     it('- GET video by ID with incorrect id', async () => {
-        await request(app).get('/videos/1').expect(404)
+        await request(app).get('/videos/1').expect(StatusCodes.NOT_FOUND)
     })
 
     let newVideo: VideoViewModel = {
@@ -41,7 +43,7 @@ describe('/videos', () => {
             availableResolutions: []
         }
 
-        const res = await request(app).post('/videos').send(data).expect(400)
+        const res = await request(app).post('/videos').send(data).expect(StatusCodes.BAD_REQUEST)
 
         expect(res.body).toEqual({
             "errorsMessages": [
@@ -52,7 +54,7 @@ describe('/videos', () => {
             ]
         })
 
-        await request(app).get('/videos').expect(200, [])
+        await request(app).get('/videos').expect(StatusCodes.OK, [])
 
     })    
     it('- POST create the video with incorrect author', async () => {
@@ -62,7 +64,7 @@ describe('/videos', () => {
             availableResolutions: []
         }
 
-        const res = await request(app).post('/videos').send(data).expect(400)
+        const res = await request(app).post('/videos').send(data).expect(StatusCodes.BAD_REQUEST)
 
         expect(res.body).toEqual({
             "errorsMessages": [
@@ -73,7 +75,7 @@ describe('/videos', () => {
             ]
         })
 
-        await request(app).get('/videos').expect(200, [])
+        await request(app).get('/videos').expect(StatusCodes.OK, [])
 
     })  
     it('- POST create the video with correct data', async () => {
@@ -83,7 +85,7 @@ describe('/videos', () => {
             availableResolutions: ["P144"]
         }     
         
-        const res = await request(app).post('/videos').send(data).expect(201)
+        const res = await request(app).post('/videos').send(data).expect(StatusCodes.CREATED)
         newVideo = res.body;
 
         expect(newVideo).toEqual(
@@ -99,16 +101,16 @@ describe('/videos', () => {
             }    
         )
 
-        await request(app).get('/videos').expect(200, [newVideo])
+        await request(app).get('/videos').expect(StatusCodes.OK, [newVideo])
 
     })
 
     it('- GET video by ID with correct id', async () => {
-        await request(app).get('/videos/' + newVideo.id).expect(200)
+        await request(app).get('/videos/' + newVideo.id).expect(StatusCodes.OK)
     })
 
     it('- PUT video by ID with incorrect id', async () => {
-        await request(app).put('/videos/123').expect(404)
+        await request(app).put('/videos/123').expect(StatusCodes.NOT_FOUND)
     })
 
     it('- PUT update the video with incorrect title', async () => {
@@ -117,7 +119,7 @@ describe('/videos', () => {
             author: "it-incubator"
         }
 
-        const res = await request(app).put('/videos/' + newVideo.id).send(data).expect(400)
+        const res = await request(app).put('/videos/' + newVideo.id).send(data).expect(StatusCodes.BAD_REQUEST)
 
         expect(res.body).toEqual({
             "errorsMessages": [
@@ -134,7 +136,7 @@ describe('/videos', () => {
             author: randomString(50)
         }
 
-        const res = await request(app).put('/videos/' + newVideo.id).send(data).expect(400)
+        const res = await request(app).put('/videos/' + newVideo.id).send(data).expect(StatusCodes.BAD_REQUEST)
 
         expect(res.body).toEqual({
             "errorsMessages": [
@@ -151,7 +153,7 @@ describe('/videos', () => {
             author: "it-incubator 2"
         }
 
-        await request(app).put('/videos/' + newVideo.id).send(data).expect(204)
+        await request(app).put('/videos/' + newVideo.id).send(data).expect(StatusCodes.NO_CONTENT)
 
         const res = await request(app).get('/videos/' + newVideo.id)
         const updateVideo = {
@@ -165,12 +167,12 @@ describe('/videos', () => {
     })
 
     it('- DELETE video by ID with incorrect id', async () => {
-        await request(app).delete('/videos/123').expect(404)
+        await request(app).delete('/videos/123').expect(StatusCodes.NOT_FOUND)
     })
     it('- DELETE video by ID with correct id', async () => {
-        await request(app).delete('/videos/' + newVideo.id).expect(204)
+        await request(app).delete('/videos/' + newVideo.id).expect(StatusCodes.CREATED)
 
-        await request(app).get('/videos').expect(200, [])
+        await request(app).get('/videos').expect(StatusCodes.OK, [])
     })
 })
 

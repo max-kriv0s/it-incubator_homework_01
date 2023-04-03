@@ -24,6 +24,7 @@ const video: VideoViewModel = {
 
 let videos: VideoViewModel[] = [video]
 
+
 export const videoRepository = {
     getVideo(): VideoViewModel[] {
         return videos
