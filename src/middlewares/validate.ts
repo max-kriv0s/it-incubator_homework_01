@@ -1,6 +1,6 @@
-import { APIErrorResult, FieldError } from "./models/APIErrorModels";
-import { CreateVideoModel } from "./models/CreateVideoModel";
-import { UpdateVideoModel } from "./models/UpdateVideoModel";
+import { APIErrorResult, FieldError } from "../models/APIErrorModels";
+import { CreateVideoModel } from "../models/CreateVideoModel";
+import { UpdateVideoModel } from "../models/UpdateVideoModel";
 
 enum Resolutions {
     'P144',

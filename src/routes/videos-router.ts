@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express"
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { APIErrorResult } from "../models/APIErrorModels"
 import { UpdateVideoModel } from "../models/UpdateVideoModel";
-import { validateAuthor, validateAvailableResolutions, validateCanBeDownloaded, validateMinAgeRestriction, validatePublicationDate, validateTitle } from "../validate";
+import { validateAuthor, validateAvailableResolutions, validateCanBeDownloaded, validateMinAgeRestriction, validatePublicationDate, validateTitle } from "../middlewares/validate";
 import { videoRepository } from "../db/db";
 
 export const routerVideos = Router()
