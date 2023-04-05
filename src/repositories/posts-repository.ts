@@ -1,7 +1,7 @@
 import { PostCreateModel } from "../models/PostCreateModel"
 import { PostUpdateModel } from "../models/PostUpdateModel"
 import { PostViewModel } from "../models/PostViewModel"
-import { newStringId } from "../utils/utils"
+import { deleteValueById, newStringId } from "../utils/utils"
 import { blogsRepository } from "./blogs-repository"
 
 const post: PostViewModel = {
@@ -53,13 +53,7 @@ export const postsRepository = {
         return true
     },
     deletePostById(id: string): boolean {
-        for (let i = 0; i < posts.length; i++) {
-            if (posts[i].id === id) {
-                posts.splice(i, 1)
-                return true
-            }
-        }
-        return false   
+       return deleteValueById(posts, id)  
     },
     deletePosts(): void {
         posts = []

@@ -21,7 +21,7 @@ export const PostValidate = [
         .exists({ checkFalsy: true }).bail()
         .isString().bail()
         .custom(value => {
-            const blog = blogsRepository.getBlog(value)
+            const blog = blogsRepository.findBlogById(value)
             if (!blog) {
                 throw new Error('Blog not found')
             }

@@ -1,7 +1,7 @@
 import { BlogCreateModel } from "../models/BlogCreateModel"
 import { BlogViewModel } from "../models/BlogViewModel"
 import { BlogUpdateModel } from "../models/BlogUpdateModel"
-import { newStringId } from "../utils/utils"
+import { deleteValueById, newStringId } from "../utils/utils"
 
 
 const blog: BlogViewModel = {
@@ -43,13 +43,7 @@ export const blogsRepository = {
         return true
     },
     deleteBlog(id: string): boolean{
-        for (let i = 0; i < blogs.length; i++) {
-            if (blogs[i].id === id) {
-                blogs.splice(i, 1)
-                return true
-            }
-        }
-        return false
+        return deleteValueById(blogs, id)
     }, 
     deleteBlogs(): void {
         blogs = []
