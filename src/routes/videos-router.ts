@@ -12,7 +12,7 @@ import { VideoViewModel } from "../models/VideoViewModel";
 export const routerVideos = Router()
 
 routerVideos.get('/', (req: Request, res: Response) => {
-    const videos = videoRepository.getVideo()
+    const videos = videoRepository.getVideos()
     res.send(videos)
 })
 routerVideos.post('/', (req: Request<{},{}, CreateVideoModel>, res: Response<VideoViewModel | APIErrorResult>) => {
@@ -28,12 +28,12 @@ routerVideos.post('/', (req: Request<{},{}, CreateVideoModel>, res: Response<Vid
         return;
     }
 
-    const newVideo = videoRepository.createProduct(body)
+    const newVideo = videoRepository.createVideo(body)
 
     res.status(StatusCodes.CREATED).send(newVideo)
 })
 routerVideos.get('/:id', (req: Request<{id: string}>, res:Response<VideoViewModel>) => {
-    const video = videoRepository.getProduct(req.params.id)
+    const video = videoRepository.getVideo(req.params.id)
     if (video) {
         res.send(video)
     } else {
@@ -44,7 +44,7 @@ routerVideos.put('/:id', (req: Request<{id: string},{}, UpdateVideoModel>, res: 
     const errors: APIErrorResult = {errorsMessages: []}
     const body = req.body;
 
-    const video = videoRepository.getProduct(req.params.id)
+    const video = videoRepository.getVideo(req.params.id)
     if (!video) {
         res.sendStatus(StatusCodes.NOT_FOUND);
         return;
@@ -62,7 +62,7 @@ routerVideos.put('/:id', (req: Request<{id: string},{}, UpdateVideoModel>, res: 
         return;
     }
 
-    videoRepository.updateProduct(video, body)
+    videoRepository.updateVideo(video, body)
 
     res.sendStatus(StatusCodes.NO_CONTENT);
 })

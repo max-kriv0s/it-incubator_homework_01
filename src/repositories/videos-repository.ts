@@ -21,13 +21,13 @@ let videos: VideoViewModel[] = [video]
 
 
 export const videoRepository = {
-    getVideo(): VideoViewModel[] {
+    getVideos(): VideoViewModel[] {
         return videos
     },
-    getProduct(id: string): VideoViewModel | undefined {
+    getVideo(id: string): VideoViewModel | undefined {
         return videos.find(v => v.id === +id);
     },
-    createProduct(body: CreateVideoModel): VideoViewModel {
+    createVideo(body: CreateVideoModel): VideoViewModel {
         const createdAt: Date = new Date()
 
         const availableResolutions: string[] = body.availableResolutions ? [...body.availableResolutions] : []
@@ -47,7 +47,7 @@ export const videoRepository = {
 
         return createVideo
     }, 
-    updateProduct(video: VideoViewModel, body: UpdateVideoModel): void  {
+    updateVideo(video: VideoViewModel, body: UpdateVideoModel): void  {
         video.title = body.title
         video.author = body.author
 
