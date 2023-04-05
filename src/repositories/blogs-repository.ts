@@ -1,6 +1,6 @@
 import { BlogCreateModel } from "../models/BlogCreateModel"
 import { BlogViewModel } from "../models/BlogViewModel"
-import { UpdateBlogView } from "../models/UpdateBlogModel"
+import { BlogUpdateModel } from "../models/BlogUpdateModel"
 
 
 const blog: BlogViewModel = {
@@ -32,7 +32,7 @@ export const blogsRepository = {
         
         return newBlog
     },
-    updateBlog(id: string, body: UpdateBlogView): boolean {
+    updateBlog(id: string, body: BlogUpdateModel): boolean {
         const blog = blogs.find(b => b.id === id)
         if (!blog) {
             return false

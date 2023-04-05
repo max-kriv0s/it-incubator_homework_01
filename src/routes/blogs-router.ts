@@ -8,7 +8,7 @@ import { StatusCodes } from "http-status-codes"
 import { BaseAuthPassed } from "../middlewares/BasicAuth-middleware"
 import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { BlogValidate } from "../middlewares/Blog-validation-middleware"
-import { UpdateBlogView } from "../models/UpdateBlogModel"
+import { BlogUpdateModel } from "../models/BlogUpdateModel"
 import { APIErrorResult } from "../models/APIErrorModels"
 import { URIParamsIdModel } from "../models/URIParamsIdModel"
 
@@ -43,7 +43,7 @@ routerBlogs.put('/:id',
     BaseAuthPassed,
     BlogValidate,
     ErrorsValidate,
-    (req: RequestsWithParamsAndBody<URIParamsIdModel, UpdateBlogView>, res: Response<APIErrorResult>) => {
+    (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogUpdateModel>, res: Response<APIErrorResult>) => {
 
         const isUpdate = blogsRepository.updateBlog(req.params.id, req.body)
         if (isUpdate) {
