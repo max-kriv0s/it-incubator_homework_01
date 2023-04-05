@@ -1,10 +1,10 @@
 import { body } from "express-validator"
 
 
-export const BlogCreateValidate = [
+export const BlogValidate = [
     body('name')
-            .exists({ checkFalsy: true }).bail()
-            .isString().bail()
+        .exists({ checkFalsy: true }).bail()
+        .isString().bail()
         .isLength({ max: 15 })
         .withMessage('must be no more than 15 chars'),
     body('description')
@@ -19,4 +19,3 @@ export const BlogCreateValidate = [
         .isLength({ max: 100 })
         .withMessage('must be no more than 100 chars'),
 ]
-
