@@ -1,7 +1,7 @@
 import { CreateVideoModel } from "../models/CreateVideoModel"
 import { UpdateVideoModel } from "../models/UpdateVideoModel"
 import { VideoViewModel } from "../models/VideoViewModel"
-import { publicationDate } from "../utils/utils"
+import { deleteValueById, newNumberId, publicationDate } from "../utils/utils"
 
 
 const createdAt: Date = new Date()
@@ -24,7 +24,7 @@ export const videoRepository = {
     getVideos(): VideoViewModel[] {
         return videos
     },
-    getVideo(id: string): VideoViewModel | undefined {
+    findVideoById(id: string): VideoViewModel | undefined {
         return videos.find(v => v.id === +id);
     },
     createVideo(body: CreateVideoModel): VideoViewModel {
@@ -33,7 +33,7 @@ export const videoRepository = {
         const availableResolutions: string[] = body.availableResolutions ? [...body.availableResolutions] : []
 
         const createVideo: VideoViewModel = {
-            id: +(new Date()),
+            id: newNumberId(),
             title: body.title,
             author: body.author,
             canBeDownloaded: false,
@@ -47,7 +47,11 @@ export const videoRepository = {
 
         return createVideo
     }, 
-    updateVideo(video: VideoViewModel, body: UpdateVideoModel): void  {
+    updateVideo(id: number, body: UpdateVideoModel): boolean  {
+        
+        const video = videos.find(v => v.id === id)
+        if (!video) { return false }
+        
         video.title = body.title
         video.author = body.author
 
@@ -66,15 +70,12 @@ export const videoRepository = {
         if (body.publicationDate){
             video.publicationDate = body.publicationDate;
         }
+
+        return true
+
     },
-    deleteVideo(id: string): boolean {
-        for (let i = 0; i < videos.length; i++) {
-            if (videos[i].id === +id){
-                const deleteVideos = videos.splice(i, 1);              
-                return true;
-            }
-        }  
-        return false
+    deleteVideo(id: number): boolean {
+        return deleteValueById(videos, id)
     },
     deleteVideos(): void {
         videos = []

@@ -1,8 +1,71 @@
+import { body } from "express-validator";
+
 import { APIErrorResult, FieldError } from "../models/APIErrorModels";
 import { CreateVideoModel } from "../models/CreateVideoModel";
 import { UpdateVideoModel } from "../models/UpdateVideoModel";
 
 const Resolutions: string[] = ['P144', 'P240', 'P360', 'P480', 'P720', 'P1080', 'P1440', 'P2160'] 
+
+const titleValidate = body('title')
+    .exists({ checkFalsy: true }).bail()
+    .isString().bail()
+    .isLength({ max: 40 })
+    .withMessage('must be no more than 40 chars')
+
+const authorValidate = body('author')
+    .exists({ checkFalsy: true }).bail()
+    .isString().bail()
+    .isLength({ max: 20 })
+    .withMessage('must be no more than 20 chars')
+
+const availableResolutionsValidate = body('availableResolutions')
+    .exists({ checkFalsy: true }).bail()
+    .isArray().bail()
+    .isLength({ min: 1 }) 
+    .custom(value => {
+        for (let i = 0; i < value.length; i++) {
+            if (!Resolutions.includes(value[i])) {
+                throw new Error('incorrect value')
+            }
+        }
+        return true
+    })
+
+const regExpDateTime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/gm
+
+
+export const VideoCreateValidate = [
+    titleValidate,
+    authorValidate,
+    availableResolutionsValidate      
+]
+
+export const VideoUpdateValidate = [
+    titleValidate,
+    authorValidate,
+    availableResolutionsValidate,
+    body('canBeDownloaded')
+        .if(body('canBeDownloaded').exists())
+        .isBoolean(),
+    body('minAgeRestriction')
+        .if(body('minAgeRestriction').exists())
+        .isLength({ min: 1, max: 18 }),
+    body('publicationDate')
+        .if(body('publicationDate').exists())
+        .isString().bail()
+        .custom(value => {
+            if (!(regExpDateTime.test(value))) {
+                throw new Error('incorrect value')
+            }
+            return true
+        })
+
+]
+
+
+
+
+
 
 export function validateTitle(bodyReques: CreateVideoModel | UpdateVideoModel, errors: APIErrorResult): void {
     if (!bodyReques.title || typeof bodyReques.title !== 'string' || bodyReques.title.length > 40) {

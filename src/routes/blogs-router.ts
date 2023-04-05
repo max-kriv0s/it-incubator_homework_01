@@ -25,7 +25,6 @@ routerBlogs.post('/',
     ErrorsValidate,
     (req: RequestsWithBody<BlogCreateModel>, res: Response<BlogViewModel>) => {
         const newBlog = blogsRepository.createBlog(req.body)
-
         res.status(StatusCodes.CREATED).send(newBlog)
 })
 
@@ -43,7 +42,6 @@ routerBlogs.put('/:id',
     BlogValidate,
     ErrorsValidate,
     (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogUpdateModel>, res: Response) => {
-
         const isUpdate = blogsRepository.updateBlog(req.params.id, req.body)
         if (isUpdate) {
             res.sendStatus(StatusCodes.NO_CONTENT)    
@@ -55,7 +53,6 @@ routerBlogs.put('/:id',
 routerBlogs.delete('/:id', 
     BasicAuthValidate,
     (req: Request<URIParamsIdModel>, res: Response) => {
-
         const isDelete = blogsRepository.deleteBlog(req.params.id)
         if (isDelete) {            
             res.sendStatus(StatusCodes.NO_CONTENT)      

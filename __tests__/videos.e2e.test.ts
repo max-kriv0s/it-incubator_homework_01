@@ -34,7 +34,7 @@ describe('/videos', () => {
         const data: CreateVideoModel = {
             title: randomString(50),
             author: "it-incubator",
-            availableResolutions: []
+            availableResolutions: ["P144"]
         }
 
         const res = await request(app).post('/videos').send(data).expect(StatusCodes.BAD_REQUEST)
@@ -55,7 +55,7 @@ describe('/videos', () => {
         const data: CreateVideoModel = {
             title: "it-incubator",
             author: randomString(50),
-            availableResolutions: []
+            availableResolutions: ["P144"]
         }
 
         const res = await request(app).post('/videos').send(data).expect(StatusCodes.BAD_REQUEST)
@@ -104,13 +104,20 @@ describe('/videos', () => {
     })
 
     it('- PUT video by ID with incorrect id', async () => {
-        await request(app).put('/videos/123').expect(StatusCodes.NOT_FOUND)
+        const data: UpdateVideoModel = {
+            title: "update course it-incubator",
+            author: "it-incubator",
+            availableResolutions: ["P144"]
+        }
+        
+        await request(app).put('/videos/123').send(data).expect(StatusCodes.NOT_FOUND)
     })
 
     it('- PUT update the video with incorrect title', async () => {
         const data: UpdateVideoModel = {
             title: randomString(50),
-            author: "it-incubator"
+            author: "it-incubator",
+            availableResolutions: ["P144"]
         }
 
         const res = await request(app).put('/videos/' + newVideo.id).send(data).expect(StatusCodes.BAD_REQUEST)
@@ -127,7 +134,8 @@ describe('/videos', () => {
     it('- PUT update the video with incorrect author', async () => {
         const data: UpdateVideoModel = {
             title: "it-incubator",
-            author: randomString(50)
+            author: randomString(50),
+            availableResolutions: ["P144"]
         }
 
         const res = await request(app).put('/videos/' + newVideo.id).send(data).expect(StatusCodes.BAD_REQUEST)
@@ -144,7 +152,8 @@ describe('/videos', () => {
     it('- PUT update the video with correct data', async () => {
         const data: UpdateVideoModel = {
             title: "new-new course",
-            author: "it-incubator 2"
+            author: "it-incubator 2",
+            availableResolutions: ["P144"]
         }
 
         await request(app).put('/videos/' + newVideo.id).send(data).expect(StatusCodes.NO_CONTENT)
