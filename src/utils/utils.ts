@@ -10,3 +10,11 @@ export function publicationDate(createdAt: Date): string {
     newDate.setHours(newDate.getHours() + 24)
     return newDate.toISOString()
 }
+
+export function newStringId() {
+    return (new Date()).getTime().toString()
+}
+
+export function newNumberId() {
+    return +(new Date()) 
+}

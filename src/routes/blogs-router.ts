@@ -5,11 +5,10 @@ import { BlogViewModel } from "../models/BlogViewModel"
 import { BlogCreateModel } from "../models/BlogCreateModel"
 import { RequestsWithBody, RequestsWithParamsAndBody } from "../types.ts/types"
 import { StatusCodes } from "http-status-codes"
-import { BaseAuthPassed } from "../middlewares/BasicAuth-middleware"
+import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middleware"
 import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { BlogValidate } from "../middlewares/Blog-validation-middleware"
 import { BlogUpdateModel } from "../models/BlogUpdateModel"
-import { APIErrorResult } from "../models/APIErrorModels"
 import { URIParamsIdModel } from "../models/URIParamsIdModel"
 
 
@@ -21,17 +20,17 @@ routerBlogs.get('/', (req: Request, res: Response<BlogViewModel[]>) => {
 })
 
 routerBlogs.post('/',
-    BaseAuthPassed,
+    BasicAuthValidate,
     BlogValidate,
     ErrorsValidate,
     (req: RequestsWithBody<BlogCreateModel>, res: Response<BlogViewModel>) => {
-    const newBlog = blogsRepository.createBlog(req.body)
+        const newBlog = blogsRepository.createBlog(req.body)
 
-    res.status(StatusCodes.CREATED).send(newBlog)
+        res.status(StatusCodes.CREATED).send(newBlog)
 })
 
 routerBlogs.get('/:id', (req: Request<URIParamsIdModel>, res: Response<BlogViewModel>) => {
-    const blog = blogsRepository.getBlog(req.params.id)
+    const blog = blogsRepository.findBlogById(req.params.id)
     if (blog) {
         res.send(blog)
     } else {
@@ -40,10 +39,10 @@ routerBlogs.get('/:id', (req: Request<URIParamsIdModel>, res: Response<BlogViewM
 })
 
 routerBlogs.put('/:id', 
-    BaseAuthPassed,
+    BasicAuthValidate,
     BlogValidate,
     ErrorsValidate,
-    (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogUpdateModel>, res: Response<APIErrorResult>) => {
+    (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogUpdateModel>, res: Response) => {
 
         const isUpdate = blogsRepository.updateBlog(req.params.id, req.body)
         if (isUpdate) {
@@ -54,7 +53,7 @@ routerBlogs.put('/:id',
 })
 
 routerBlogs.delete('/:id', 
-    BaseAuthPassed,
+    BasicAuthValidate,
     (req: Request<URIParamsIdModel>, res: Response) => {
 
         const isDelete = blogsRepository.deleteBlog(req.params.id)

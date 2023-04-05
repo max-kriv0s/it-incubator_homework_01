@@ -1,6 +1,7 @@
 import { BlogCreateModel } from "../models/BlogCreateModel"
 import { BlogViewModel } from "../models/BlogViewModel"
 import { BlogUpdateModel } from "../models/BlogUpdateModel"
+import { newStringId } from "../utils/utils"
 
 
 const blog: BlogViewModel = {
@@ -16,13 +17,12 @@ export const blogsRepository = {
     getBlogs(): BlogViewModel[] {
         return blogs
     },
-    getBlog(id: string): BlogViewModel | undefined {
+    findBlogById(id: string): BlogViewModel | undefined {
         return blogs.find(b => b.id === id)   
     },
     createBlog(body: BlogCreateModel): BlogViewModel {
-        const id = (new Date()).getTime().toString()
         const newBlog: BlogViewModel = {
-            id: id,
+            id: newStringId(),
             name: body.name,
             description: body.description,
             websiteUrl: body.websiteUrl
@@ -34,9 +34,8 @@ export const blogsRepository = {
     },
     updateBlog(id: string, body: BlogUpdateModel): boolean {
         const blog = blogs.find(b => b.id === id)
-        if (!blog) {
-            return false
-        }
+        if (!blog) { return false }
+
         blog.name = body.name
         blog.description = body.description
         blog.websiteUrl = body.websiteUrl
