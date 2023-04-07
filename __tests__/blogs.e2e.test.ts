@@ -1,5 +1,3 @@
-
-
 import request from "supertest";
 import { app } from "../src/setting";
 import { StatusCodes } from "http-status-codes";
@@ -252,6 +250,7 @@ describe('/blogs', () => {
 
         const res = await request(app)
                         .get('/blogs/' + newBlog.id)
+                        
         const updateBlog: BlogViewModel = {
             ...newBlog,
             name: data.name,
