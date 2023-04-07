@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
 
 
-const admin = process.env.ADMIN_LOGIN
+const admin = 'Basic YWRtaW46cXdlcnR5'
 
 export const BasicAuthValidate = (req: Request, res: Response, next: NextFunction) => {
     if (req.headers.authorization && req.headers.authorization === admin) {
