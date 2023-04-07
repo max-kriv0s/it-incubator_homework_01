@@ -31,7 +31,7 @@ const availableResolutionsValidate = body('availableResolutions')
         return true
     })
 
-const regExpDateTime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/gm
+const reDateTime = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/gm
 
 
 export const VideoCreateValidate = [
@@ -54,7 +54,7 @@ export const VideoUpdateValidate = [
         .if(body('publicationDate').exists())
         .isString().bail()
         .custom(value => {
-            if (!(regExpDateTime.test(value))) {
+            if (!reDateTime.test(value)) {
                 throw new Error('incorrect value')
             }
             return true

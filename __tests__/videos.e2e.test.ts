@@ -20,16 +20,7 @@ describe('/videos', () => {
         await request(app).get('/videos/1').expect(StatusCodes.NOT_FOUND)
     })
 
-    let newVideo: VideoViewModel = {
-        id: 0,
-        title: "",
-        author: "",
-        canBeDownloaded: false,
-        minAgeRestriction: null,
-        createdAt: "",
-        publicationDate: "",
-        availableResolutions: []
-    }
+    let newVideo: VideoViewModel;
     it('- POST create the video with incorrect title', async () => {
         const data: CreateVideoModel = {
             title: randomString(50),

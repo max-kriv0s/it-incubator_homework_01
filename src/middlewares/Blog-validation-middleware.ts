@@ -1,5 +1,6 @@
 import { body } from "express-validator"
 
+const reWebsiteUrl = new RegExp('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$')
 
 export const BlogValidate = [
     body('name')
@@ -15,7 +16,12 @@ export const BlogValidate = [
     body('websiteUrl')
         .exists({ checkFalsy: true }).bail()
         .isString().bail()
-        .isURL({protocols: ['https']}).bail()
         .isLength({ max: 100 })
-        .withMessage('must be no more than 100 chars'),
+        .withMessage('must be no more than 100 chars')
+        .custom(value => {
+            if (!reWebsiteUrl.test(value)) {
+                throw new Error('incorrect value')
+            }
+            return true
+        })
 ]
