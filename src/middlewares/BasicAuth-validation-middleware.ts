@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
 
-
 const admin = process.env.ADMIN_LOGIN
 
 export const BasicAuthValidate = (req: Request, res: Response, next: NextFunction) => {
