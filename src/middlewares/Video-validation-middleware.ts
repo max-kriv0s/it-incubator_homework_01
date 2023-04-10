@@ -1,8 +1,8 @@
 import { body } from "express-validator";
 
-import { APIErrorResult, FieldError } from "../models/APIErrorModels";
-import { CreateVideoModel } from "../models/CreateVideoModel";
-import { UpdateVideoModel } from "../models/UpdateVideoModel";
+import { APIErrorResult, FieldError } from "../types.ts/APIErrorModels";
+import { CreateVideoModel } from "../models/videos/CreateVideoModel";
+import { UpdateVideoModel } from "../models/videos/UpdateVideoModel";
 
 const Resolutions: string[] = ['P144', 'P240', 'P360', 'P480', 'P720', 'P1080', 'P1440', 'P2160'] 
 

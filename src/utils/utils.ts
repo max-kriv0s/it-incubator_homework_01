@@ -1,4 +1,4 @@
-import { DataBaseModel } from "../models/DataBaseMode";
+import { DataBaseModel } from "../types.ts/DataBaseMode";
 
 export function randomString(n: number) {
     let rnd = '';

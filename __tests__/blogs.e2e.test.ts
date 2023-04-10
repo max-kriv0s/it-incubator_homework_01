@@ -1,10 +1,10 @@
 import request from "supertest";
 import { app } from "../src/setting";
 import { StatusCodes } from "http-status-codes";
-import { BlogViewModel } from "../src/models/BlogViewModel";
-import { BlogCreateModel } from "../src/models/BlogCreateModel";
+import { BlogViewModel } from "../src/models/blogs/BlogViewModel";
+import { BlogCreateModel } from "../src/models/blogs/BlogCreateModel";
 import { randomString } from "../src/utils/utils";
-import { BlogUpdateModel } from "../src/models/BlogUpdateModel";
+import { BlogUpdateModel } from "../src/models/blogs/BlogUpdateModel";
 
 
 describe('/blogs', () => {

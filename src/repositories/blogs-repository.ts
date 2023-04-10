@@ -1,6 +1,6 @@
-import { BlogCreateModel } from "../models/BlogCreateModel"
-import { BlogViewModel } from "../models/BlogViewModel"
-import { BlogUpdateModel } from "../models/BlogUpdateModel"
+import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
+import { BlogViewModel } from "../models/blogs/BlogViewModel"
+import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { deleteValueById, newStringId } from "../utils/utils"
 
 

@@ -1,10 +1,10 @@
 import request from "supertest";
 import { StatusCodes } from "http-status-codes";
 
-import { CreateVideoModel } from "../src/models/CreateVideoModel";
-import { UpdateVideoModel } from "../src/models/UpdateVideoModel";
+import { CreateVideoModel } from "../src/models/videos/CreateVideoModel";
+import { UpdateVideoModel } from "../src/models/videos/UpdateVideoModel";
 import { app } from "../src/setting"
-import { VideoViewModel } from "../src/models/VideoViewModel";
+import { VideoViewModel } from "../src/models/videos/VideoViewModel";
 import {randomString} from "../src/utils/utils"
 
 describe('/videos', () => {

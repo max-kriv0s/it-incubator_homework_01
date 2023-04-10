@@ -1,15 +1,15 @@
 import { Router, Request, Response } from "express"
 
 import { blogsRepository } from "../repositories/blogs-repository"
-import { BlogViewModel } from "../models/BlogViewModel"
-import { BlogCreateModel } from "../models/BlogCreateModel"
+import { BlogViewModel } from "../models/blogs/BlogViewModel"
+import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
 import { RequestsWithBody, RequestsWithParamsAndBody } from "../types.ts/types"
 import { StatusCodes } from "http-status-codes"
 import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middleware"
 import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { BlogValidate } from "../middlewares/Blog-validation-middleware"
-import { BlogUpdateModel } from "../models/BlogUpdateModel"
-import { URIParamsIdModel } from "../models/URIParamsIdModel"
+import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
+import { URIParamsIdModel } from "../types.ts/URIParamsIdModel"
 
 
 export const routerBlogs = Router()

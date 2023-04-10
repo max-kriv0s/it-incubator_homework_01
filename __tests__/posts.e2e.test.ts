@@ -1,12 +1,12 @@
 import request from "supertest";
 import { app } from "../src/setting";
 import { StatusCodes } from "http-status-codes";
-import { PostViewModel } from "../src/models/PostViewModel";
-import { PostCreateModel } from "../src/models/PostCreateModel";
+import { PostViewModel } from "../src/models/posts/PostViewModel";
+import { PostCreateModel } from "../src/models/posts/PostCreateModel";
 import { randomString } from "../src/utils/utils";
-import { BlogCreateModel } from "../src/models/BlogCreateModel";
-import { BlogViewModel } from "../src/models/BlogViewModel";
-import { PostUpdateModel } from "../src/models/PostUpdateModel";
+import { BlogCreateModel } from "../src/models/blogs/BlogCreateModel";
+import { BlogViewModel } from "../src/models/blogs/BlogViewModel";
+import { PostUpdateModel } from "../src/models/posts/PostUpdateModel";
 
 
 

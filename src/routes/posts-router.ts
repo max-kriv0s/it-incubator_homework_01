@@ -1,15 +1,15 @@
 import { Router, Request, Response } from "express"
 
-import { PostViewModel } from "../models/PostViewModel"
+import { PostViewModel } from "../models/posts/PostViewModel"
 import { postsRepository } from "../repositories/posts-repository"
-import { PostCreateModel } from "../models/PostCreateModel"
+import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middleware"
 import { RequestsWithBody, RequestsWithParamsAndBody } from "../types.ts/types"
 import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { PostValidate } from "../middlewares/Post-validation-middleware"
 import { StatusCodes } from "http-status-codes"
-import { URIParamsIdModel } from "../models/URIParamsIdModel"
-import { PostUpdateModel } from "../models/PostUpdateModel"
+import { URIParamsIdModel } from "../types.ts/URIParamsIdModel"
+import { PostUpdateModel } from "../models/posts/PostUpdateModel"
 
 
 export const routerPosts = Router()

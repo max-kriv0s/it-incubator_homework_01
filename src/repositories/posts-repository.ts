@@ -1,6 +1,6 @@
-import { PostCreateModel } from "../models/PostCreateModel"
-import { PostUpdateModel } from "../models/PostUpdateModel"
-import { PostViewModel } from "../models/PostViewModel"
+import { PostCreateModel } from "../models/posts/PostCreateModel"
+import { PostUpdateModel } from "../models/posts/PostUpdateModel"
+import { PostViewModel } from "../models/posts/PostViewModel"
 import { deleteValueById, newStringId } from "../utils/utils"
 import { blogsRepository } from "./blogs-repository"
 

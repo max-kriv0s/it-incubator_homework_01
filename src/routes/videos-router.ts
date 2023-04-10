@@ -1,15 +1,15 @@
 import { Router, Request, Response } from "express"
 import { StatusCodes } from "http-status-codes";
 
-import { CreateVideoModel } from "../models/CreateVideoModel"
-import { APIErrorResult } from "../models/APIErrorModels"
-import { UpdateVideoModel } from "../models/UpdateVideoModel";
+import { CreateVideoModel } from "../models/videos/CreateVideoModel"
+import { APIErrorResult } from "../types.ts/APIErrorModels"
+import { UpdateVideoModel } from "../models/videos/UpdateVideoModel";
 import { VideoCreateValidate, VideoUpdateValidate} from "../middlewares/Video-validation-middleware";
 import { videoRepository } from "../repositories/videos-repository";
-import { VideoViewModel } from "../models/VideoViewModel";
+import { VideoViewModel } from "../models/videos/VideoViewModel";
 import { ErrorsValidate } from "../middlewares/Errors-middleware";
 import { RequestsURIParams, RequestsWithBody } from "../types.ts/types";
-import { URIParamsIdModel } from "../models/URIParamsIdModel";
+import { URIParamsIdModel } from "../types.ts/URIParamsIdModel";
 
 
 export const routerVideos = Router()

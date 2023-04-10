@@ -1,6 +1,6 @@
-import { CreateVideoModel } from "../models/CreateVideoModel"
-import { UpdateVideoModel } from "../models/UpdateVideoModel"
-import { VideoViewModel } from "../models/VideoViewModel"
+import { CreateVideoModel } from "../models/videos/CreateVideoModel"
+import { UpdateVideoModel } from "../models/videos/UpdateVideoModel"
+import { VideoViewModel } from "../models/videos/VideoViewModel"
 import { deleteValueById, newNumberId, publicationDate } from "../utils/utils"
 
 
