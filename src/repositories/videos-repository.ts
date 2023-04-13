@@ -21,13 +21,13 @@ let videos: VideoViewModel[] = [video]
 
 
 export const videoRepository = {
-    getVideos(): VideoViewModel[] {
+    async getVideos(): Promise<VideoViewModel[]> {
         return videos
     },
-    findVideoById(id: string): VideoViewModel | undefined {
+    async findVideoById(id: string): Promise<VideoViewModel | undefined> {
         return videos.find(v => v.id === +id);
     },
-    createVideo(body: CreateVideoModel): VideoViewModel {
+    async createVideo(body: CreateVideoModel): Promise<VideoViewModel> {
         const createdAt: Date = new Date()
 
         const availableResolutions: string[] = body.availableResolutions ? [...body.availableResolutions] : []
@@ -47,7 +47,7 @@ export const videoRepository = {
 
         return createVideo
     }, 
-    updateVideo(id: number, body: UpdateVideoModel): boolean  {
+    async updateVideo(id: number, body: UpdateVideoModel): Promise<boolean>  {
         
         const video = videos.find(v => v.id === id)
         if (!video) { return false }
@@ -74,10 +74,10 @@ export const videoRepository = {
         return true
 
     },
-    deleteVideo(id: number): boolean {
+    async deleteVideo(id: number): Promise<boolean> {
         return deleteValueById(videos, id)
     },
-    deleteVideos(): void {
+    async deleteVideos() {
         videos = []
     }
 }
