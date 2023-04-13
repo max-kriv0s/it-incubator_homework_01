@@ -24,8 +24,8 @@ export const PostValidate = [
         .trim()    
         .exists({ checkFalsy: true }).bail()
         .isString().bail()
-        .custom(value => {
-            const blog = blogsRepository.findBlogById(value)
+        .custom(async (value) => {
+            const blog = await blogsRepository.findBlogById(value)
             if (!blog) {
                 throw new Error('Blog not found')
             }

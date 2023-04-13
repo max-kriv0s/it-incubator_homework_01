@@ -24,7 +24,7 @@ export const postsRepository = {
         return posts.find(p => p.id === id)
     },
     async createPost(body: PostCreateModel): Promise<PostViewModel> {
-        const blog = blogsRepository.findBlogById(body.blogId)
+        const blog = await blogsRepository.findBlogById(body.blogId)
  
         const newPost: PostViewModel = {
             id: newStringId(),
@@ -42,7 +42,7 @@ export const postsRepository = {
         const post = posts.find(p => p.id === id)
         if (!post) { return false }
 
-        const blog = blogsRepository.findBlogById(body.blogId)
+        const blog = await blogsRepository.findBlogById(body.blogId)
 
         post.title = body.title
         post.shortDescription = body.shortDescription
