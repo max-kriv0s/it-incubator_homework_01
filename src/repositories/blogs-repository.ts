@@ -14,13 +14,13 @@ const blog: BlogViewModel = {
 let blogs: BlogViewModel[] = [blog]
 
 export const blogsRepository = {
-    getBlogs(): BlogViewModel[] {
+    async getBlogs(): Promise<BlogViewModel[]> {
         return blogs
     },
-    findBlogById(id: string): BlogViewModel | undefined {
+    async findBlogById(id: string): Promise<BlogViewModel | undefined> {
         return blogs.find(b => b.id === id)   
     },
-    createBlog(body: BlogCreateModel): BlogViewModel {
+    async createBlog(body: BlogCreateModel): Promise<BlogViewModel> {
         const newBlog: BlogViewModel = {
             id: newStringId(),
             name: body.name,
@@ -32,7 +32,7 @@ export const blogsRepository = {
         
         return newBlog
     },
-    updateBlog(id: string, body: BlogUpdateModel): boolean {
+    async updateBlog(id: string, body: BlogUpdateModel): Promise<boolean> {
         const blog = blogs.find(b => b.id === id)
         if (!blog) { return false }
 
@@ -42,10 +42,10 @@ export const blogsRepository = {
 
         return true
     },
-    deleteBlog(id: string): boolean{
+    async deleteBlog(id: string): Promise<boolean> {
         return deleteValueById(blogs, id)
     }, 
-    deleteBlogs(): void {
+    async deleteBlogs() {
         blogs = []
     }
 }

@@ -14,8 +14,8 @@ import { URIParamsIdModel } from "../types.ts/URIParamsIdModel"
 
 export const routerBlogs = Router()
 
-routerBlogs.get('/', (req: Request, res: Response<BlogViewModel[]>) => {
-    const blogs: BlogViewModel[] = blogsRepository.getBlogs()
+routerBlogs.get('/', async (req: Request, res: Response<BlogViewModel[]>) => {
+    const blogs: BlogViewModel[] = await blogsRepository.getBlogs()
     res.send(blogs)
 })
 
@@ -23,13 +23,13 @@ routerBlogs.post('/',
     BasicAuthValidate,
     BlogValidate,
     ErrorsValidate,
-    (req: RequestsWithBody<BlogCreateModel>, res: Response<BlogViewModel>) => {
-        const newBlog = blogsRepository.createBlog(req.body)
+    async (req: RequestsWithBody<BlogCreateModel>, res: Response<BlogViewModel>) => {
+        const newBlog = await blogsRepository.createBlog(req.body)
         res.status(StatusCodes.CREATED).send(newBlog)
 })
 
-routerBlogs.get('/:id', (req: Request<URIParamsIdModel>, res: Response<BlogViewModel>) => {
-    const blog = blogsRepository.findBlogById(req.params.id)
+routerBlogs.get('/:id', async (req: Request<URIParamsIdModel>, res: Response<BlogViewModel>) => {
+    const blog = await blogsRepository.findBlogById(req.params.id)
     if (blog) {
         res.send(blog)
     } else {
@@ -41,8 +41,8 @@ routerBlogs.put('/:id',
     BasicAuthValidate,
     BlogValidate,
     ErrorsValidate,
-    (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogUpdateModel>, res: Response) => {
-        const isUpdate = blogsRepository.updateBlog(req.params.id, req.body)
+    async (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogUpdateModel>, res: Response) => {
+        const isUpdate = await blogsRepository.updateBlog(req.params.id, req.body)
         if (isUpdate) {
             res.sendStatus(StatusCodes.NO_CONTENT)    
         } else {
@@ -52,8 +52,8 @@ routerBlogs.put('/:id',
 
 routerBlogs.delete('/:id', 
     BasicAuthValidate,
-    (req: Request<URIParamsIdModel>, res: Response) => {
-        const isDelete = blogsRepository.deleteBlog(req.params.id)
+    async (req: Request<URIParamsIdModel>, res: Response) => {
+        const isDelete = await blogsRepository.deleteBlog(req.params.id)
         if (isDelete) {            
             res.sendStatus(StatusCodes.NO_CONTENT)      
         } else {
