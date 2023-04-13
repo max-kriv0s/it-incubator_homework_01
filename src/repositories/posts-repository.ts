@@ -17,13 +17,13 @@ let posts: PostViewModel[] = [post]
 
 
 export const postsRepository = {
-    getPosts(): PostViewModel[] {
+    async getPosts(): Promise<PostViewModel[]> {
         return posts
     },
-    findPostById(id: string): PostViewModel | undefined {
+    async findPostById(id: string): Promise<PostViewModel | undefined> {
         return posts.find(p => p.id === id)
     },
-    createPost(body: PostCreateModel): PostViewModel {
+    async createPost(body: PostCreateModel): Promise<PostViewModel> {
         const blog = blogsRepository.findBlogById(body.blogId)
  
         const newPost: PostViewModel = {
@@ -38,7 +38,7 @@ export const postsRepository = {
 
         return newPost
     },
-    updatePost(id: string, body: PostUpdateModel): boolean {
+    async updatePost(id: string, body: PostUpdateModel): Promise<boolean> {
         const post = posts.find(p => p.id === id)
         if (!post) { return false }
 
@@ -52,10 +52,10 @@ export const postsRepository = {
 
         return true
     },
-    deletePostById(id: string): boolean {
+    async deletePostById(id: string): Promise<boolean> {
        return deleteValueById(posts, id)  
     },
-    deletePosts(): void {
+    async deletePosts() {
         posts = []
     }
 }
