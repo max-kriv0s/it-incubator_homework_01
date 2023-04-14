@@ -9,14 +9,16 @@ if (!MONGO_URI) {
 }
 
 const client = new MongoClient(MONGO_URI)
+const db = client.db()
 
-export const videosCollection = client.db().collection<VideoViewModel>('videos')
-export const blogsCollection = client.db().collection<BlogViewModel>('blogs')
-export const postsCollection = client.db().collection<PostViewModel>('posts')
+export const videosCollection = db.collection<VideoViewModel>('videos')
+export const blogsCollection = db.collection<BlogViewModel>('blogs')
+export const postsCollection = db.collection<PostViewModel>('posts')
 
 export const runDB = async () => {
     try {
         await client.connect()
+        await db.command({ ping: 1 });
         console.log('Connect to successfully to server')
     } catch (e) {
         console.log('Don\'t connected successfully to server')
