@@ -1,18 +1,9 @@
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
 import { BlogViewModel } from "../models/blogs/BlogViewModel"
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
-import { deleteValueById, newStringId } from "../utils/utils"
+import { newStringId } from "../utils/utils"
 import { blogsCollection } from "./db"
 
-
-const blog: BlogViewModel = {
-    id: '1',
-    name: 'it-incubator',
-    description: 'Обучение Frontend и Backend',
-    websiteUrl: 'https://it-incubator.io'
-}
-
-let blogs: BlogViewModel[] = [blog]
 
 export const blogsRepository = {
     async getBlogs(): Promise<BlogViewModel[]> {
@@ -32,7 +23,7 @@ export const blogsRepository = {
             websiteUrl: body.websiteUrl
         }
 
-        const result = await blogsCollection.insertOne(newBlog)
+        const result = await blogsCollection.insertOne({...newBlog})
         return newBlog
     },
 

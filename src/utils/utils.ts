@@ -21,12 +21,12 @@ export function newNumberId() {
     return +(new Date()) 
 }
 
-export function deleteValueById(db: DataBaseModel , id: string| number): boolean {
-    for (let i = 0; i < db.length; i++) {
-        if (db[i].id === id) {
-            db.splice(i, 1)
-            return true
-        }
-    }
-    return false
-}
+// export function deleteValueById(db: DataBaseModel , id: string| number): boolean {
+//     for (let i = 0; i < db.length; i++) {
+//         if (db[i].id === id) {
+//             db.splice(i, 1)
+//             return true
+//         }
+//     }
+//     return false
+// }

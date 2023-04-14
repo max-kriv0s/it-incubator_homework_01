@@ -153,8 +153,13 @@ describe('/videos', () => {
         const updateVideo = {
             ...newVideo,
             title: data.title,
-            author: data.author
+            author: data.author,
+            availableResolutions: data.availableResolutions ? data.availableResolutions : [],
+            canBeDownloaded: false,
+            minAgeRestriction: null,
+            publicationDate: ''
         }
+
         expect(res.body).toEqual(updateVideo)
 
         newVideo = updateVideo

@@ -28,7 +28,7 @@ routerVideos.post('/',
 })
 
 routerVideos.get('/:id', async (req: RequestsURIParams<URIParamsIdModel>, res:Response<VideoViewModel>) => {
-    const video = await videoRepository.findVideoById(req.params.id)
+    const video = await videoRepository.findVideoById(+req.params.id)
     if (video) {
         res.send(video)
     } else {

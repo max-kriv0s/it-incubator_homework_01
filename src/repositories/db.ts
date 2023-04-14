@@ -10,9 +10,9 @@ if (!MONGO_URI) {
 
 const client = new MongoClient(MONGO_URI)
 
-export const videoCollection = client.db().collection<VideoViewModel>('videos')
+export const videosCollection = client.db().collection<VideoViewModel>('videos')
 export const blogsCollection = client.db().collection<BlogViewModel>('blogs')
-export const postCollection = client.db().collection<PostViewModel>('posts')
+export const postsCollection = client.db().collection<PostViewModel>('posts')
 
 export const runDB = async () => {
     try {
