@@ -16,7 +16,7 @@ export const blogsRepository = {
     },
 
     async createBlog(body: BlogCreateModel): Promise<BlogViewModel> {
-        const newBlog: BlogViewModel = {
+        const newBlog = {
             id: newStringId(),
             name: body.name,
             description: body.description,
@@ -26,7 +26,8 @@ export const blogsRepository = {
         }
 
         const result = await blogsCollection.insertOne({...newBlog})
-        return newBlog
+        return newBlog      
+        
     },
 
     async updateBlog(id: string, body: BlogUpdateModel): Promise<boolean> {
