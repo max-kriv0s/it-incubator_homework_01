@@ -1,33 +1,21 @@
 import { CreateVideoModel } from "../models/videos/CreateVideoModel"
 import { UpdateVideoModel } from "../models/videos/UpdateVideoModel"
 import { VideoViewModel } from "../models/videos/VideoViewModel"
-import { deleteValueById, newNumberId, publicationDate } from "../utils/utils"
-
-
-const createdAt: Date = new Date()
-
-const video: VideoViewModel = {
-    id: 0, 
-    title: "new video it-incubator",
-    author: 'it-incubator',
-    canBeDownloaded: false,
-    minAgeRestriction: null,
-    createdAt: createdAt.toISOString(),
-    publicationDate: publicationDate(createdAt),
-    availableResolutions: ["P144"]
-}
-
-let videos: VideoViewModel[] = [video]
+import { newNumberId, publicationDate } from "../utils/utils"
+import { videosCollection } from "./db"
 
 
 export const videoRepository = {
-    getVideos(): VideoViewModel[] {
-        return videos
+    async getVideos(): Promise<VideoViewModel[]> {
+        return videosCollection.find({}, {projection: {'_id': 0}}).toArray()
     },
-    findVideoById(id: string): VideoViewModel | undefined {
-        return videos.find(v => v.id === +id);
+
+    async findVideoById(id: number): Promise<VideoViewModel | null> {
+        const video:VideoViewModel | null = await videosCollection.findOne({ id: id}, {projection: {'_id': 0}})
+        return video
     },
-    createVideo(body: CreateVideoModel): VideoViewModel {
+
+    async createVideo(body: CreateVideoModel): Promise<VideoViewModel> {
         const createdAt: Date = new Date()
 
         const availableResolutions: string[] = body.availableResolutions ? [...body.availableResolutions] : []
@@ -43,41 +31,33 @@ export const videoRepository = {
             availableResolutions: availableResolutions
         }
     
-        videos.push(createVideo)
-
+        const result = await videosCollection.insertOne({...createVideo})
         return createVideo
+
     }, 
-    updateVideo(id: number, body: UpdateVideoModel): boolean  {
+
+    async updateVideo(id: number, body: UpdateVideoModel): Promise<boolean>  {
         
-        const video = videos.find(v => v.id === id)
-        if (!video) { return false }
-        
-        video.title = body.title
-        video.author = body.author
+        const result = await videosCollection.updateOne(
+            { id: id},
+            { $set: {
+                title: body.title,
+                author: body.author,
+                availableResolutions: body.availableResolutions ? body.availableResolutions : [],
+                canBeDownloaded: body.canBeDownloaded ? body.canBeDownloaded : false,
+                minAgeRestriction: body.minAgeRestriction ? body.minAgeRestriction : null,
+                publicationDate: body.publicationDate ? body.publicationDate :''
+            }}
+        )
 
-        if (body.availableResolutions) {
-            video.availableResolutions = body.availableResolutions;
-        }
-    
-        if (body.canBeDownloaded) {
-            video.canBeDownloaded = body.canBeDownloaded
-        }
-
-        if (body.minAgeRestriction) {
-            video.minAgeRestriction = body.minAgeRestriction;
-        }
-    
-        if (body.publicationDate){
-            video.publicationDate = body.publicationDate;
-        }
-
-        return true
-
+        return result.matchedCount === 1
     },
-    deleteVideo(id: number): boolean {
-        return deleteValueById(videos, id)
+
+    async deleteVideo(id: number): Promise<boolean> {
+        const result = await videosCollection.deleteOne({ id: id})
+        return result.deletedCount === 1 
     },
-    deleteVideos(): void {
-        videos = []
+    async deleteVideos() {
+        videosCollection.deleteMany({})
     }
 }

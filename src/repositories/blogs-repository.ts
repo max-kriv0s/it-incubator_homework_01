@@ -1,51 +1,53 @@
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
 import { BlogViewModel } from "../models/blogs/BlogViewModel"
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
-import { deleteValueById, newStringId } from "../utils/utils"
+import { newStringId } from "../utils/utils"
+import { blogsCollection } from "./db"
 
-
-const blog: BlogViewModel = {
-    id: '1',
-    name: 'it-incubator',
-    description: 'Обучение Frontend и Backend',
-    websiteUrl: 'https://it-incubator.io'
-}
-
-let blogs: BlogViewModel[] = [blog]
 
 export const blogsRepository = {
-    getBlogs(): BlogViewModel[] {
-        return blogs
+    async getBlogs(): Promise<BlogViewModel[]> {
+        return blogsCollection.find({}, {projection: {'_id': 0}}).toArray()
     },
-    findBlogById(id: string): BlogViewModel | undefined {
-        return blogs.find(b => b.id === id)   
+
+    async findBlogById(id: string): Promise<BlogViewModel | null> {
+        const blog:BlogViewModel | null = await blogsCollection.findOne({ id: id}, {projection: {'_id': 0}})
+        return blog
     },
-    createBlog(body: BlogCreateModel): BlogViewModel {
-        const newBlog: BlogViewModel = {
+
+    async createBlog(body: BlogCreateModel): Promise<BlogViewModel> {
+        const newBlog = {
             id: newStringId(),
             name: body.name,
             description: body.description,
-            websiteUrl: body.websiteUrl
+            websiteUrl: body.websiteUrl,
+            isMembership: false,
+            createdAt: new Date().toISOString()
         }
 
-        blogs.push(newBlog)
+        const result = await blogsCollection.insertOne({...newBlog})
+        return newBlog      
         
-        return newBlog
     },
-    updateBlog(id: string, body: BlogUpdateModel): boolean {
-        const blog = blogs.find(b => b.id === id)
-        if (!blog) { return false }
 
-        blog.name = body.name
-        blog.description = body.description
-        blog.websiteUrl = body.websiteUrl
+    async updateBlog(id: string, body: BlogUpdateModel): Promise<boolean> {
+        const result = await blogsCollection.updateOne(
+            { id: id},
+            { $set: {
+                name: body.name,
+                description: body.description,
+                websiteUrl: body.websiteUrl
+            }}
+        )
 
-        return true
+        return result.matchedCount === 1
     },
-    deleteBlog(id: string): boolean{
-        return deleteValueById(blogs, id)
+
+    async deleteBlog(id: string): Promise<boolean> {
+        const result = await blogsCollection.deleteOne({ id: id})
+        return result.deletedCount === 1
     }, 
-    deleteBlogs(): void {
-        blogs = []
+    async deleteBlogs() {
+        blogsCollection.deleteMany({})
     }
 }

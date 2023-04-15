@@ -6,7 +6,7 @@ import { postsRepository } from "../repositories/posts-repository";
 
 export const routerTesting = Router()
 
-routerTesting.delete('/all-data', (req: Request, res: Response) => {
+routerTesting.delete('/all-data', async (req: Request, res: Response) => {
     videoRepository.deleteVideos()
     blogsRepository.deleteBlogs()
     postsRepository.deletePosts()

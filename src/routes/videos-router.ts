@@ -14,21 +14,21 @@ import { URIParamsIdModel } from "../types.ts/URIParamsIdModel";
 
 export const routerVideos = Router()
 
-routerVideos.get('/', (req: Request, res: Response) => {
-    const videos = videoRepository.getVideos()
+routerVideos.get('/', async (req: Request, res: Response) => {
+    const videos = await videoRepository.getVideos()
     res.send(videos)
 })
 
 routerVideos.post('/', 
     VideoCreateValidate,
     ErrorsValidate,
-    (req: RequestsWithBody<CreateVideoModel>, res: Response<VideoViewModel>) => {
-        const newVideo = videoRepository.createVideo(req.body)
+    async (req: RequestsWithBody<CreateVideoModel>, res: Response<VideoViewModel>) => {
+        const newVideo = await videoRepository.createVideo(req.body)
         res.status(StatusCodes.CREATED).send(newVideo)
 })
 
-routerVideos.get('/:id', (req: RequestsURIParams<URIParamsIdModel>, res:Response<VideoViewModel>) => {
-    const video = videoRepository.findVideoById(req.params.id)
+routerVideos.get('/:id', async (req: RequestsURIParams<URIParamsIdModel>, res:Response<VideoViewModel>) => {
+    const video = await videoRepository.findVideoById(+req.params.id)
     if (video) {
         res.send(video)
     } else {
@@ -39,8 +39,8 @@ routerVideos.get('/:id', (req: RequestsURIParams<URIParamsIdModel>, res:Response
 routerVideos.put('/:id', 
     VideoUpdateValidate,
     ErrorsValidate,
-    (req: Request<{id: string},{}, UpdateVideoModel>, res: Response) => {
-        const isUpdate = videoRepository.updateVideo(+req.params.id, req.body)
+    async (req: Request<{id: string},{}, UpdateVideoModel>, res: Response) => {
+        const isUpdate = await videoRepository.updateVideo(+req.params.id, req.body)
         if (isUpdate) {
             res.sendStatus(StatusCodes.NO_CONTENT);    
         } else {
@@ -48,8 +48,8 @@ routerVideos.put('/:id',
         }
 })
 
-routerVideos.delete('/:id', (req: Request<{id: string}>, res:Response) => {
-    const isDeleted = videoRepository.deleteVideo(+req.params.id)
+routerVideos.delete('/:id', async (req: Request<{id: string}>, res:Response) => {
+    const isDeleted = await videoRepository.deleteVideo(+req.params.id)
     if (isDeleted) {
         res.sendStatus(StatusCodes.NO_CONTENT);
     } else {

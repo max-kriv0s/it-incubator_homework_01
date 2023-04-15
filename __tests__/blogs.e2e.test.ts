@@ -126,7 +126,9 @@ describe('/blogs', () => {
             id: expect.any(String),
             name: data.name,
             description: data.description,
-            websiteUrl: data.websiteUrl
+            websiteUrl: data.websiteUrl,
+            isMembership: false,
+            createdAt: expect.any(String)
         })
 
         await request(app)

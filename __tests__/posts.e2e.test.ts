@@ -177,7 +177,8 @@ describe('/blogs', () => {
             shortDescription: data.shortDescription,
             content: data.content,
             blogId: blog.id,
-            blogName: blog.name
+            blogName: blog.name,
+            createdAt: expect.any(String)
         })
 
         await request(app)
@@ -333,9 +334,11 @@ describe('/blogs', () => {
                         .get('/posts/' + newPost.id)
 
         const updatePost: PostViewModel = {
-            ...data,
-            id: newPost.id,
-            blogName: newPost.blogName
+            ...newPost,
+            title: data.title,
+            shortDescription: data.shortDescription,
+            content: data.content,
+            blogId: data.blogId
         }
         
         expect(res.body).toEqual(updatePost)
