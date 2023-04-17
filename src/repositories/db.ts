@@ -3,10 +3,10 @@ import { VideoViewModel } from "../models/videos/VideoViewModel"
 import { BlogViewModel } from "../models/blogs/BlogViewModel"
 import { PostViewModel } from "../models/posts/PostViewModel"
 
-const MONGO_URI = process.env.MONGO_URI
-if (!MONGO_URI) {
-    throw new Error('Don\'t found url')
-}
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017'
+// if (!MONGO_URI) {
+//     throw new Error('Don\'t found url')
+// }
 
 const client = new MongoClient(MONGO_URI)
 const db = client.db()
