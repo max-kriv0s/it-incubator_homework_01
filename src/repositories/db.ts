@@ -1,9 +1,9 @@
 import { MongoClient } from "mongodb"
 import { VideoViewModel } from "../models/videos/VideoViewModel"
-import { BlogViewModel } from "../models/blogs/BlogViewModel"
-import { PostViewModel } from "../models/posts/PostViewModel"
+import { BlogDbModel } from "../models/blogs/BlogDbModel"
+import { PostDbModel } from "../models/posts/PostDbModel"
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017'
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/"
 // if (!MONGO_URI) {
 //     throw new Error('Don\'t found url')
 // }
@@ -12,8 +12,8 @@ const client = new MongoClient(MONGO_URI)
 const db = client.db()
 
 export const videosCollection = db.collection<VideoViewModel>('videos')
-export const blogsCollection = db.collection<BlogViewModel>('blogs')
-export const postsCollection = db.collection<PostViewModel>('posts')
+export const blogsCollection = db.collection<BlogDbModel>('blogs')
+export const postsCollection = db.collection<PostDbModel>('posts')
 
 export const runDB = async () => {
     try {
