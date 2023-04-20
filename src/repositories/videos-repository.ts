@@ -57,6 +57,7 @@ export const videoRepository = {
         const result = await videosCollection.deleteOne({ id: id})
         return result.deletedCount === 1 
     },
+    
     async deleteVideos() {
         videosCollection.deleteMany({})
     }
