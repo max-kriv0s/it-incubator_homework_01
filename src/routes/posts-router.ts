@@ -10,29 +10,30 @@ import { PostValidate } from "../middlewares/Post-validation-middleware"
 import { StatusCodes } from "http-status-codes"
 import { URIParamsIdModel } from "../types.ts/URIParamsIdModel"
 import { PostUpdateModel } from "../models/posts/PostUpdateModel"
+import { postsService } from "../domain/posts-service"
 
 
 export const routerPosts = Router()
 
-routerPosts.get('/', 
-    async (req: Request, res: Response<PostViewModel[]>) => { 
-        const posts = await postsRepository.getPosts()
-        res.send(posts)
-})
+// routerPosts.get('/', 
+//     async (req: Request, res: Response<PostViewModel[]>) => { 
+//         const posts = await postsRepository.getPosts()
+//         res.send(posts)
+// })
 
 routerPosts.post('/', 
     BasicAuthValidate,
     PostValidate,
     ErrorsValidate,
     async (req: RequestsWithBody<PostCreateModel>, res: Response<PostViewModel>) => {      
-        const post = await postsRepository.createPost(req.body)
+        const post = await postsService.createPost(req.body)
         res.status(StatusCodes.CREATED).send(post)
 
 })
 
 routerPosts.get('/:id', 
     async (req: Request<URIParamsIdModel>, res: Response<PostViewModel> ) => {
-        const post = await postsRepository.findPostById(req.params.id)  
+        const post = await postsService.findPostById(req.params.id)  
         if (post) {
             res.send(post)
         } else {
@@ -45,7 +46,7 @@ routerPosts.put('/:id',
     PostValidate,
     ErrorsValidate,
     async (req:RequestsWithParamsAndBody<URIParamsIdModel, PostUpdateModel>, res: Response) => {
-        const isUpdate = await postsRepository.updatePost(req.params.id, req.body)
+        const isUpdate = await postsService.updatePost(req.params.id, req.body)
         if (isUpdate) {
             res.sendStatus(StatusCodes.NO_CONTENT)    
         } else {
@@ -56,7 +57,7 @@ routerPosts.put('/:id',
 routerPosts.delete('/:id', 
     BasicAuthValidate,
     async (req: Request<URIParamsIdModel>, res: Response) => {
-        const isDeleted = await postsRepository.deletePostById(req.params.id)
+        const isDeleted = await postsService.deletePostById(req.params.id)
         if (isDeleted) {
             res.sendStatus(StatusCodes.NO_CONTENT)
         } else {
