@@ -8,16 +8,20 @@ import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { BlogValidate } from "../middlewares/Blog-validation-middleware"
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { URIParamsIdModel } from "../types.ts/URIParamsIdModel"
-import { PaginatorBlogViewTypes, PaginatorTypes } from "../types.ts/PaginatorType"
+import { PaginatorBlogViewTypes, PaginatorPostViewTypes, PaginatorTypes } from "../types.ts/PaginatorType"
 import { QueryParamsModels } from "../types.ts/QueryParamsModels"
 import { blogsServise } from "../domain/blogs-service"
+import { PostViewModel } from "../models/posts/PostViewModel"
+import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
+import { PostValidate } from "../middlewares/Post-validation-middleware"
 
 
 export const routerBlogs = Router()
 
-routerBlogs.get('/', async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorBlogViewTypes>) => {
-    const blogs: PaginatorBlogViewTypes = await blogsServise.getBlogs(req.query)
-    res.send(blogs)
+routerBlogs.get('/', 
+    async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorBlogViewTypes>) => {
+        const blogs: PaginatorBlogViewTypes = await blogsServise.getBlogs(req.query)
+        res.send(blogs)
 })
 
 routerBlogs.post('/',
@@ -29,13 +33,38 @@ routerBlogs.post('/',
         res.status(StatusCodes.CREATED).send(newBlog)
 })
 
-routerBlogs.get('/:id', async (req: Request<URIParamsIdModel>, res: Response<BlogViewModel>) => {
-    const blog = await blogsServise.findBlogById(req.params.id)
-    if (blog) {
-        res.send(blog)
+routerBlogs.post('/:id/posts',
+    BasicAuthValidate,
+    PostValidate,
+    ErrorsValidate,
+    async (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogPostCreateModel>, res: Response<PostViewModel>) => {
+        const newPost = await blogsServise.createPostByBlogId(req.params.id, req.body)
+        if (newPost) {
+            res.status(StatusCodes.CREATED).send(newPost)
+        } else {
+            res.sendStatus(StatusCodes.NOT_FOUND)
+        }
+    }
+)
+
+routerBlogs.get('/:id',
+    async (req: Request<URIParamsIdModel>, res: Response<BlogViewModel>) => {
+        const blog = await blogsServise.findBlogById(req.params.id)
+        if (blog) {
+            res.send(blog)
+        } else {
+            res.sendStatus(StatusCodes.NOT_FOUND)
+        }
+})
+
+routerBlogs.get('/:id/posts',
+    async (req: RequestsWithParamsAndQuery<URIParamsIdModel, QueryParamsModels>, res: Response<PaginatorPostViewTypes>) => {
+    const posts = await blogsServise.findPostsByBlogId(req.params.id, req.query)
+    if (posts) {
+        res.send(posts)
     } else {
         res.sendStatus(StatusCodes.NOT_FOUND)
-    }
+    }   
 })
 
 routerBlogs.put('/:id', 
@@ -62,10 +91,3 @@ routerBlogs.delete('/:id',
         }   
 })
 
-// routerBlogs.get('/:id/posts', (req: RequestsWithParamsAndQuery<URIParamsIdModel, QueryParamsModels>
-//     , res) => {
-//         const pageNumber:number = +req.query.pageNumber ?? 1
-//         const pageSize: number = +req.query.pageSize ?? 10
-//         const sortBy:string = req.query.sortBy ?? 'createdAt'
-//         const sortDirection = req.query.sortDirection ?? 'desc'
-// })
