@@ -1,8 +1,10 @@
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { blogsCollection } from "./db"
-import { PaginatorBlogDbTypes } from "../types.ts/PaginatorType"
+import { PaginatorBlogViewTypes } from "../types.ts/PaginatorType"
 import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { ObjectId } from "mongodb"
+import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
+import { BlogViewModel } from "../models/blogs/BlogViewModel"
 
 
 export const blogsRepository = {
@@ -10,7 +12,7 @@ export const blogsRepository = {
         pageNumber: number, 
         pageSize: number,
         sortBy: string,
-        sortDirection: string): Promise<PaginatorBlogDbTypes> {
+        sortDirection: string): Promise<PaginatorBlogViewTypes> {
             
             const filter: any = {}
             if (searchNameTerm) {
@@ -30,22 +32,50 @@ export const blogsRepository = {
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount: totalCount,
-                items: blogs
+                items: blogs.map(i => ({
+                    id: i._id.toString(),
+                    name: i.name,
+                    description: i.description,
+                    websiteUrl: i.websiteUrl,
+                    createdAt: i.createdAt,
+                    isMembership: i.isMembership
+                }))
             }
     },
 
-    async findBlogById(id: string): Promise<BlogDbModel | null> {
+    async findBlogById(id: string): Promise<BlogViewModel | null> {
+        if (!ObjectId.isValid(id)) return null
+        
         const blog:BlogDbModel | null = await blogsCollection.findOne({ _id: new ObjectId(id)})
-        return blog
+        if (!blog) return null
+       
+        return {
+            ...blog,
+            id: blog._id.toString()
+        }     
     },
 
-    async createBlog(newBlog: BlogDbModel): Promise<BlogDbModel> {
-        const result = await blogsCollection.insertOne(newBlog)
-        return newBlog      
+    async createBlog(body: BlogCreateModel): Promise<BlogViewModel> {
+        const newBlog: BlogDbModel = {
+            _id: new ObjectId(),
+            name: body.name,
+            description: body.description,
+            websiteUrl: body.websiteUrl,
+            isMembership: false,
+            createdAt: new Date().toISOString()
+        }
         
+        const result = await blogsCollection.insertOne(newBlog)
+
+        return {
+            ...newBlog,
+            id: newBlog._id.toString()
+        }    
     },
 
     async updateBlog(id: string, body: BlogUpdateModel): Promise<boolean> {
+        if (!ObjectId.isValid(id)) return false
+        
         const result = await blogsCollection.updateOne(
             { _id: new ObjectId(id) },
             { $set: {
@@ -59,6 +89,8 @@ export const blogsRepository = {
     },
 
     async deleteBlogById(id: string): Promise<boolean> {
+        if (!ObjectId.isValid(id)) return false
+        
         const result = await blogsCollection.deleteOne({ _id: new ObjectId(id) })
         return result.deletedCount === 1
     }, 
