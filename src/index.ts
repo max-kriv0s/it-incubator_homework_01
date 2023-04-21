@@ -1,6 +1,3 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
 import { app } from "./setting"
 import { runDB } from './repositories/db'
 
