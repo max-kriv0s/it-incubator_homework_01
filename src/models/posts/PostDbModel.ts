@@ -5,7 +5,7 @@ export type PostDbModel = {
     title: string
     shortDescription: string
     content: string
-    blogId: string
+    blogId: ObjectId
     blogName: string
     createdAt: string
 }
