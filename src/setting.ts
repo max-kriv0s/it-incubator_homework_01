@@ -1,4 +1,6 @@
 import express from "express";
+import dotenv from 'dotenv'
+dotenv.config()
 
 import { routerVideos } from "./routes/videos-router";
 import { routerTesting } from "./routes/testing-router";
