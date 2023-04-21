@@ -1,34 +1,75 @@
-import { ObjectId } from "mongodb"
 import { PostCreateModel } from "../models/posts/PostCreateModel"
-import { PostDbModel } from "../models/posts/PostDbModel"
 import { PostUpdateModel } from "../models/posts/PostUpdateModel"
 import { PostViewModel } from "../models/posts/PostViewModel"
 import { postsRepository } from "../repositories/posts-repository"
 import { blogsServise } from "./blogs-service"
-import { PaginatorPostDbTypes, PaginatorPostViewTypes, } from "../types.ts/PaginatorType"
 import { QueryParamsModels } from "../types.ts/QueryParamsModels"
+import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
+import { PaginatorPostViewTypes } from "../types.ts/PaginatorType"
 
 export const postsService = {
 
     async getPosts(queryParams: QueryParamsModels): Promise<PaginatorPostViewTypes> {
-        const pageNumber:number = +queryParams.pageNumber ?? 1
-        const pageSize: number = +queryParams.pageSize ?? 10
-        const sortBy:string = queryParams.sortBy ?? 'createdAt'
-        const sortDirection: string = queryParams.sortDirection ?? 'desc' 
+        const pageNumber:number = queryParams.pageNumber ? +queryParams.pageNumber : 1
+        const pageSize: number = queryParams.pageSize ? +queryParams.pageSize : 10
+        const sortBy:string = queryParams.sortBy ? queryParams.sortBy : 'createdAt'
+        const sortDirection = queryParams.sortDirection ? queryParams.sortDirection : 'desc' 
         
-        const postsDb: PaginatorPostDbTypes = await postsRepository.getPosts( 
+        const posts = await postsRepository.getPosts( 
             pageNumber, 
             pageSize,
             sortBy,
             sortDirection)
+
+        return {
+            pagesCount: posts.pagesCount,
+            page: posts.page,
+            pageSize: posts.pageSize,
+            totalCount: posts.totalCount,
+            items: posts.items.map(i => ({
+                id: i.id,
+                title: i.title,
+                shortDescription: i.shortDescription,
+                content: i.content,
+                blogId: i.blogId,
+                blogName: i.blogName,
+                createdAt: i.createdAt
+            }))
+        }
+        
+    },
+    
+    async findPostById(id: string): Promise<PostViewModel | null> {
+        const post = await postsRepository.findPostById(id)
+        if (!post) return null
         
         return {
-            pagesCount: postsDb.pagesCount,
-            page: postsDb.page,
-            pageSize: postsDb.pageSize,
-            totalCount: postsDb.totalCount,
-            items: postsDb.items.map(i => ({
-                id: i._id.toString(),
+            id: post.id,
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName,
+            createdAt: post.createdAt
+        }
+    },
+
+    async findPostsByBlogId(blogId: string, queryParams: QueryParamsModels): Promise<PaginatorPostViewTypes | null> {
+        const pageNumber:number = queryParams.pageNumber ? +queryParams.pageNumber : 1
+        const pageSize: number = queryParams.pageSize ? +queryParams.pageSize : 10
+        const sortBy:string = queryParams.sortBy ? queryParams.sortBy : 'createdAt'
+        const sortDirection = queryParams.sortDirection ? queryParams.sortDirection : 'desc'
+
+        const posts = await postsRepository.findPostsByBlogId(blogId, pageNumber, pageSize, sortBy, sortDirection)
+        if (!posts) return null
+
+        return {
+            pagesCount: posts.pagesCount,
+            page: posts.page,
+            pageSize: posts.pageSize,
+            totalCount: posts.totalCount,
+            items: posts.items.map(i => ({
+                id: i.id,
                 title: i.title,
                 shortDescription: i.shortDescription,
                 content: i.content,
@@ -38,38 +79,30 @@ export const postsService = {
             }))
         }
     },
-    
-    async findPostById(id: string): Promise<PostViewModel | null> {
-        const post = await postsRepository.findPostById(id)
-        if (!post) return null
-
-        return {
-            id: post._id.toString(),
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: post.blogId,
-            blogName: post.blogName,
-            createdAt: post.createdAt   
-        }
-    },
 
     async createPost(body: PostCreateModel): Promise<PostViewModel> {
         const blog = await blogsServise.findBlogById(body.blogId)
- 
-        const newPost: PostDbModel = {
-            _id: new ObjectId(),
-            title: body.title,
-            shortDescription: body.shortDescription,
-            content: body.content,
-            blogId: body.blogId,
-            blogName: blog ? blog.name : "",
-            createdAt: new Date().toISOString()
+        const blogName: string = blog ? blog.name : ""
+
+        const createdPost = await postsRepository.createPost(body, blogName)
+
+        return {
+            id: createdPost.id,
+            title: createdPost.title,
+            shortDescription: createdPost.shortDescription,
+            content: createdPost.content,
+            blogId: createdPost.blogId,
+            blogName: createdPost.blogName,
+            createdAt: createdPost.createdAt
         }
 
-        const createdPost = await postsRepository.createPost(newPost)
+    },
+
+    async createPostByBlogId(blogId: string, blogName: string, body: BlogPostCreateModel): Promise<PostViewModel> {
+
+        const createdPost = await postsRepository.createPostByBlogId(blogId, blogName, body)
         return {
-            id: createdPost._id.toString(),
+            id: createdPost.id,
             title: createdPost.title,
             shortDescription: createdPost.shortDescription,
             content: createdPost.content,
@@ -89,6 +122,5 @@ export const postsService = {
 
     async deletePostById(id: string): Promise<boolean> {
         return await postsRepository.deletePostById(id)
-    },
-
+    }
 }
