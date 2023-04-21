@@ -4,11 +4,8 @@ import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { PostDbModel } from "../models/posts/PostDbModel"
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/"
-// if (!MONGO_URI) {
-//     throw new Error('Don\'t found url')
-// }
 
-const client = new MongoClient(MONGO_URI)
+export const client = new MongoClient(MONGO_URI)
 const db = client.db()
 
 export const videosCollection = db.collection<VideoViewModel>('videos')
