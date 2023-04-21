@@ -5,6 +5,7 @@ import { BlogViewModel } from "../src/models/blogs/BlogViewModel";
 import { BlogCreateModel } from "../src/models/blogs/BlogCreateModel";
 import { randomString } from "../src/utils/utils";
 import { BlogUpdateModel } from "../src/models/blogs/BlogUpdateModel";
+import { client } from "../src/repositories/db";
 
 
 describe('/blogs', () => {
@@ -14,11 +15,22 @@ describe('/blogs', () => {
     beforeAll(async () => {
         await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
     })
+    
+    afterAll(async () => {
+        client.close()
+    })
 
     it ('- GET blogs = []', async () => {
         await request(app)
             .get('/blogs')
-            .expect(StatusCodes.OK, [])
+            .expect(StatusCodes.OK, 
+                { 
+                    pagesCount: 0, 
+                    page: 1, 
+                    pageSize: 10, 
+                    totalCount: 0, 
+                    items: [] 
+                })
     })
 
     it('- GET blog by ID with incorrect id', async () => {
@@ -38,6 +50,7 @@ describe('/blogs', () => {
         
         await request(app)
             .post('/blogs')
+            .send(data)
             .expect(StatusCodes.UNAUTHORIZED)
     })
 
@@ -133,7 +146,14 @@ describe('/blogs', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(StatusCodes.OK, [newBlog])
+            .expect(StatusCodes.OK, 
+                { 
+                    pagesCount: 1, 
+                    page: 1, 
+                    pageSize: 10, 
+                    totalCount: 1, 
+                    items: [newBlog] 
+                })
     })
 
     it ('- GET blog by ID with correct id', async () => {
