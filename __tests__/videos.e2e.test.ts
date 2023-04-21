@@ -1,11 +1,12 @@
 import request from "supertest";
 import { StatusCodes } from "http-status-codes";
-
 import { CreateVideoModel } from "../src/models/videos/CreateVideoModel";
 import { UpdateVideoModel } from "../src/models/videos/UpdateVideoModel";
 import { app } from "../src/setting"
 import { VideoViewModel } from "../src/models/videos/VideoViewModel";
 import {randomString} from "../src/utils/utils"
+import { client } from "../src/repositories/db";
+
 
 describe('/videos', () => {
    
@@ -13,6 +14,10 @@ describe('/videos', () => {
         await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
     })
    
+    afterAll(async () => {
+        client.close()
+    })
+
     it('- GET videos = []', async () => {
         await request(app).get('/videos').expect(StatusCodes.OK, [])
     })
@@ -173,6 +178,7 @@ describe('/videos', () => {
 
         await request(app).get('/videos').expect(StatusCodes.OK, [])
     })
+
 })
 
 
