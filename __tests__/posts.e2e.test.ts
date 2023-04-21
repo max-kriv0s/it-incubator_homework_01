@@ -7,7 +7,7 @@ import { randomString } from "../src/utils/utils";
 import { BlogCreateModel } from "../src/models/blogs/BlogCreateModel";
 import { BlogViewModel } from "../src/models/blogs/BlogViewModel";
 import { PostUpdateModel } from "../src/models/posts/PostUpdateModel";
-
+import { client } from "../src/repositories/db";
 
 
 describe('/blogs', () => {
@@ -33,10 +33,21 @@ describe('/blogs', () => {
         blog = res.body
     })
 
+    afterAll(async () => {
+        client.close()
+    })
+
     it ('- GET posts = []', async () => {
         await request(app)
             .get('/posts')
-            .expect(StatusCodes.OK, [])
+            .expect(StatusCodes.OK, 
+                { 
+                    pagesCount: 0, 
+                    page: 1, 
+                    pageSize: 10, 
+                    totalCount: 0, 
+                    items: [] 
+                })
     })
 
     it('- GET post by ID with incorrect id', async () => {
@@ -183,7 +194,14 @@ describe('/blogs', () => {
 
         await request(app)
             .get('/posts')
-            .expect(StatusCodes.OK, [newPost])
+            .expect(StatusCodes.OK, 
+                { 
+                    pagesCount: 1, 
+                    page: 1, 
+                    pageSize: 10, 
+                    totalCount: 1, 
+                    items: [newPost] 
+                })
     })
 
     it ('- GET post by ID with correct id', async () => {
