@@ -1,29 +1,31 @@
 import { Router, Request, Response } from "express"
-
 import { PostViewModel } from "../models/posts/PostViewModel"
-import { postsRepository } from "../repositories/posts-repository"
 import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middleware"
-import { RequestsWithBody, RequestsWithParamsAndBody } from "../types.ts/types"
+import { RequestsQuery, RequestsWithBody, RequestsWithParamsAndBody } from "../types.ts/types"
 import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { PostValidate } from "../middlewares/Post-validation-middleware"
 import { StatusCodes } from "http-status-codes"
 import { URIParamsIdModel } from "../types.ts/URIParamsIdModel"
 import { PostUpdateModel } from "../models/posts/PostUpdateModel"
 import { postsService } from "../domain/posts-service"
+import { BlogIdValidate } from "../middlewares/Blog-validation-middleware"
+import { QueryParamsModels } from "../types.ts/QueryParamsModels"
+import { PaginatorPostViewTypes } from "../types.ts/PaginatorType"
 
 
 export const routerPosts = Router()
 
-// routerPosts.get('/', 
-//     async (req: Request, res: Response<PostViewModel[]>) => { 
-//         const posts = await postsRepository.getPosts()
-//         res.send(posts)
-// })
+routerPosts.get('/', 
+    async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorPostViewTypes>) => { 
+        const posts = await postsService.getPosts(req.query)
+        res.send(posts)
+})
 
 routerPosts.post('/', 
     BasicAuthValidate,
     PostValidate,
+    BlogIdValidate,
     ErrorsValidate,
     async (req: RequestsWithBody<PostCreateModel>, res: Response<PostViewModel>) => {      
         const post = await postsService.createPost(req.body)
@@ -44,6 +46,7 @@ routerPosts.get('/:id',
 routerPosts.put('/:id', 
     BasicAuthValidate,
     PostValidate,
+    BlogIdValidate,
     ErrorsValidate,
     async (req:RequestsWithParamsAndBody<URIParamsIdModel, PostUpdateModel>, res: Response) => {
         const isUpdate = await postsService.updatePost(req.params.id, req.body)
