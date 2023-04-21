@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { blogsRepository } from "../repositories/blogs-repository";
+
 
 export const PostValidate = [
     body('title')
@@ -19,16 +19,5 @@ export const PostValidate = [
         .exists({ checkFalsy: true }).bail()
         .isString().bail()
         .isLength({ max: 1000 })
-        .withMessage('must be no more than 1000 chars'),
-    body('blogId')
-        .trim()    
-        .exists({ checkFalsy: true }).bail()
-        .isString().bail()
-        .custom(async (value) => {
-            const blog = await blogsRepository.findBlogById(value)
-            if (!blog) {
-                throw new Error('Blog not found')
-            }
-            return true
-        })               
+        .withMessage('must be no more than 1000 chars'),             
 ]
