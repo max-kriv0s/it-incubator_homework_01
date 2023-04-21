@@ -8,7 +8,8 @@ import { BlogViewModel } from "../models/blogs/BlogViewModel"
 
 
 export const blogsRepository = {
-    async getBlogs(searchNameTerm: string | null, 
+    async getBlogs(
+        searchNameTerm: string | null, 
         pageNumber: number, 
         pageSize: number,
         sortBy: string,
@@ -16,7 +17,7 @@ export const blogsRepository = {
             
             const filter: any = {}
             if (searchNameTerm) {
-                filter.name = { $regex: searchNameTerm }
+                filter.name = { $regex: searchNameTerm,  $options: 'i'}
             }
             
             const totalCount: number = await blogsCollection.countDocuments(filter)
