@@ -6,6 +6,7 @@ import { routerVideos } from "./routes/videos-router";
 import { routerTesting } from "./routes/testing-router";
 import { routerBlogs } from "./routes/blogs-router";
 import { routerPosts } from "./routes/posts-router";
+import { routerUsers } from "./routes/users-router";
 
 
 export const app = express()
@@ -16,3 +17,4 @@ app.use('/testing', routerTesting)
 app.use('/videos', routerVideos)
 app.use('/blogs', routerBlogs)
 app.use('/posts', routerPosts)
+app.use('/users', routerUsers)
