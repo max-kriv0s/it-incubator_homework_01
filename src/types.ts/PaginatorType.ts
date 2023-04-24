@@ -2,6 +2,8 @@ import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { BlogViewModel } from "../models/blogs/BlogViewModel"
 import { PostDbModel } from "../models/posts/PostDbModel"
 import { PostViewModel } from "../models/posts/PostViewModel"
+import { UserDBModel } from "../models/users/UserDBModel"
+import { UserViewModel } from "../models/users/UserViewModel"
 
 export type PaginatorTypes<T> = {
     pagesCount: number
@@ -13,5 +15,9 @@ export type PaginatorTypes<T> = {
 
 export type PaginatorBlogViewTypes = PaginatorTypes<BlogViewModel>
 export type PaginatorBlogDbTypes = PaginatorTypes<BlogDbModel>
+
 export type PaginatorPostViewTypes = PaginatorTypes<PostViewModel>
 export type PaginatorPostDbTypes = PaginatorTypes<PostDbModel>
+
+export type PaginatorUserViewModel = PaginatorTypes<UserViewModel>
+export type PaginatorUserDBModel = PaginatorTypes<UserDBModel>
