@@ -19,7 +19,7 @@ routerUsers.get('/',
     async (req: RequestsQuery<QueryParamsUsersModel>, res: Response<PaginatorUserViewModel>) => {
         
         const users = await usersService.getAllUsers(req.query)
-        return users
+        res.send(users)
     })
 
 routerUsers.post('/', 
