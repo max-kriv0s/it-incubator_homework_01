@@ -15,17 +15,17 @@ export const usersRepository = {
         sortBy: string,
         sortDirection: string): Promise<PaginatorUserViewModel> {
 
-            const filterLogin: any = {}
-            if (searchLoginTerm) {
-                filterLogin.login = { $regex: searchLoginTerm, $options: 'i' }
+            let filter: any = {}
+            if (searchLoginTerm && searchEmailTerm) {
+                filter = {$or: [
+                    {login: { $regex: searchLoginTerm, $options: 'i' }}, 
+                    {email: { $regex: searchEmailTerm, $options: 'i' }}
+                ]}
+            } else if (searchLoginTerm) {
+                filter.login = { $regex: searchLoginTerm, $options: 'i' }
+            } else if (searchEmailTerm) {
+                filter.email = { $regex: searchEmailTerm, $options: 'i' }
             }
-
-            const filterEmail: any = {}
-            if (searchEmailTerm) {
-                filterEmail.email = { $regex: searchEmailTerm, $options: 'i' }
-            }
-
-            const filter = {$or: [filterLogin, filterEmail]}
 
             const totalCount: number = await usersCollection.countDocuments(filter)
             const skip = (pageNumber - 1) * pageSize
@@ -77,5 +77,13 @@ export const usersRepository = {
 
     async deleteUsers() {
         usersCollection.deleteMany({})
+    },
+
+    async findByLoginOrEmail(loginOrEmail: string): Promise<string | null> {
+       
+        const user = await usersCollection.findOne({ $or: [ { login: loginOrEmail }, { email: loginOrEmail } ] })
+        if (!user) return null
+
+        return user.password
     }
 }
