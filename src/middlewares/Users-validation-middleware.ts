@@ -19,5 +19,6 @@ export const UserValidate = [
         .trim()
         .exists({ checkFalsy: true })
         .isString()
-        .matches('^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+        .isEmail()
 ]
+// .matches('^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
