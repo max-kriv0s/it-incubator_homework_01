@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 
 export const LoginValidation = [
-    body('login')
+    body('loginOrEmail')
         .trim()
         .exists({ checkFalsy: true })
         .isString(),
