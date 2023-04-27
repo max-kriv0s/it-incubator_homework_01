@@ -2,14 +2,14 @@ import { Router, Request, Response } from "express"
 import { StatusCodes } from "http-status-codes";
 
 import { CreateVideoModel } from "../models/videos/CreateVideoModel"
-import { APIErrorResult } from "../types.ts/APIErrorModels"
+import { APIErrorResult } from "../types/APIErrorModels"
 import { UpdateVideoModel } from "../models/videos/UpdateVideoModel";
 import { VideoCreateValidate, VideoUpdateValidate} from "../middlewares/Video-validation-middleware";
 import { videoRepository } from "../repositories/videos-repository";
 import { VideoViewModel } from "../models/videos/VideoViewModel";
 import { ErrorsValidate } from "../middlewares/Errors-middleware";
-import { RequestsURIParams, RequestsWithBody } from "../types.ts/types";
-import { URIParamsIdModel } from "../types.ts/URIParamsIdModel";
+import { RequestsURIParams, RequestsWithBody } from "../types/types";
+import { URIParamsIdModel } from "../types/URIParamsIdModel";
 
 
 export const routerVideos = Router()

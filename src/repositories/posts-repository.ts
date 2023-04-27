@@ -5,7 +5,7 @@ import { postsCollection } from "./db"
 import { PostViewModel } from "../models/posts/PostViewModel"
 import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
-import { PaginatorPostViewTypes } from "../types.ts/PaginatorType"
+import { PaginatorPostViewTypes } from "../types/PaginatorType"
 
 
 export const postsRepository = {

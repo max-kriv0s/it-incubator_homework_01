@@ -1,5 +1,5 @@
-import { Request, Response, Router } from "express";
-import { RequestsWithBody } from "../types.ts/types";
+import { Response, Router } from "express";
+import { RequestsWithBody } from "../types/types";
 import { LoginInputModel } from "../models/auth/LoginInputModel";
 import { LoginValidation } from "../middlewares/Login-validation-middleware";
 import { StatusCodes } from "http-status-codes";

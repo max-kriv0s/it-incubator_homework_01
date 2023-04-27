@@ -3,9 +3,9 @@ import { PostUpdateModel } from "../models/posts/PostUpdateModel"
 import { PostViewModel } from "../models/posts/PostViewModel"
 import { postsRepository } from "../repositories/posts-repository"
 import { blogsServise } from "./blogs-service"
-import { QueryParamsModels } from "../types.ts/QueryParamsModels"
+import { QueryParamsModels } from "../types/QueryParamsModels"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
-import { PaginatorPostViewTypes } from "../types.ts/PaginatorType"
+import { PaginatorPostViewTypes } from "../types/PaginatorType"
 
 export const postsService = {
 

@@ -2,8 +2,8 @@ import bcrypt from "bcrypt"
 import { UserCreateModel } from "../models/users/UserCreateModel";
 import { UserViewModel } from "../models/users/UserViewModel";
 import { usersRepository } from "../repositories/users-repository";
-import { PaginatorUserViewModel } from "../types.ts/PaginatorType";
-import { QueryParamsUsersModel } from "../types.ts/QueryParamsModels";
+import { PaginatorUserViewModel } from "../types/PaginatorType";
+import { QueryParamsUsersModel } from "../types/QueryParamsModels";
 
 
 export const usersService = {

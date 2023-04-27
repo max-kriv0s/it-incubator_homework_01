@@ -1,7 +1,7 @@
 import {Response, Request, NextFunction} from "express"
 import { validationResult } from "express-validator";
 import { StatusCodes } from "http-status-codes";
-import { APIErrorResult, FieldError } from "../types.ts/APIErrorModels";
+import { APIErrorResult, FieldError } from "../types/APIErrorModels";
 
 
 export function ErrorsValidate(req: Request, res: Response<APIErrorResult>, next: NextFunction) {

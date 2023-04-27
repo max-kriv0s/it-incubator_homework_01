@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { UserDBModel } from "../models/users/UserDBModel"
-import { PaginatorUserViewModel } from "../types.ts/PaginatorType"
+import { PaginatorUserViewModel } from "../types/PaginatorType"
 import { usersCollection } from "./db"
 import { UserCreateModel } from "../models/users/UserCreateModel"
 

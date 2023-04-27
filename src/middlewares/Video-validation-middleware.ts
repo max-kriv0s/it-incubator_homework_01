@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-import { APIErrorResult, FieldError } from "../types.ts/APIErrorModels";
+import { APIErrorResult, FieldError } from "../types/APIErrorModels";
 import { CreateVideoModel } from "../models/videos/CreateVideoModel";
 import { UpdateVideoModel } from "../models/videos/UpdateVideoModel";
 

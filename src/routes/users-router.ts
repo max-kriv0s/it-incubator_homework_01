@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
 import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middleware";
-import { PaginatorUserViewModel } from "../types.ts/PaginatorType";
-import { RequestsQuery, RequestsWithBody } from "../types.ts/types";
-import { QueryParamsUsersModel } from "../types.ts/QueryParamsModels";
+import { PaginatorUserViewModel } from "../types/PaginatorType";
+import { RequestsQuery, RequestsWithBody } from "../types/types";
+import { QueryParamsUsersModel } from "../types/QueryParamsModels";
 import { usersService } from "../domain/users-service";
-import { URIParamsIdModel } from "../types.ts/URIParamsIdModel";
+import { URIParamsIdModel } from "../types/URIParamsIdModel";
 import { StatusCodes } from "http-status-codes";
 import { UserCreateModel } from "../models/users/UserCreateModel";
 import { UserViewModel } from "../models/users/UserViewModel";
