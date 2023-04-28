@@ -4,6 +4,7 @@ import { UserViewModel } from "../models/users/UserViewModel";
 import { usersRepository } from "../repositories/users-repository";
 import { PaginatorUserViewModel } from "../types/PaginatorType";
 import { QueryParamsUsersModel } from "../types/QueryParamsModels";
+import { UserDBModel } from "../models/users/UserDBModel";
 
 
 export const usersService = {
@@ -65,12 +66,19 @@ export const usersService = {
         return hash
     },
 
-    async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
+    async checkCredentials(loginOrEmail: string, password: string): Promise<UserDBModel | null> {
         
-        const passwodHash = await usersRepository.findByLoginOrEmail(loginOrEmail)
-        if (!passwodHash) return false
+        const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
+        if (!user) return null
 
-        const validPassword = await bcrypt.compare(password, passwodHash)
-        return validPassword
+        const validPassword = await bcrypt.compare(password, user.password)
+        if (!validPassword) return null
+        
+        return user
+    },
+
+    async findUserById(userId: string): Promise<UserDBModel | null> {
+        const user = usersRepository.findUserById(userId)
+        return user
     }
 }

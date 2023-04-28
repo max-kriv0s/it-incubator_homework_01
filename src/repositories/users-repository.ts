@@ -79,11 +79,18 @@ export const usersRepository = {
         usersCollection.deleteMany({})
     },
 
-    async findByLoginOrEmail(loginOrEmail: string): Promise<string | null> {
+    async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBModel | null> {
        
         const user = await usersCollection.findOne({ $or: [ { login: loginOrEmail }, { email: loginOrEmail } ] })
         if (!user) return null
 
-        return user.password
+        return user
+    },
+
+    async findUserById(userId: string): Promise<UserDBModel | null> {
+        if (!ObjectId.isValid(userId)) return null
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
+        return user
     }
 }
