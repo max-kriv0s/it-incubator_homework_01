@@ -1,6 +1,6 @@
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { blogsCollection } from "./db"
-import { PaginatorBlogViewTypes } from "../types/PaginatorType"
+import { PaginatorBlogDbTypes } from "../types/PaginatorType"
 import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { ObjectId } from "mongodb"
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
@@ -13,7 +13,7 @@ export const blogsRepository = {
         pageNumber: number, 
         pageSize: number,
         sortBy: string,
-        sortDirection: string): Promise<PaginatorBlogViewTypes> {
+        sortDirection: string): Promise<PaginatorBlogDbTypes> {
             
             const filter: any = {}
             if (searchNameTerm) {
@@ -33,14 +33,7 @@ export const blogsRepository = {
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount: totalCount,
-                items: blogs.map(i => ({
-                    id: i._id.toString(),
-                    name: i.name,
-                    description: i.description,
-                    websiteUrl: i.websiteUrl,
-                    createdAt: i.createdAt,
-                    isMembership: i.isMembership
-                }))
+                items: blogs
             }
     },
 
@@ -56,7 +49,7 @@ export const blogsRepository = {
         }     
     },
 
-    async createBlog(body: BlogCreateModel): Promise<BlogViewModel> {
+    async createBlog(body: BlogCreateModel): Promise<BlogDbModel> {
         const newBlog: BlogDbModel = {
             _id: new ObjectId(),
             name: body.name,
@@ -67,11 +60,7 @@ export const blogsRepository = {
         }
         
         const result = await blogsCollection.insertOne(newBlog)
-
-        return {
-            ...newBlog,
-            id: newBlog._id.toString()
-        }    
+        return newBlog
     },
 
     async updateBlog(id: string, body: BlogUpdateModel): Promise<boolean> {

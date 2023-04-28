@@ -1,17 +1,16 @@
+import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
+import { BlogDbModel } from "../models/blogs/BlogDbModel"
+import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { BlogViewModel } from "../models/blogs/BlogViewModel"
 import { blogsRepository } from "../repositories/blogs-repository"
-import { PaginatorBlogViewTypes, PaginatorPostViewTypes } from "../types/PaginatorType"
+import { PaginatorBlogDbTypes } from "../types/PaginatorType"
 import { QueryParamsModels } from "../types/QueryParamsModels"
-import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
-import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { postsService } from "./posts-service"
-import { PostViewModel } from "../models/posts/PostViewModel"
-import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 
 
 export const blogsServise = {
 
-    async getBlogs(queryParams: QueryParamsModels): Promise<PaginatorBlogViewTypes> {
+    async getBlogs(queryParams: QueryParamsModels): Promise<PaginatorBlogDbTypes> {
         const searchNameTerm: string | null = queryParams.searchNameTerm ? queryParams.searchNameTerm : null
         const pageNumber: number = queryParams.pageNumber ? +queryParams.pageNumber : 1
         const pageSize: number = queryParams.pageSize ? +queryParams.pageSize : 10
@@ -25,20 +24,7 @@ export const blogsServise = {
             sortBy,
             sortDirection)
 
-        return {
-            pagesCount: blogs.pagesCount,
-            page: blogs.page,
-            pageSize: blogs.pageSize,
-            totalCount: blogs.totalCount,
-            items: blogs.items.map(i => ({
-                id: i.id,
-                name: i.name,
-                description: i.description,
-                websiteUrl: i.websiteUrl,
-                createdAt: i.createdAt,
-                isMembership: i.isMembership
-            }))            
-        }
+        return blogs
 
     },
 
@@ -57,17 +43,9 @@ export const blogsServise = {
         }
     },
 
-    async createBlog(body: BlogCreateModel): Promise<BlogViewModel> {
-        const createdBlog = await blogsRepository.createBlog(body)
-
-        return {
-            id: createdBlog.id,
-            name: createdBlog.name,
-            description: createdBlog.description,
-            websiteUrl: createdBlog.websiteUrl,
-            createdAt: createdBlog.createdAt,
-            isMembership: createdBlog.isMembership
-        }
+    async createBlog(body: BlogCreateModel): Promise<BlogDbModel> {
+        const newBlog = await blogsRepository.createBlog(body)
+        return newBlog
     },
 
     async updateBlog(id: string, body: BlogUpdateModel): Promise<boolean> {

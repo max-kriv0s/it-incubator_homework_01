@@ -8,19 +8,29 @@ import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { BlogValidate } from "../middlewares/Blog-validation-middleware"
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { URIParamsIdModel } from "../types/URIParamsIdModel"
-import { PaginatorBlogViewTypes, PaginatorPostViewTypes, PaginatorTypes } from "../types/PaginatorType"
+import { PaginatorBlogViewTypes, PaginatorPostViewTypes } from "../types/PaginatorType"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { blogsServise } from "../domain/blogs-service"
 import { PostViewModel } from "../models/posts/PostViewModel"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 import { PostValidate } from "../middlewares/Post-validation-middleware"
+import { BlogDbModel } from "../models/blogs/BlogDbModel"
 
 
 export const routerBlogs = Router()
 
 routerBlogs.get('/', 
     async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorBlogViewTypes>) => {
-        const blogs: PaginatorBlogViewTypes = await blogsServise.getBlogs(req.query)
+        const blogsDB = await blogsServise.getBlogs(req.query)
+        
+        const blogs: PaginatorBlogViewTypes = {
+            pagesCount: blogsDB.pagesCount,
+            page: blogsDB.page,
+            pageSize: blogsDB.pageSize,
+            totalCount: blogsDB.totalCount,
+            items: blogsDB.items.map(i => blogDBToBlogView(i))
+        }
+        
         res.send(blogs)
 })
 
@@ -29,7 +39,9 @@ routerBlogs.post('/',
     BlogValidate,
     ErrorsValidate,
     async (req: RequestsWithBody<BlogCreateModel>, res: Response<BlogViewModel>) => {
-        const newBlog = await blogsServise.createBlog(req.body)
+        const newBlogDB = await blogsServise.createBlog(req.body)
+        const newBlog = blogDBToBlogView(newBlogDB)
+        
         res.status(StatusCodes.CREATED).send(newBlog)
 })
 
@@ -91,3 +103,13 @@ routerBlogs.delete('/:id',
         }   
 })
 
+function blogDBToBlogView(blog: BlogDbModel): BlogViewModel{
+    return {
+        id: blog._id.toString(),
+        name: blog.name,
+        description: blog.description,
+        websiteUrl: blog.websiteUrl,
+        createdAt: blog.createdAt,
+        isMembership: blog.isMembership
+    }
+}
