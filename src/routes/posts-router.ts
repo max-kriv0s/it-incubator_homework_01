@@ -12,52 +12,61 @@ import { postsService } from "../domain/posts-service"
 import { BlogIdValidate } from "../middlewares/Blog-validation-middleware"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { PaginatorPostViewTypes } from "../types/PaginatorType"
+import { postDBToPostView } from "../utils/utils"
 
 
 export const routerPosts = Router()
 
-routerPosts.get('/', 
-    async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorPostViewTypes>) => { 
+routerPosts.get('/',
+    async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorPostViewTypes>) => {
         const posts = await postsService.getPosts(req.query)
-        res.send(posts)
-})
+        res.send({
+            pagesCount: posts.pagesCount,
+            page: posts.page,
+            pageSize: posts.pageSize,
+            totalCount: posts.totalCount,
+            items: posts.items.map(i => postDBToPostView(i))
+        })
+    })
 
-routerPosts.post('/', 
+routerPosts.post('/',
     BasicAuthValidate,
     PostValidate,
     BlogIdValidate,
     ErrorsValidate,
-    async (req: RequestsWithBody<PostCreateModel>, res: Response<PostViewModel>) => {      
-        const post = await postsService.createPost(req.body)
+    async (req: RequestsWithBody<PostCreateModel>, res: Response<PostViewModel>) => {
+        const postDB = await postsService.createPost(req.body)
+        const post = postDBToPostView(postDB)
         res.status(StatusCodes.CREATED).send(post)
 
-})
+    })
 
-routerPosts.get('/:id', 
-    async (req: Request<URIParamsIdModel>, res: Response<PostViewModel> ) => {
-        const post = await postsService.findPostById(req.params.id)  
-        if (post) {
+routerPosts.get('/:id',
+    async (req: Request<URIParamsIdModel>, res: Response<PostViewModel>) => {
+        const postDB = await postsService.findPostById(req.params.id)
+        if (postDB) {
+            const post = postDBToPostView(postDB)
             res.send(post)
         } else {
             res.sendStatus(StatusCodes.NOT_FOUND)
-        } 
-})
+        }
+    })
 
-routerPosts.put('/:id', 
+routerPosts.put('/:id',
     BasicAuthValidate,
     PostValidate,
     BlogIdValidate,
     ErrorsValidate,
-    async (req:RequestsWithParamsAndBody<URIParamsIdModel, PostUpdateModel>, res: Response) => {
+    async (req: RequestsWithParamsAndBody<URIParamsIdModel, PostUpdateModel>, res: Response) => {
         const isUpdate = await postsService.updatePost(req.params.id, req.body)
         if (isUpdate) {
-            res.sendStatus(StatusCodes.NO_CONTENT)    
+            res.sendStatus(StatusCodes.NO_CONTENT)
         } else {
             res.sendStatus(StatusCodes.NOT_FOUND)
         }
-})
+    })
 
-routerPosts.delete('/:id', 
+routerPosts.delete('/:id',
     BasicAuthValidate,
     async (req: Request<URIParamsIdModel>, res: Response) => {
         const isDeleted = await postsService.deletePostById(req.params.id)
@@ -67,4 +76,4 @@ routerPosts.delete('/:id',
             res.sendStatus(StatusCodes.NOT_FOUND)
         }
 
-})
+    })

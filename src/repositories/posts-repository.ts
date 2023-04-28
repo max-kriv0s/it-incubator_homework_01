@@ -2,10 +2,9 @@ import { ObjectId } from "mongodb"
 import { PostDbModel } from "../models/posts/PostDbModel"
 import { PostUpdateModel } from "../models/posts/PostUpdateModel"
 import { postsCollection } from "./db"
-import { PostViewModel } from "../models/posts/PostViewModel"
 import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
-import { PaginatorPostViewTypes } from "../types/PaginatorType"
+import { PaginatorPostDbTypes } from "../types/PaginatorType"
 
 
 export const postsRepository = {
@@ -13,13 +12,13 @@ export const postsRepository = {
         pageNumber: number,
         pageSize: number,
         sortBy: string,
-        sortDirection: string): Promise<PaginatorPostViewTypes> { 
-        
+        sortDirection: string): Promise<PaginatorPostDbTypes> {
+
         const totalCount: number = await postsCollection.countDocuments({})
-        
+
         const skip = (pageNumber - 1) * pageSize
         const posts: PostDbModel[] = await postsCollection.find({})
-            .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })    
+            .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
             .skip(skip)
             .limit(pageSize).toArray()
 
@@ -28,81 +27,53 @@ export const postsRepository = {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: posts.map(i => ({
-                id: i._id.toString(),
-                title: i.title,
-                shortDescription: i.shortDescription,
-                content: i.content,
-                blogId: i.blogId.toString(),
-                blogName: i.blogName,
-                createdAt: i.createdAt
-            }))
+            items: posts
         }
     },
 
-    async findPostById(id: string): Promise<PostViewModel | null> {
-        
+    async findPostById(id: string): Promise<PostDbModel | null> {
+
         if (!ObjectId.isValid(id)) return null
 
         const post = await postsCollection.findOne({ _id: new ObjectId(id) })
         if (!post) return null
 
-        const {_id, ...findPost} = post
-        return {
-            ...findPost,
-            id: _id.toString(),
-            blogId: findPost.blogId.toString()
-        }
+        return post
     },
 
     async findPostsByBlogId(
-        blogId: string,        
+        blogId: string,
         pageNumber: number,
         pageSize: number,
         sortBy: string,
-        sortDirection: string): Promise<PaginatorPostViewTypes | null> {
-            
-            if (!ObjectId.isValid(blogId)) return null
+        sortDirection: string): Promise<PaginatorPostDbTypes | null> {
 
-            const totalCount: number = await postsCollection.countDocuments({ blogId: new ObjectId(blogId)})
-        
-            const skip = (pageNumber - 1) * pageSize
-            const posts: PostDbModel[] = await postsCollection.find({ blogId: new ObjectId(blogId) })
-                .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })    
-                .skip(skip)
-                .limit(pageSize).toArray()
-    
-            return {
-                pagesCount: Math.ceil(totalCount / pageSize),
-                page: pageNumber,
-                pageSize: pageSize,
-                totalCount: totalCount,
-                items: posts.map(i => ({
-                    id: i._id.toString(),
-                    title: i.title,
-                    shortDescription: i.shortDescription,
-                    content: i.content,
-                    blogId: i.blogId.toString(),
-                    blogName: i.blogName,
-                    createdAt: i.createdAt
-                }))
-            }
-    },
+        if (!ObjectId.isValid(blogId)) return null
 
-    async createPostInDB(newPost: PostDbModel): Promise<PostViewModel> {
+        const totalCount: number = await postsCollection.countDocuments({ blogId: new ObjectId(blogId) })
 
-        const result = await postsCollection.insertOne(newPost)
-        
-        const {_id, ...createdPost} = newPost
+        const skip = (pageNumber - 1) * pageSize
+        const posts: PostDbModel[] = await postsCollection.find({ blogId: new ObjectId(blogId) })
+            .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+            .skip(skip)
+            .limit(pageSize).toArray()
+
         return {
-            ...createdPost,
-            id: _id.toString(),
-            blogId: createdPost.blogId.toString(),
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: posts
         }
     },
 
-    async createPost(body: PostCreateModel, blogName: string): Promise<PostViewModel> {
-        
+    async createPostInDB(newPost: PostDbModel): Promise<PostDbModel> {
+        const result = await postsCollection.insertOne(newPost)
+        return newPost
+    },
+
+    async createPost(body: PostCreateModel, blogName: string): Promise<PostDbModel> {
+
         const newPost: PostDbModel = {
             _id: new ObjectId(),
             title: body.title,
@@ -111,13 +82,13 @@ export const postsRepository = {
             blogId: new ObjectId(body.blogId),
             blogName: blogName,
             createdAt: new Date().toISOString()
-        } 
-        
+        }
+
         return await this.createPostInDB(newPost)
     },
 
-    async createPostByBlogId(blogId: string, blogName: string, body: BlogPostCreateModel): Promise<PostViewModel> {
-        
+    async createPostByBlogId(blogId: string, blogName: string, body: BlogPostCreateModel): Promise<PostDbModel> {
+
         const newPost: PostDbModel = {
             _id: new ObjectId(),
             title: body.title,
@@ -131,8 +102,8 @@ export const postsRepository = {
         return await this.createPostInDB(newPost)
     },
 
-    async updatePost(id: string, body: PostUpdateModel, blogId: string, blogName: string): Promise<boolean> {
-        
+    async updatePost(id: string, body: PostUpdateModel, blogId: ObjectId, blogName: string): Promise<boolean> {
+
         if (!ObjectId.isValid(id)) return false
 
         const result = await postsCollection.updateOne(
@@ -152,7 +123,7 @@ export const postsRepository = {
     },
 
     async deletePostById(id: string): Promise<boolean> {
-        
+
         if (!ObjectId.isValid(id)) return false
 
         const result = await postsCollection.deleteOne({ _id: new ObjectId(id) })
