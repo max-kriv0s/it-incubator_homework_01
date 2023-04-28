@@ -3,8 +3,9 @@ import { VideoViewModel } from "../models/videos/VideoViewModel"
 import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { PostDbModel } from "../models/posts/PostDbModel"
 import { UserDBModel } from "../models/users/UserDBModel"
+import { settings } from "../settings"
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/"
+const MONGO_URI = settings.MONGO_URI
 
 export const client = new MongoClient(MONGO_URI)
 const db = client.db()
