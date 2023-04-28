@@ -10,7 +10,7 @@ export const UserValidate = [
         .withMessage('must be between 3 and 15 characters')
         .matches('^[a-zA-Z0-9_-]*$'),
     body('password')
-        .trim()    
+        .trim()
         .exists({ checkFalsy: true })
         .isString()
         .isLength({ min: 6, max: 20 })
@@ -21,4 +21,3 @@ export const UserValidate = [
         .isString()
         .isEmail()
 ]
-// .matches('^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')

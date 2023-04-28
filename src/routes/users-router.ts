@@ -10,6 +10,7 @@ import { UserCreateModel } from "../models/users/UserCreateModel";
 import { UserViewModel } from "../models/users/UserViewModel";
 import { UserValidate } from "../middlewares/Users-validation-middleware";
 import { ErrorsValidate } from "../middlewares/Errors-middleware";
+import { userDBToUserView } from "../utils/utils";
 
 
 export const routerUsers = Router({})
@@ -17,28 +18,36 @@ export const routerUsers = Router({})
 routerUsers.get('/',
     BasicAuthValidate,
     async (req: RequestsQuery<QueryParamsUsersModel>, res: Response<PaginatorUserViewModel>) => {
-        
-        const users = await usersService.getAllUsers(req.query)
+
+        const usersDB = await usersService.getAllUsers(req.query)
+        const users = {
+            pagesCount: usersDB.pagesCount,
+            page: usersDB.page,
+            pageSize: usersDB.pageSize,
+            totalCount: usersDB.totalCount,
+            items: usersDB.items.map(i => userDBToUserView(i))
+        }
         res.send(users)
     })
 
-routerUsers.post('/', 
-    BasicAuthValidate, 
+routerUsers.post('/',
+    BasicAuthValidate,
     UserValidate,
-    ErrorsValidate,   
+    ErrorsValidate,
     async (req: RequestsWithBody<UserCreateModel>, res: Response<UserViewModel>) => {
-        const newUser = await usersService.createUser(req.body)
+        const newUserDB = await usersService.createUser(req.body)
+        const newUser = userDBToUserView(newUserDB)
         res.status(StatusCodes.CREATED).send(newUser)
     })
 
 routerUsers.delete('/:id',
-    BasicAuthValidate, 
+    BasicAuthValidate,
     async (req: Request<URIParamsIdModel>, res: Response) => {
 
         const isDelete = await usersService.deleteUserById(req.params.id)
-        if (isDelete) {            
-            res.sendStatus(StatusCodes.NO_CONTENT)      
+        if (isDelete) {
+            res.sendStatus(StatusCodes.NO_CONTENT)
         } else {
             res.sendStatus(StatusCodes.NOT_FOUND)
-        } 
+        }
     })
