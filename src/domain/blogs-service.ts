@@ -1,9 +1,10 @@
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
 import { BlogDbModel } from "../models/blogs/BlogDbModel"
+import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
-import { BlogViewModel } from "../models/blogs/BlogViewModel"
+import { PostDbModel } from "../models/posts/PostDbModel"
 import { blogsRepository } from "../repositories/blogs-repository"
-import { PaginatorBlogDbTypes } from "../types/PaginatorType"
+import { PaginatorBlogDbTypes, PaginatorPostDbTypes } from "../types/PaginatorType"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { postsService } from "./posts-service"
 
@@ -17,7 +18,7 @@ export const blogsServise = {
         const sortBy: string = queryParams.sortBy ? queryParams.sortBy : 'createdAt'
         const sortDirection: string = queryParams.sortDirection ? queryParams.sortDirection : 'desc'
 
-        const blogs =  await blogsRepository.getBlogs(
+        const blogs = await blogsRepository.getBlogs(
             searchNameTerm,
             pageNumber,
             pageSize,
@@ -28,19 +29,9 @@ export const blogsServise = {
 
     },
 
-    async findBlogById(id: string): Promise<BlogViewModel | null> {
-        
+    async findBlogById(id: string): Promise<BlogDbModel | null> {
         const blog = await blogsRepository.findBlogById(id)
-        if (!blog) return null
-        
-        return {
-            id: blog.id,
-            name: blog.name,
-            description: blog.description,
-            websiteUrl: blog.websiteUrl,
-            createdAt: blog.createdAt,
-            isMembership: blog.isMembership
-        }
+        return blog
     },
 
     async createBlog(body: BlogCreateModel): Promise<BlogDbModel> {
@@ -56,44 +47,19 @@ export const blogsServise = {
         return await blogsRepository.deleteBlogById(id)
     },
 
-    async findPostsByBlogId(blogId: string, queryParams: QueryParamsModels): Promise<PaginatorPostViewTypes | null> {
+    async findPostsByBlogId(blogId: string, queryParams: QueryParamsModels): Promise<PaginatorPostDbTypes | null> {
         const blog = await blogsRepository.findBlogById(blogId)
-        if (!blog) return null    
-        
-        const posts = await postsService.findPostsByBlogId(blogId, queryParams)
-        if (!posts) return null
+        if (!blog) return null
 
-        return {
-            pagesCount: posts.pagesCount,
-            page: posts.page,
-            pageSize: posts.pageSize,
-            totalCount: posts.totalCount,
-            items: posts.items.map(i => ({
-                id: i.id,
-                title: i.title,
-                shortDescription: i.shortDescription,
-                content: i.content,
-                blogId: i.blogId,
-                blogName: i.blogName,
-                createdAt: i.createdAt
-            }))
-        }
+        const posts = await postsService.findPostsByBlogId(blogId, queryParams)
+        return posts
     },
 
-    async createPostByBlogId(blogId: string, body: BlogPostCreateModel): Promise<PostViewModel | null> {
+    async createPostByBlogId(blogId: string, body: BlogPostCreateModel): Promise<PostDbModel | null> {
         const blog = await blogsRepository.findBlogById(blogId)
-        if (!blog) return null    
+        if (!blog) return null
 
         const createdPost = await postsService.createPostByBlogId(blogId, blog.name, body)
-
-        return {
-            id: createdPost.id,
-            title: createdPost.title,
-            shortDescription: createdPost.shortDescription,
-            content: createdPost.content,
-            blogId: createdPost.blogId,
-            blogName: createdPost.blogName,
-            createdAt: createdPost.createdAt
-        }
+        return createdPost
     }
 }
