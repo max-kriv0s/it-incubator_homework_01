@@ -1,6 +1,6 @@
 import { CommentatorInfo } from "./CommentsCommentatorInfoModel"
 
-export type CommentsViewModel = {
+export type CommentsDBModel = {
     _id: string
     content: string
     commentatorInfo: CommentatorInfo
