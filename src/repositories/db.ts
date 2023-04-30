@@ -4,6 +4,7 @@ import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { PostDbModel } from "../models/posts/PostDbModel"
 import { UserDBModel } from "../models/users/UserDBModel"
 import { settings } from "../settings"
+import { CommentsDBModel } from "../models/comments/CommentsDBModel"
 
 const MONGO_URI = settings.MONGO_URI
 
@@ -14,6 +15,7 @@ export const videosCollection = db.collection<VideoViewModel>('videos')
 export const blogsCollection = db.collection<BlogDbModel>('blogs')
 export const postsCollection = db.collection<PostDbModel>('posts')
 export const usersCollection = db.collection<UserDBModel>('users')
+export const commentsCollection = db.collection<CommentsDBModel>('comments')
 
 export const runDB = async () => {
     try {
