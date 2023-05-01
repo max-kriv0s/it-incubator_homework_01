@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import { CommentDBModel } from "../models/comments/CommentDBModel";
 import { commentsCollection, usersCollection } from "./db";
-import { CommentUpdateModel } from "../models/comments/CommentUpdateModel";
+import { CommentInputModel } from "../models/comments/CommentInputModel";
+import { PaginatorCommentDBModel } from "../types/PaginatorType";
 
 export const commentsRepository = {
 
@@ -12,7 +13,7 @@ export const commentsRepository = {
         return comment
     }, 
 
-    async updatedComment(id: string, body: CommentUpdateModel): Promise<boolean> {
+    async updatedComment(id: string, body: CommentInputModel): Promise<boolean> {
         if (!ObjectId.isValid(id)) return false
 
         const result = await commentsCollection.updateOne(
@@ -34,5 +35,48 @@ export const commentsRepository = {
 
     async deleteComments() {
         await usersCollection.deleteMany({})
+    },
+    
+    async findCommentsByPostId(
+        postId: string,
+        pageNumber: number,
+        pageSize: number,
+        sortBy: string,
+        sortDirection: string): Promise<PaginatorCommentDBModel | null> {
+
+            if (!ObjectId.isValid(postId)) return null
+
+            const totalCount: number = await commentsCollection.countDocuments({ postId: new ObjectId(postId) })
+
+            const skip = (pageNumber - 1) * pageSize
+            const comments = await commentsCollection.find({ postId: new ObjectId(postId) })
+                .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+                .skip(skip)
+                .limit(pageSize).toArray()
+    
+            return {
+                pagesCount: Math.ceil(totalCount / pageSize),
+                page: pageNumber,
+                pageSize: pageSize,
+                totalCount: totalCount,
+                items: comments
+            }           
+    },
+
+    async createCommentByPostId(postId: string, userId: string, userLogin: string, body: CommentInputModel): Promise<CommentDBModel> {
+
+        const newCommetn: CommentDBModel = {
+            _id: new ObjectId(),
+            content: body.content,
+            commentatorInfo: {
+                userId: new ObjectId(userId),
+                userLogin: userLogin
+            },
+            createdAt: new Date().toISOString(),
+            postId: new ObjectId(postId)
+        } 
+
+        const result = await commentsCollection.insertOne(newCommetn)
+        return newCommetn
     }
 }
