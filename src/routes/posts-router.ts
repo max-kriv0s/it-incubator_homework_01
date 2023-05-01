@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express"
 import { PostViewModel } from "../models/posts/PostViewModel"
 import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middleware"
-import { RequestsQuery, RequestsWithBody, RequestsWithParamsAndBody } from "../types/types"
+import { RequestsQuery, RequestsWithBody, RequestsWithParamsAndBody, RequestsWithParamsAndQuery } from "../types/types"
 import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { PostValidate } from "../middlewares/Post-validation-middleware"
 import { StatusCodes } from "http-status-codes"
@@ -12,7 +12,12 @@ import { postsService } from "../domain/posts-service"
 import { BlogIdValidate } from "../middlewares/Blog-validation-middleware"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { PaginatorCommentViewModel, PaginatorPostViewTypes } from "../types/PaginatorType"
-import { postDBToPostView } from "../utils/utils"
+import { commentDBToCommentView, postDBToPostView } from "../utils/utils"
+import { CommentInputModel } from "../models/comments/CommentInputModel"
+import { CommentValidate } from "../middlewares/Comment-validate-middleware"
+import { BearerAuthMiddleware } from "../middlewares/BearerAuth-middleware"
+import { CommentViewModel } from "../models/comments/CommentViewModel"
+import { postsRepository } from "../repositories/posts-repository"
 
 
 export const routerPosts = Router()
@@ -79,6 +84,36 @@ routerPosts
         })
 
     .get('/:postId/comments',
-        async (req: Request<URIParamsPostIdCommentsModel>, res: Response<PaginatorCommentViewModel>) => {
+        async (req: RequestsWithParamsAndQuery<URIParamsPostIdCommentsModel, QueryParamsModels>, 
+            res: Response<PaginatorCommentViewModel>) => {
+
+                const comments = await postsService.findCommentsByPostId(req.params.postId, req.query)
+                if (comments) {
+                    res.send({
+                        pagesCount: comments.pagesCount,
+                        page: comments.page,
+                        pageSize: comments.pageSize,
+                        totalCount: comments.totalCount,
+                        items: comments.items.map(i => commentDBToCommentView(i))
+                    })
+
+                } else {
+                    res.sendStatus(StatusCodes.NOT_FOUND)
+                }
 
         })
+
+    .post('/:postId/comments',
+        BearerAuthMiddleware,
+        CommentValidate,
+        ErrorsValidate,
+        async (req: RequestsWithParamsAndBody<URIParamsPostIdCommentsModel, CommentInputModel>, res: Response<CommentViewModel>) => {
+
+            const commentDB = await postsService.createCommentByPostID(req.params.postId, req.userId!, req.body)
+            if (commentDB) {
+                const comment = commentDBToCommentView(commentDB)
+                res.status(StatusCodes.CREATED).send(comment)
+            } else {
+                res.sendStatus(StatusCodes.NOT_FOUND)
+            }
+    })
