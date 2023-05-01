@@ -4,7 +4,7 @@ import { PaginatorUserViewModel } from "../types/PaginatorType";
 import { RequestsQuery, RequestsWithBody } from "../types/types";
 import { QueryParamsUsersModel } from "../types/QueryParamsModels";
 import { usersService } from "../domain/users-service";
-import { URIParamsIdModel } from "../types/URIParamsIdModel";
+import { URIParamsIdModel } from "../types/URIParamsModel";
 import { StatusCodes } from "http-status-codes";
 import { UserCreateModel } from "../models/users/UserCreateModel";
 import { UserViewModel } from "../models/users/UserViewModel";

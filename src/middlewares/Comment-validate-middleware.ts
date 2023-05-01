@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { commentsService } from "../domain/comments-service";
-import { URIParamsCommentIdModel } from "../types/URIParamsIdModel";
+import { URIParamsCommentIdModel } from "../types/URIParamsModel";
 import { StatusCodes } from "http-status-codes";
 import { body } from "express-validator";
 

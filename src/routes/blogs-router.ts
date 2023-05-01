@@ -7,7 +7,7 @@ import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middlewar
 import { ErrorsValidate } from "../middlewares/Errors-middleware"
 import { BlogValidate } from "../middlewares/Blog-validation-middleware"
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
-import { URIParamsIdModel } from "../types/URIParamsIdModel"
+import { URIParamsIdModel } from "../types/URIParamsModel"
 import { PaginatorBlogViewTypes, PaginatorPostViewTypes } from "../types/PaginatorType"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { blogsService } from "../domain/blogs-service"

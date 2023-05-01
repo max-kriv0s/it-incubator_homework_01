@@ -9,7 +9,7 @@ import { videoRepository } from "../repositories/videos-repository";
 import { VideoViewModel } from "../models/videos/VideoViewModel";
 import { ErrorsValidate } from "../middlewares/Errors-middleware";
 import { RequestsURIParams, RequestsWithBody } from "../types/types";
-import { URIParamsIdModel } from "../types/URIParamsIdModel";
+import { URIParamsIdModel } from "../types/URIParamsModel";
 
 
 export const routerVideos = Router()

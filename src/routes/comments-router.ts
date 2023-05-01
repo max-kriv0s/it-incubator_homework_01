@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import { URIParamsCommentIdModel, URIParamsIdModel, } from "../types/URIParamsIdModel";
+import { URIParamsCommentIdModel, URIParamsIdModel, } from "../types/URIParamsModel";
 import { StatusCodes } from "http-status-codes";
-import { CommentsViewModel } from "../models/comments/CommentViewModel";
+import { CommentViewModel } from "../models/comments/CommentViewModel";
 import { commentsService } from "../domain/comments-service";
 import { commentDBToCommentView } from "../utils/utils";
 import { BearerAuthMiddleware } from "../middlewares/BearerAuth-middleware";
@@ -14,7 +14,7 @@ import { RequestsWithParamsAndBody } from "../types/types";
 export const commentsRouter = Router({})
 commentsRouter
     .get('/:id',
-    async (req: Request<URIParamsIdModel>, res: Response<CommentsViewModel>) => {
+    async (req: Request<URIParamsIdModel>, res: Response<CommentViewModel>) => {
         
         const commentDB = await commentsService.findCommentByID(req.params.id)
         if (commentDB) {

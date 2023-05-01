@@ -1,6 +1,6 @@
 import { CommentCommentatorInfo } from "./CommentCommentatorInfoModel"
 
-export type CommentsViewModel = {
+export type CommentViewModel = {
     id: string
     content: string
     commentatorInfo: CommentCommentatorInfo
