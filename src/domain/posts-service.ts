@@ -4,8 +4,11 @@ import { postsRepository } from "../repositories/posts-repository"
 import { blogsService } from "./blogs-service"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
-import { PaginatorPostDbTypes } from "../types/PaginatorType"
+import { PaginatorCommentDBModel, PaginatorPostDbTypes } from "../types/PaginatorType"
 import { PostDbModel } from "../models/posts/PostDbModel"
+import { commentsService } from "./comments-service"
+import { CommentDBModel } from "../models/comments/CommentDBModel"
+import { CommentInputModel } from "../models/comments/CommentInputModel"
 
 export const postsService = {
 
@@ -65,5 +68,21 @@ export const postsService = {
 
     async deletePostById(id: string): Promise<boolean> {
         return await postsRepository.deletePostById(id)
+    },
+
+    async findCommentsByPostId(postId: string, queryParams: QueryParamsModels): Promise<PaginatorCommentDBModel | null> {
+        const post = await this.findPostById(postId)
+        if (!post) return null
+
+        const comments = commentsService.findCommentsByPostId(postId, queryParams)
+        return comments
+    },
+
+    async createCommentByPostID(postId: string, userId: string, body: CommentInputModel): Promise<CommentDBModel | null> {
+        const post = await this.findPostById(postId)
+        if (!post) return null
+
+        const comment = await commentsService.createCommentByPostId(postId, userId, body)
+        return comment
     }
 }
