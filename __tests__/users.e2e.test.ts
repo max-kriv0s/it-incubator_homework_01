@@ -1,5 +1,5 @@
 import request from "supertest"
-import { app } from "../src/setting"
+import { app } from "../src/app"
 import { StatusCodes } from "http-status-codes"
 import { client } from "../src/repositories/db"
 import { UserCreateModel } from "../src/models/users/UserCreateModel"
@@ -346,16 +346,17 @@ describe('/users', () => {
 
     it ('- POST auth with correct data', async () => {
 
-        await request(app)
+        const res = await request(app)
             .post('/auth/login')
             .send({
                 loginOrEmail: 'user_0',
                 password: 'test_password'
             })
-            .expect(StatusCodes.NO_CONTENT)
+            .expect(StatusCodes.OK)
 
-   
-
+        expect(res.body).toEqual({
+            accessToken: expect.any(String)
+        })
     })
 
 })

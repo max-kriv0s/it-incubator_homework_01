@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../src/setting";
+import { app } from "../src/app";
 import { StatusCodes } from "http-status-codes";
 import { PostViewModel } from "../src/models/posts/PostViewModel";
 import { PostCreateModel } from "../src/models/posts/PostCreateModel";
