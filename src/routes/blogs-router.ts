@@ -10,7 +10,7 @@ import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
 import { URIParamsIdModel } from "../types/URIParamsIdModel"
 import { PaginatorBlogViewTypes, PaginatorPostViewTypes } from "../types/PaginatorType"
 import { QueryParamsModels } from "../types/QueryParamsModels"
-import { blogsServise } from "../domain/blogs-service"
+import { blogsService } from "../domain/blogs-service"
 import { PostViewModel } from "../models/posts/PostViewModel"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 import { PostValidate } from "../middlewares/Post-validation-middleware"
@@ -22,7 +22,7 @@ export const routerBlogs = Router()
 
 routerBlogs.get('/',
     async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorBlogViewTypes>) => {
-        const blogsDB = await blogsServise.getBlogs(req.query)
+        const blogsDB = await blogsService.getBlogs(req.query)
 
         const blogs: PaginatorBlogViewTypes = {
             pagesCount: blogsDB.pagesCount,
@@ -40,7 +40,7 @@ routerBlogs.post('/',
     BlogValidate,
     ErrorsValidate,
     async (req: RequestsWithBody<BlogCreateModel>, res: Response<BlogViewModel>) => {
-        const newBlogDB = await blogsServise.createBlog(req.body)
+        const newBlogDB = await blogsService.createBlog(req.body)
         const newBlog = blogDBToBlogView(newBlogDB)
 
         res.status(StatusCodes.CREATED).send(newBlog)
@@ -51,7 +51,7 @@ routerBlogs.post('/:id/posts',
     PostValidate,
     ErrorsValidate,
     async (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogPostCreateModel>, res: Response<PostViewModel>) => {
-        const newPostDB = await blogsServise.createPostByBlogId(req.params.id, req.body)
+        const newPostDB = await blogsService.createPostByBlogId(req.params.id, req.body)
         if (newPostDB) {
             const newPost = postDBToPostView(newPostDB)
             res.status(StatusCodes.CREATED).send(newPost)
@@ -63,7 +63,7 @@ routerBlogs.post('/:id/posts',
 
 routerBlogs.get('/:id',
     async (req: Request<URIParamsIdModel>, res: Response<BlogViewModel>) => {
-        const blogDB = await blogsServise.findBlogById(req.params.id)
+        const blogDB = await blogsService.findBlogById(req.params.id)
         if (blogDB) {
             const blog = blogDBToBlogView(blogDB)
             res.send(blog)
@@ -74,7 +74,7 @@ routerBlogs.get('/:id',
 
 routerBlogs.get('/:id/posts',
     async (req: RequestsWithParamsAndQuery<URIParamsIdModel, QueryParamsModels>, res: Response<PaginatorPostViewTypes>) => {
-        const posts = await blogsServise.findPostsByBlogId(req.params.id, req.query)
+        const posts = await blogsService.findPostsByBlogId(req.params.id, req.query)
         if (posts) {
             res.send({
                 pagesCount: posts.pagesCount,
@@ -93,7 +93,7 @@ routerBlogs.put('/:id',
     BlogValidate,
     ErrorsValidate,
     async (req: RequestsWithParamsAndBody<URIParamsIdModel, BlogUpdateModel>, res: Response) => {
-        const isUpdate = await blogsServise.updateBlog(req.params.id, req.body)
+        const isUpdate = await blogsService.updateBlog(req.params.id, req.body)
         if (isUpdate) {
             res.sendStatus(StatusCodes.NO_CONTENT)
         } else {
@@ -104,7 +104,7 @@ routerBlogs.put('/:id',
 routerBlogs.delete('/:id',
     BasicAuthValidate,
     async (req: Request<URIParamsIdModel>, res: Response) => {
-        const isDelete = await blogsServise.deleteBlogById(req.params.id)
+        const isDelete = await blogsService.deleteBlogById(req.params.id)
         if (isDelete) {
             res.sendStatus(StatusCodes.NO_CONTENT)
         } else {

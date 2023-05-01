@@ -1,7 +1,7 @@
 import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { PostUpdateModel } from "../models/posts/PostUpdateModel"
 import { postsRepository } from "../repositories/posts-repository"
-import { blogsServise } from "./blogs-service"
+import { blogsService } from "./blogs-service"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 import { PaginatorPostDbTypes } from "../types/PaginatorType"
@@ -42,7 +42,7 @@ export const postsService = {
     },
 
     async createPost(body: PostCreateModel): Promise<PostDbModel> {
-        const blog = await blogsServise.findBlogById(body.blogId)
+        const blog = await blogsService.findBlogById(body.blogId)
         const blogName: string = blog ? blog.name : ""
 
         const createdPost = await postsRepository.createPost(body, blogName)
@@ -56,7 +56,7 @@ export const postsService = {
     },
 
     async updatePost(id: string, body: PostUpdateModel): Promise<boolean> {
-        const blog = await blogsServise.findBlogById(body.blogId)
+        const blog = await blogsService.findBlogById(body.blogId)
         if (!blog) return false
 
         const blogName = blog ? blog.name : ""

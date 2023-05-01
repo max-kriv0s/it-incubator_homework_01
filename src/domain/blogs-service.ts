@@ -9,7 +9,7 @@ import { QueryParamsModels } from "../types/QueryParamsModels"
 import { postsService } from "./posts-service"
 
 
-export const blogsServise = {
+export const blogsService = {
 
     async getBlogs(queryParams: QueryParamsModels): Promise<PaginatorBlogDbTypes> {
         const searchNameTerm: string | null = queryParams.searchNameTerm ? queryParams.searchNameTerm : null
