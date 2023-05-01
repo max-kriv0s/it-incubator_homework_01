@@ -1,5 +1,5 @@
 import { body } from "express-validator"
-import { blogsServise } from "../domain/blogs-service"
+import { blogsService } from "../domain/blogs-service"
 
 const reWebsiteUrl = new RegExp('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$')
 
@@ -36,7 +36,7 @@ export const BlogIdValidate = [
     .exists({ checkFalsy: true }).bail()
     .isString().bail()
     .custom(async (value) => {
-        const blog = await blogsServise.findBlogById(value)
+        const blog = await blogsService.findBlogById(value)
         if (!blog) {
             throw new Error('Blog not found')
         }
