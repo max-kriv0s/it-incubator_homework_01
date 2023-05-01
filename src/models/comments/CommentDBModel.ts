@@ -1,9 +1,12 @@
 import { ObjectId } from "mongodb"
-import { CommentCommentatorInfo } from "./CommentCommentatorInfoModel"
 
 export type CommentDBModel = {
     _id: ObjectId
     content: string
-    commentatorInfo: CommentCommentatorInfo
-    createdAt: string
+    commentatorInfo: {
+        userId: ObjectId
+        userLogin: string
+    }
+    createdAt: string,
+    postId: ObjectId
 }
