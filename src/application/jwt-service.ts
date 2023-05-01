@@ -1,12 +1,14 @@
 import jwt from 'jsonwebtoken'
 import { UserDBModel } from "../models/users/UserDBModel";
-import { settings } from '../settings';
 import { ObjectId } from 'mongodb';
+import { settings } from '../settings';
+
+const JWT_SECRET = settings.JWT_SECRET
 
 export const jwtService = {
 
     async createJWT(user:UserDBModel): Promise<string> {
-        const token = jwt.sign(user._id, settings.JWT_SECRET, { expiresIn: '10m' })
+        const token = jwt.sign({ UserId: user._id }, JWT_SECRET, { expiresIn: '10m' })
         return token 
     },
 
