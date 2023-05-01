@@ -35,14 +35,13 @@ routerAuth
             }
             
             const userDB = await usersService.findUserById(userId!)
-            if (!userDB) {
-                res.sendStatus(StatusCodes.UNAUTHORIZED)               
-            }
-            
-            res.send({
-                email: userDB!.email,
-                login: userDB!.login,
-                userId: userId!
-            })
-            
+            if (userDB) {     
+                res.send({
+                    email: userDB.email,
+                    login: userDB.login,
+                    userId: userId!
+                })
+            } else {
+                res.sendStatus(StatusCodes.UNAUTHORIZED)           
+            }  
     })
