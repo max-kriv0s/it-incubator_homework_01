@@ -1,8 +1,9 @@
-import { CommentCommentatorInfo } from "./CommentCommentatorInfoModel"
-
 export type CommentViewModel = {
     id: string
     content: string
-    commentatorInfo: CommentCommentatorInfo
+    commentatorInfo: {
+        userId: string
+        userLogin: string
+    }
     createdAt: string
 }
