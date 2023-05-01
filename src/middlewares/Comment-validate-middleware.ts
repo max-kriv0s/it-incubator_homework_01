@@ -9,7 +9,7 @@ export const CommentUserIDMiddleware = async (req: Request<URIParamsCommentIdMod
     if (!comment) {
         res.sendStatus(StatusCodes.NOT_FOUND)
         return
-    } else if (comment.commentatorInfo.userId !== req.userId) {
+    } else if (comment.commentatorInfo.userId.toString() !== req.userId) {
         res.sendStatus(StatusCodes.FORBIDDEN)
         return
     }
@@ -23,6 +23,6 @@ export const CommentValidate = [
         .exists({ checkFalsy: true })
         .isString()
         .isLength({ min: 20, max: 300 })
-        .withMessage('must be between 6 and 20 characters')
+        .withMessage('must be between 20 and 300 characters')
     
 ]
