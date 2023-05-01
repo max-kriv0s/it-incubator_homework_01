@@ -8,6 +8,7 @@ import { routerBlogs } from "./routes/blogs-router";
 import { routerPosts } from "./routes/posts-router";
 import { routerUsers } from "./routes/users-router";
 import { routerAuth } from "./routes/auth-router";
+import { commentsRouter } from "./routes/comments-router";
 
 
 export const app = express()
@@ -20,3 +21,4 @@ app.use('/blogs', routerBlogs)
 app.use('/posts', routerPosts)
 app.use('/users', routerUsers)
 app.use('/auth', routerAuth)
+app.use('/comments', commentsRouter)
