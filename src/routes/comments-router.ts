@@ -7,7 +7,7 @@ import { commentDBToCommentView } from "../utils/utils";
 import { BearerAuthMiddleware } from "../middlewares/BearerAuth-middleware";
 import { CommentUserIDMiddleware, CommentValidate } from "../middlewares/Comment-validate-middleware";
 import { ErrorsValidate } from "../middlewares/Errors-middleware";
-import { CommentUpdateModel } from "../models/comments/CommentUpdateModel";
+import { CommentInputModel } from "../models/comments/CommentInputModel";
 import { RequestsWithParamsAndBody } from "../types/types";
 
 
@@ -30,7 +30,7 @@ commentsRouter
     CommentValidate,
     ErrorsValidate,
     CommentUserIDMiddleware,
-    async (req: RequestsWithParamsAndBody<URIParamsCommentIdModel, CommentUpdateModel>, res: Response) => {
+    async (req: RequestsWithParamsAndBody<URIParamsCommentIdModel, CommentInputModel>, res: Response) => {
         
         const isUpdate = await commentsService.updatedComment(req.params.commentId, req.body)
         if (isUpdate) {
