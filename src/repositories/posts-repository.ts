@@ -36,8 +36,6 @@ export const postsRepository = {
         if (!ObjectId.isValid(id)) return null
 
         const post = await postsCollection.findOne({ _id: new ObjectId(id) })
-        if (!post) return null
-
         return post
     },
 
@@ -131,6 +129,6 @@ export const postsRepository = {
     },
 
     async deletePosts() {
-        postsCollection.deleteMany({})
+        await postsCollection.deleteMany({})
     }
 }

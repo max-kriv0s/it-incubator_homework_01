@@ -40,8 +40,6 @@ export const blogsRepository = {
         if (!ObjectId.isValid(id)) return null
 
         const blog: BlogDbModel | null = await blogsCollection.findOne({ _id: new ObjectId(id) })
-        if (!blog) return null
-
         return blog
     },
 
@@ -84,6 +82,6 @@ export const blogsRepository = {
     },
 
     async deleteBlogs() {
-        blogsCollection.deleteMany({})
+        await blogsCollection.deleteMany({})
     }
 }

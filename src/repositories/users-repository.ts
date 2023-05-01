@@ -68,14 +68,12 @@ export const usersRepository = {
     },
 
     async deleteUsers() {
-        usersCollection.deleteMany({})
+        await usersCollection.deleteMany({})
     },
 
     async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBModel | null> {
 
         const user = await usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] })
-        if (!user) return null
-
         return user
     },
 

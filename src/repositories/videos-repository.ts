@@ -59,6 +59,6 @@ export const videoRepository = {
     },
     
     async deleteVideos() {
-        videosCollection.deleteMany({})
+        await videosCollection.deleteMany({})
     }
 }
