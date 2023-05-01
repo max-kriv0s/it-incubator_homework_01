@@ -1,7 +1,7 @@
 import { BlogDbModel } from "../models/blogs/BlogDbModel";
 import { BlogViewModel } from "../models/blogs/BlogViewModel";
 import { CommentDBModel } from "../models/comments/CommentDBModel";
-import { CommentsViewModel } from "../models/comments/CommentViewModel";
+import { CommentViewModel } from "../models/comments/CommentViewModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostViewModel } from "../models/posts/PostViewModel";
 import { UserDBModel } from "../models/users/UserDBModel";
@@ -61,12 +61,12 @@ export function userDBToUserView(user: UserDBModel): UserViewModel {
     }
 }
 
-export function commentDBToCommentView(comment: CommentDBModel): CommentsViewModel {
+export function commentDBToCommentView(comment: CommentDBModel): CommentViewModel {
     return {
         id: comment._id.toString(),
         content: comment.content,
         commentatorInfo: {
-            userId: comment.commentatorInfo.userId,
+            userId: comment.commentatorInfo.userId.toString(),
             userLogin: comment.commentatorInfo.userLogin
         },
         createdAt: comment.createdAt
