@@ -77,10 +77,10 @@ export const usersService = {
 
     async createUserForEmailConfirmation(body: UserCreateModel): Promise<string> {
 
-        const userByLogin = await usersRepository.findByLoginOrEmail(body.login)
-        const userByEmail = await usersRepository.findByLoginOrEmail(body.email)
+        // const userByLogin = await usersRepository.findByLoginOrEmail(body.login)
+        // const userByEmail = await usersRepository.findByLoginOrEmail(body.email)
 
-        if (userByLogin || userByEmail) return "user already exists"
+        // if (userByLogin || userByEmail) return "user already exists"
 
         const passwordHash = await this._generatePasswordHash(body.password)
 
