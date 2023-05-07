@@ -85,6 +85,8 @@ export const usersRepository = {
         const user = await this.findUserByCodeConfirmation(code)
         if (!user) return false
 
+        if (user.emailConfirmation.isConfirmed) return false
+
         const isUpdated = await usersCollection.updateOne({_id: user._id}, {$set: {"emailConfirmation.isConfirmed": true}})
         return isUpdated.matchedCount === 1
     },
