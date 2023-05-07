@@ -8,6 +8,11 @@ import { ErrorsValidate } from "../middlewares/Errors-middleware";
 import { jwtService } from "../application/jwt-service";
 import { MeViewModel } from "../models/auth/MeViewModel";
 import { BearerAuthMiddleware } from "../middlewares/BearerAuth-middleware";
+import { UserCreateModel } from "../models/users/UserCreateModel";
+import { UserValidate } from "../middlewares/Users-validation-middleware";
+import { RegistrationConfirmationCodeModel } from "../models/auth/RegistrationConfirmationCodeModel";
+import { AuthRegistrationConfirmationCodeValidate, AuthRegistrationEmailResendingValodate } from "../middlewares/Auth-validation-middleware";
+import { RegistrationEmailResendingModel } from "../models/auth/RegistrationEmailResendingModel";
 
 
 export const routerAuth = Router({})
@@ -37,11 +42,66 @@ routerAuth
             const userDB = await usersService.findUserById(userId!)
             if (userDB) {     
                 res.send({
-                    email: userDB.email,
-                    login: userDB.login,
+                    email: userDB.accountData.email,
+                    login: userDB.accountData.login,
                     userId: userId!
                 })
             } else {
-                res.sendStatus(StatusCodes.UNAUTHORIZED)           
-            }  
+                res.sendStatus(StatusCodes.UNAUTHORIZED)
+            }
     })
+
+    .post('/registration',
+        UserValidate,
+        ErrorsValidate,
+        async (req: RequestsWithBody<UserCreateModel>, res: Response) => {
+
+            const textError = await usersService.createUserForEmailConfirmation(req.body)
+            if (!textError) {
+                res.sendStatus(StatusCodes.NO_CONTENT)
+            } else {
+                res.status(StatusCodes.BAD_REQUEST).send({})
+            }
+    })
+
+    .post('/registration-confirmation',
+        AuthRegistrationConfirmationCodeValidate,
+        ErrorsValidate,
+        async (req: RequestsWithBody<RegistrationConfirmationCodeModel>, res: Response) => {
+            
+            const textError = await usersService.confirmRegistration(req.body.code)
+            if (!textError) {
+                res.sendStatus(StatusCodes.NO_CONTENT)
+            } else {
+                res.status(StatusCodes.BAD_REQUEST).send({
+                    errorsMessages: [
+                        {
+                            message: textError,
+                            field: ""
+                        }
+                    ]
+                })
+            }
+        }
+    )
+
+    .post('/registration-email-resending',
+        AuthRegistrationEmailResendingValodate,
+        ErrorsValidate,
+        async (req: RequestsWithBody<RegistrationEmailResendingModel>, res: Response) => {
+            
+            const textError = await usersService.resendingConfirmationCodeToUser(req.body.email)
+            if (!textError) {
+                res.sendStatus(StatusCodes.NO_CONTENT)
+            } else {
+                res.status(StatusCodes.BAD_REQUEST).send({
+                    errorsMessages: [
+                        {
+                            message: textError,
+                            field: ""
+                        }
+                    ]
+                })
+            }
+        }
+    )
