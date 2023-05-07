@@ -1,10 +1,18 @@
 import bcrypt from "bcrypt"
+import add from 'date-fns/add'
+import {v4 as uuidv4 } from 'uuid'
 import { UserCreateModel } from "../models/users/UserCreateModel";
 import { usersRepository } from "../repositories/users-repository";
 import { PaginatorUserDBModel } from "../types/PaginatorType";
 import { QueryParamsUsersModel } from "../types/QueryParamsModels";
 import { UserDBModel } from "../models/users/UserDBModel";
+import { UserServiceModel } from "../models/users/UserServiceModel";
+import { emailManager } from "../managers/email-managers";
 
+
+const CODE_LIFE_TIME = {
+    hours: 1,
+}
 
 export const usersService = {
 
@@ -31,16 +39,29 @@ export const usersService = {
 
     async createUser(body: UserCreateModel): Promise<UserDBModel> {
 
-        const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await this._generateHash(body.password, passwordSalt)
+        const passwordHash = await this._generatePasswordHash(body.password)
 
-        const createdUser = await usersRepository.createUser(body, passwordHash)
+        const newUser: UserServiceModel = {
+            accountData: {
+                login: body.login,
+                password: passwordHash,
+                email: body.email,
+                createdAt: new Date().toISOString()
+            },
+            emailConfirmation: {
+                confirmationCode: '',
+                expirationDate: new Date(),
+                isConfirmed: true
+            }
+        }
 
+        const createdUser = await usersRepository.createUser(newUser)
+        
         return createdUser
     },
 
     async deleteUserById(id: string): Promise<boolean> {
-        return await usersRepository.deleteBlogById(id)
+        return await usersRepository.deleteUserById(id)
     },
 
     async _generateHash(password: string, salt: string) {
@@ -49,19 +70,101 @@ export const usersService = {
         return hash
     },
 
+    async _generatePasswordHash(password: string): Promise<string> {
+        
+        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordHash = await this._generateHash(password, passwordSalt)
+        return passwordHash
+    },
+
+    async createUserForEmailConfirmation(body: UserCreateModel): Promise<string> {
+
+        const userByLogin = await usersRepository.findByLoginOrEmail(body.login)
+        const userByEmail = await usersRepository.findByLoginOrEmail(body.email)
+
+        if (userByLogin || userByEmail) return "user already exists"
+
+        const passwordHash = await this._generatePasswordHash(body.password)
+
+        const newUser: UserServiceModel = {
+            accountData: {
+                login: body.login,
+                password: passwordHash,
+                email: body.email,
+                createdAt: new Date().toISOString()
+            },
+            emailConfirmation: {
+                confirmationCode: uuidv4(),
+                expirationDate: add(new Date(), CODE_LIFE_TIME),
+                isConfirmed: false
+            }
+        }
+        
+        const createdUser = await usersRepository.createUser(newUser)
+            
+        try {
+            await emailManager.sendEmailConfirmationMessage(createdUser)
+        } catch (error) {
+            console.error(error)
+            
+            // нужно ли удалять пользователя в случае ошибки отправки email?
+            // const isDeleded = await this.deleteUserById(createdUser._id.toString())
+
+            return "Mail sending error"
+        }
+
+        return ""
+
+    },
+
     async checkCredentials(loginOrEmail: string, password: string): Promise<UserDBModel | null> {
 
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
         if (!user) return null
 
-        const validPassword = await bcrypt.compare(password, user.password)
+        if (!user.emailConfirmation.isConfirmed) return null
+
+        const validPassword = await bcrypt.compare(password, user.accountData.password)
         if (!validPassword) return null
 
         return user
     },
 
     async findUserById(userId: string): Promise<UserDBModel | null> {
-        const user = usersRepository.findUserById(userId)
+        const user = await usersRepository.findUserById(userId)
         return user
+    },
+
+    async confirmRegistration(code: string): Promise<string> {
+        const isUpdated = await usersRepository.confirmRegistration(code)
+
+        if (!isUpdated) return "User update error"
+
+        return ""
+    },
+
+    async resendingConfirmationCodeToUser(email: string): Promise<string> {
+        
+        const user = await usersRepository.findByLoginOrEmail(email)
+        if (!user) return "User not found"
+
+        const emailConfirmation = {
+            confirmationCode: uuidv4(),
+            expirationDate: add(new Date(), CODE_LIFE_TIME),
+            isConfirmed: false
+        }
+
+        const isUpdated = await usersRepository.updateDataEmailConfirmation(user, emailConfirmation)
+        if (!isUpdated) return "User update error"
+
+        try {
+            await emailManager.sendPasswordRecoveryMessage(user)
+        } catch (error) {
+            console.error(error)
+            return "Mail sending error"
+        }
+
+        return ""
+        
     }
 }
