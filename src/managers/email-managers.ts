@@ -7,23 +7,23 @@ const APP_URL = settings.APP_URL
 
 export const emailManager = {
 
-    async sendEmailConfirmationMessage(user: UserDBModel) {
+    async sendEmailConfirmationMessage(email: string, confirmationCode: string) {
         const textMessage = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:
-            <a href='${APP_URL}/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
+            <a href='${APP_URL}/confirm-email?code=${confirmationCode}'>complete registration</a>
         </p>`
         
-        const info = await emailAdapter.sendEmail(user.email, "Email confirmation", textMessage)
+        const info = await emailAdapter.sendEmail(email, "Email confirmation", textMessage)
         
     },
 
-    async sendPasswordRecoveryMessage(user: UserDBModel) {
+    async sendPasswordRecoveryMessage(email: string, confirmationCode: string) {
         const textMessage = `<h1>Resending email confirmation</h1>
         <p>To finish registration please follow the link below:
-            <a href='${APP_URL}/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
+            <a href='${APP_URL}/confirm-email?code=${confirmationCode}'>complete registration</a>
         </p>`
         
-        const info = await emailAdapter.sendEmail(user.email, "Resending email confirmation", textMessage)
+        const info = await emailAdapter.sendEmail(email, "Resending email confirmation", textMessage)
         
     }
 }

@@ -99,7 +99,7 @@ export const usersService = {
         const createdUser = await usersRepository.createUser(newUser)
             
         try {
-            await emailManager.sendEmailConfirmationMessage(createdUser)
+            await emailManager.sendEmailConfirmationMessage(createdUser.email, createdUser.emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
             
@@ -154,7 +154,7 @@ export const usersService = {
         if (!isUpdated) return "User update error"
 
         try {
-            await emailManager.sendPasswordRecoveryMessage(user)
+            await emailManager.sendPasswordRecoveryMessage(user.email, emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
             return "Mail sending error"

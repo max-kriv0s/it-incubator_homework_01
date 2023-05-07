@@ -60,7 +60,14 @@ routerAuth
             if (!textError) {
                 res.sendStatus(StatusCodes.NO_CONTENT)
             } else {
-                res.status(StatusCodes.BAD_REQUEST).send({})
+                res.status(StatusCodes.BAD_REQUEST).send({
+                    errorsMessages: [
+                        {
+                            message: textError,
+                            field: ""
+                        }
+                    ]
+                })
             }
     })
 
