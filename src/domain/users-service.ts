@@ -151,6 +151,8 @@ export const usersService = {
         const user = await usersRepository.findByLoginOrEmail(email)
         if (!user) return GetDescriptionOfError("User not found", "email")
 
+        if (user.emailConfirmation.isConfirmed) return GetDescriptionOfError("Email confirmed", "email")
+
         const emailConfirmation = {
             confirmationCode: uuidv4(),
             expirationDate: add(new Date(), CODE_LIFE_TIME),
