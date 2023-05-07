@@ -6,6 +6,7 @@ import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostViewModel } from "../models/posts/PostViewModel";
 import { UserDBModel } from "../models/users/UserDBModel";
 import { UserViewModel } from "../models/users/UserViewModel";
+import { APIErrorResult } from "../types/APIErrorModels";
 import { DataBaseModel } from "../types/DataBaseMode";
 
 export function randomString(n: number) {
@@ -70,5 +71,16 @@ export function commentDBToCommentView(comment: CommentDBModel): CommentViewMode
             userLogin: comment.commentatorInfo.userLogin
         },
         createdAt: comment.createdAt
+    }
+}
+
+export function GetDescriptionOfError(message: string, field: string): APIErrorResult {
+    return {
+        errorsMessages: [
+            {
+                message: message,
+                field: field
+            }
+        ]
     }
 }

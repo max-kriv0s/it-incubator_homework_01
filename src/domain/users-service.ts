@@ -8,6 +8,8 @@ import { QueryParamsUsersModel } from "../types/QueryParamsModels";
 import { UserDBModel } from "../models/users/UserDBModel";
 import { UserServiceModel } from "../models/users/UserServiceModel";
 import { emailManager } from "../managers/email-managers";
+import { APIErrorResult } from "../types/APIErrorModels";
+import { GetDescriptionOfError } from "../utils/utils";
 
 
 const CODE_LIFE_TIME = {
@@ -75,12 +77,17 @@ export const usersService = {
         return passwordHash
     },
 
-    async createUserForEmailConfirmation(body: UserCreateModel): Promise<string> {
+    async createUserForEmailConfirmation(body: UserCreateModel): Promise<APIErrorResult | null> {
 
-        // const userByLogin = await usersRepository.findByLoginOrEmail(body.login)
-        // const userByEmail = await usersRepository.findByLoginOrEmail(body.email)
+        const userByLogin = await usersRepository.findByLoginOrEmail(body.login)
+        if (userByLogin) {
+            return GetDescriptionOfError("user already exists", "login")
+        }    
 
-        // if (userByLogin || userByEmail) return "user already exists"
+        const userByEmail = await usersRepository.findByLoginOrEmail(body.email)
+        if (userByEmail) {
+            return GetDescriptionOfError("user already exists", "email")
+        }
 
         const passwordHash = await this._generatePasswordHash(body.password)
 
@@ -106,10 +113,10 @@ export const usersService = {
             // нужно ли удалять пользователя в случае ошибки отправки email?
             // const isDeleded = await this.deleteUserById(createdUser._id.toString())
 
-            return "Mail sending error"
+            return GetDescriptionOfError("Mail sending error", "email")
         }
 
-        return ""
+        return null
 
     },
 
@@ -131,18 +138,18 @@ export const usersService = {
         return user
     },
 
-    async confirmRegistration(code: string): Promise<string> {
+    async confirmRegistration(code: string): Promise<APIErrorResult | null> {
         const isUpdated = await usersRepository.confirmRegistration(code)
 
-        if (!isUpdated) return "User update error"
+        if (!isUpdated) return GetDescriptionOfError("User update error", "code")
 
-        return ""
+        return null
     },
 
-    async resendingConfirmationCodeToUser(email: string): Promise<string> {
+    async resendingConfirmationCodeToUser(email: string): Promise<APIErrorResult | null> {
         
         const user = await usersRepository.findByLoginOrEmail(email)
-        if (!user) return "User not found"
+        if (!user) return GetDescriptionOfError("User not found", "email")
 
         const emailConfirmation = {
             confirmationCode: uuidv4(),
@@ -151,16 +158,16 @@ export const usersService = {
         }
 
         const isUpdated = await usersRepository.updateDataEmailConfirmation(user, emailConfirmation)
-        if (!isUpdated) return "User update error"
+        if (!isUpdated) return GetDescriptionOfError("User update error", "email")
 
         try {
             await emailManager.sendPasswordRecoveryMessage(user.email, emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
-            return "Mail sending error"
+            return GetDescriptionOfError("Mail sending error", "email")
         }
 
-        return ""
+        return null
         
     }
 }

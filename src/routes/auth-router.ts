@@ -56,18 +56,11 @@ routerAuth
         ErrorsValidate,
         async (req: RequestsWithBody<UserCreateModel>, res: Response) => {
 
-            const textError = await usersService.createUserForEmailConfirmation(req.body)
-            if (!textError) {
+            const error = await usersService.createUserForEmailConfirmation(req.body)
+            if (!error) {
                 res.sendStatus(StatusCodes.NO_CONTENT)
             } else {
-                res.status(StatusCodes.BAD_REQUEST).send({
-                    errorsMessages: [
-                        {
-                            message: textError,
-                            field: ""
-                        }
-                    ]
-                })
+                res.status(StatusCodes.BAD_REQUEST).send(error)
             }
     })
 
@@ -76,18 +69,11 @@ routerAuth
         ErrorsValidate,
         async (req: RequestsWithBody<RegistrationConfirmationCodeModel>, res: Response) => {
             
-            const textError = await usersService.confirmRegistration(req.body.code)
-            if (!textError) {
+            const error = await usersService.confirmRegistration(req.body.code)
+            if (!error) {
                 res.sendStatus(StatusCodes.NO_CONTENT)
             } else {
-                res.status(StatusCodes.BAD_REQUEST).send({
-                    errorsMessages: [
-                        {
-                            message: textError,
-                            field: ""
-                        }
-                    ]
-                })
+                res.status(StatusCodes.BAD_REQUEST).send(error)
             }
         }
     )
@@ -97,18 +83,11 @@ routerAuth
         ErrorsValidate,
         async (req: RequestsWithBody<RegistrationEmailResendingModel>, res: Response) => {
             
-            const textError = await usersService.resendingConfirmationCodeToUser(req.body.email)
-            if (!textError) {
+            const error = await usersService.resendingConfirmationCodeToUser(req.body.email)
+            if (!error) {
                 res.sendStatus(StatusCodes.NO_CONTENT)
             } else {
-                res.status(StatusCodes.BAD_REQUEST).send({
-                    errorsMessages: [
-                        {
-                            message: textError,
-                            field: ""
-                        }
-                    ]
-                })
+                res.status(StatusCodes.BAD_REQUEST).send(error)
             }
         }
     )
