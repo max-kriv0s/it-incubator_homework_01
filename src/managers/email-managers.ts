@@ -13,7 +13,7 @@ export const emailManager = {
             <a href='${APP_URL}/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
         </p>`
         
-        const info = await emailAdapter.sendEmail(user.accountData.email, "Email confirmation", textMessage)
+        const info = await emailAdapter.sendEmail(user.email, "Email confirmation", textMessage)
         
     },
 
@@ -23,7 +23,7 @@ export const emailManager = {
             <a href='${APP_URL}/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
         </p>`
         
-        const info = await emailAdapter.sendEmail(user.accountData.email, "Resending email confirmation", textMessage)
+        const info = await emailAdapter.sendEmail(user.email, "Resending email confirmation", textMessage)
         
     }
 }

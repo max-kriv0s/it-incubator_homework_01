@@ -42,8 +42,8 @@ routerAuth
             const userDB = await usersService.findUserById(userId!)
             if (userDB) {     
                 res.send({
-                    email: userDB.accountData.email,
-                    login: userDB.accountData.login,
+                    email: userDB.email,
+                    login: userDB.login,
                     userId: userId!
                 })
             } else {

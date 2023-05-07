@@ -42,12 +42,10 @@ export const usersService = {
         const passwordHash = await this._generatePasswordHash(body.password)
 
         const newUser: UserServiceModel = {
-            accountData: {
-                login: body.login,
-                password: passwordHash,
-                email: body.email,
-                createdAt: new Date().toISOString()
-            },
+            login: body.login,
+            password: passwordHash,
+            email: body.email,
+            createdAt: new Date().toISOString(),
             emailConfirmation: {
                 confirmationCode: '',
                 expirationDate: new Date(),
@@ -87,12 +85,10 @@ export const usersService = {
         const passwordHash = await this._generatePasswordHash(body.password)
 
         const newUser: UserServiceModel = {
-            accountData: {
-                login: body.login,
-                password: passwordHash,
-                email: body.email,
-                createdAt: new Date().toISOString()
-            },
+            login: body.login,
+            password: passwordHash,
+            email: body.email,
+            createdAt: new Date().toISOString(),
             emailConfirmation: {
                 confirmationCode: uuidv4(),
                 expirationDate: add(new Date(), CODE_LIFE_TIME),
@@ -124,7 +120,7 @@ export const usersService = {
 
         if (!user.emailConfirmation.isConfirmed) return null
 
-        const validPassword = await bcrypt.compare(password, user.accountData.password)
+        const validPassword = await bcrypt.compare(password, user.password)
         if (!validPassword) return null
 
         return user

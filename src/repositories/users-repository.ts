@@ -2,7 +2,6 @@ import { ObjectId } from "mongodb"
 import { UserDBModel, UserEmailConfirmationType } from "../models/users/UserDBModel"
 import { PaginatorUserDBModel } from "../types/PaginatorType"
 import { usersCollection } from "./db"
-import { UserCreateModel } from "../models/users/UserCreateModel"
 import { UserServiceModel } from "../models/users/UserServiceModel"
 
 
@@ -20,8 +19,8 @@ export const usersRepository = {
         if (searchLoginTerm && searchEmailTerm) {
             filter = {
                 $or: [
-                    { login: { $regex: searchLoginTerm, $options: 'i' } },
-                    { email: { $regex: searchEmailTerm, $options: 'i' } }
+                    { "login": { $regex: searchLoginTerm, $options: 'i' } },
+                    { "email": { $regex: searchEmailTerm, $options: 'i' } }
                 ]
             }
         } else if (searchLoginTerm) {
