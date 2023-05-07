@@ -1,8 +1,9 @@
 import { ObjectId } from "mongodb"
-import { UserDBModel } from "../models/users/UserDBModel"
+import { UserDBModel, UserEmailConfirmationType } from "../models/users/UserDBModel"
 import { PaginatorUserDBModel } from "../types/PaginatorType"
 import { usersCollection } from "./db"
 import { UserCreateModel } from "../models/users/UserCreateModel"
+import { UserServiceModel } from "../models/users/UserServiceModel"
 
 
 export const usersRepository = {
@@ -46,20 +47,17 @@ export const usersRepository = {
         }
     },
 
-    async createUser(body: UserCreateModel, passwordHash: string): Promise<UserDBModel> {
+    async createUser(user: UserServiceModel): Promise<UserDBModel> {
         const newUser: UserDBModel = {
+            ...user,
             _id: new ObjectId(),
-            login: body.login,
-            password: passwordHash,
-            email: body.email,
-            createdAt: new Date().toISOString()
         }
 
         const result = await usersCollection.insertOne(newUser)
         return newUser
     },
 
-    async deleteBlogById(id: string): Promise<boolean> {
+    async deleteUserById(id: string): Promise<boolean> {
 
         if (!ObjectId.isValid(id)) return false
 
@@ -82,5 +80,27 @@ export const usersRepository = {
 
         const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
         return user
+    },
+
+    async confirmRegistration(code: string): Promise<boolean> {
+        const user = await this.findUserByCodeConfirmation(code)
+        if (!user) return false
+
+        const isUpdated = await usersCollection.updateOne({_id: user._id}, {$set: {"emailConfirmation.isConfirmed": true}})
+        return isUpdated.matchedCount === 1
+    },
+
+    async findUserByCodeConfirmation(code: string): Promise<UserDBModel | null> {
+        const user = await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
+        if (user && user.emailConfirmation.expirationDate > new Date()) {
+            return user
+        } else {
+            return null
+        }
+    },
+
+    async updateDataEmailConfirmation(user: UserDBModel, emailConfirmation: UserEmailConfirmationType): Promise<boolean> {
+        const isUpdated = await usersCollection.updateOne({_id: user._id}, {$set: {emailConfirmation: emailConfirmation}})
+        return isUpdated.matchedCount === 1
     }
 }
