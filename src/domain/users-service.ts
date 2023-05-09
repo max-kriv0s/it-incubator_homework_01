@@ -44,10 +44,12 @@ export const usersService = {
         const passwordHash = await this._generatePasswordHash(body.password)
 
         const newUser: UserServiceModel = {
-            login: body.login,
-            password: passwordHash,
-            email: body.email,
-            createdAt: new Date().toISOString(),
+            accountData: {
+                login: body.login,
+                password: passwordHash,
+                email: body.email,
+                createdAt: new Date().toISOString()
+            },
             emailConfirmation: {
                 confirmationCode: '',
                 expirationDate: new Date(),
@@ -92,10 +94,12 @@ export const usersService = {
         const passwordHash = await this._generatePasswordHash(body.password)
 
         const newUser: UserServiceModel = {
-            login: body.login,
-            password: passwordHash,
-            email: body.email,
-            createdAt: new Date().toISOString(),
+            accountData: {
+                login: body.login,
+                password: passwordHash,
+                email: body.email,
+                createdAt: new Date().toISOString()
+            },
             emailConfirmation: {
                 confirmationCode: uuidv4(),
                 expirationDate: add(new Date(), CODE_LIFE_TIME),
@@ -106,7 +110,7 @@ export const usersService = {
         const createdUser = await usersRepository.createUser(newUser)
             
         try {
-            await emailManager.sendEmailConfirmationMessage(createdUser.email, createdUser.emailConfirmation.confirmationCode)
+            await emailManager.sendEmailConfirmationMessage(createdUser.accountData.email, createdUser.emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
             
@@ -127,7 +131,7 @@ export const usersService = {
 
         if (!user.emailConfirmation.isConfirmed) return null
 
-        const validPassword = await bcrypt.compare(password, user.password)
+        const validPassword = await bcrypt.compare(password, user.accountData.password)
         if (!validPassword) return null
 
         return user
@@ -163,7 +167,7 @@ export const usersService = {
         if (!isUpdated) return GetDescriptionOfError("User update error", "email")
 
         try {
-            await emailManager.sendPasswordRecoveryMessage(user.email, emailConfirmation.confirmationCode)
+            await emailManager.sendPasswordRecoveryMessage(user.accountData.email, emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
             return GetDescriptionOfError("Mail sending error", "email")

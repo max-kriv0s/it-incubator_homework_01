@@ -19,21 +19,21 @@ export const usersRepository = {
         if (searchLoginTerm && searchEmailTerm) {
             filter = {
                 $or: [
-                    { "login": { $regex: searchLoginTerm, $options: 'i' } },
-                    { "email": { $regex: searchEmailTerm, $options: 'i' } }
+                    { "accountData.login": { $regex: searchLoginTerm, $options: 'i' } },
+                    { "accountData.email": { $regex: searchEmailTerm, $options: 'i' } }
                 ]
             }
         } else if (searchLoginTerm) {
-            filter.login = { $regex: searchLoginTerm, $options: 'i' }
+            filter = { "accountData.login": {$regex: searchLoginTerm, $options: 'i' } }
         } else if (searchEmailTerm) {
-            filter.email = { $regex: searchEmailTerm, $options: 'i' }
+            filter = { "accountData.email": {$regex: searchEmailTerm, $options: 'i' } }
         }
 
         const totalCount: number = await usersCollection.countDocuments(filter)
         const skip = (pageNumber - 1) * pageSize
 
         const users: UserDBModel[] = await usersCollection.find(filter)
-            .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+            .sort({ ["accountData." + sortBy]: sortDirection === 'asc' ? 1 : -1 })
             .skip(skip)
             .limit(pageSize).toArray()
 
@@ -70,7 +70,7 @@ export const usersRepository = {
 
     async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBModel | null> {
 
-        const user = await usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] })
+        const user = await usersCollection.findOne({ $or: [{ "accountData.login": loginOrEmail }, { "accountData.email": loginOrEmail }] })
         return user
     },
 

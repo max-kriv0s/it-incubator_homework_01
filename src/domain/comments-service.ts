@@ -34,7 +34,7 @@ export const commentsService = {
         const user = await usersService.findUserById(userId)
         if (!user) return null
 
-        const comment = await commentsRepository.createCommentByPostId(postId, userId, user.login, body)
+        const comment = await commentsRepository.createCommentByPostId(postId, userId, user.accountData.login, body)
         return comment
     }
 }

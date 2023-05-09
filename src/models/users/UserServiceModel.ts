@@ -1,9 +1,6 @@
-import { UserEmailConfirmationType } from "./UserDBModel"
+import { UserEmailConfirmationType, accountData } from "./UserDBModel"
 
 export type UserServiceModel = {
-    login: string
-    password: string
-    email: string
-    createdAt: string
+    accountData: accountData
     emailConfirmation: UserEmailConfirmationType
 }
