@@ -1,11 +1,5 @@
 import { ObjectId } from "mongodb"
 
-export type UserDBModel = {
-    _id: ObjectId
-    accountData: accountData
-    emailConfirmation: UserEmailConfirmationType
-}
-
 export type accountData = {
     login: string
     password: string
@@ -17,4 +11,10 @@ export type UserEmailConfirmationType = {
     confirmationCode: string
     expirationDate: Date
     isConfirmed: boolean
+}
+
+export type UserDBModel = {
+    _id: ObjectId
+    accountData: accountData
+    emailConfirmation: UserEmailConfirmationType
 }
