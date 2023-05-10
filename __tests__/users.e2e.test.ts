@@ -5,6 +5,9 @@ import { client } from "../src/repositories/db"
 import { UserCreateModel } from "../src/models/users/UserCreateModel"
 import { randomString } from "../src/utils/utils"
 import { UserViewModel } from "../src/models/users/UserViewModel"
+// import { emailAdapter } from "../src/adapter/email-adapter"
+
+// emailAdapter.sendEmail = () => {}
 
 const ADMIN_LOGIN = process.env.ADMIN_LOGIN ? process.env.ADMIN_LOGIN : ''
 
