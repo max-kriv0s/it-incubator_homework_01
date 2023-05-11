@@ -1,5 +1,4 @@
 import { emailAdapter } from "../adapter/email-adapter";
-import { UserDBModel } from "../models/users/UserDBModel";
 import { settings } from "../settings";
 
 const APP_URL = settings.APP_URL
