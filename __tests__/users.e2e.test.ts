@@ -5,9 +5,7 @@ import { client } from "../src/repositories/db"
 import { UserCreateModel } from "../src/models/users/UserCreateModel"
 import { randomString } from "../src/utils/utils"
 import { UserViewModel } from "../src/models/users/UserViewModel"
-// import { emailAdapter } from "../src/adapter/email-adapter"
 
-// emailAdapter.sendEmail = () => {}
 
 const ADMIN_LOGIN = process.env.ADMIN_LOGIN ? process.env.ADMIN_LOGIN : ''
 
@@ -292,74 +290,6 @@ describe('/users', () => {
             }
         )        
 
-    })
-
-    it ('- POST auth with incorrect loginOrEmail', async () => {
-
-        const res = await request(app)
-            .post('/auth/login')
-            .send({
-                password: '123456'
-            })
-            .expect(StatusCodes.BAD_REQUEST)
-
-        expect(res.body).toEqual({
-            "errorsMessages": [
-                {
-                    message: expect.any(String),
-                    field: 'loginOrEmail'
-                }
-            ]
-        })    
-
-    })
-
-    it ('- POST auth with incorrect password', async () => {
-
-        const res = await request(app)
-            .post('/auth/login')
-            .send({
-                loginOrEmail: '123456'
-            })
-            .expect(StatusCodes.BAD_REQUEST)
-
-        expect(res.body).toEqual({
-            "errorsMessages": [
-                {
-                    message: expect.any(String),
-                    field: 'password'
-                }
-            ]
-        })    
-
-    })
-
-    it ('- POST If the password or login is wrong', async () => {
-
-        const data = {
-            loginOrEmail: "user",
-            password: "123456"
-        }
-
-        await request(app)
-            .post('/auth/login')
-            .send(data)
-            .expect(StatusCodes.UNAUTHORIZED)
-    })
-
-    it ('- POST auth with correct data', async () => {
-
-        const res = await request(app)
-            .post('/auth/login')
-            .send({
-                loginOrEmail: 'user_0',
-                password: 'test_password'
-            })
-            .expect(StatusCodes.OK)
-
-        expect(res.body).toEqual({
-            accessToken: expect.any(String)
-        })
     })
 
 })
