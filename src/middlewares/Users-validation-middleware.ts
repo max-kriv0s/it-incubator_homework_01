@@ -6,7 +6,7 @@ export const UserValidate = [
         .trim()
         .exists({ checkFalsy: true })
         .isString()
-        .isLength({ min: 3, max: 15 })
+        .isLength({ min: 3, max: 10 })
         .withMessage('must be between 3 and 15 characters')
         .matches('^[a-zA-Z0-9_-]*$'),
     body('password')
