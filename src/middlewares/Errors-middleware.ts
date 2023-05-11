@@ -9,8 +9,14 @@ export function ErrorsValidate(req: Request, res: Response<APIErrorResult>, next
     if (!result.isEmpty()) {
 
       const errors = result.array({ onlyFirstError: true })
-      const messages: FieldError[] = errors.map(err => ({message: err.msg, field: err.param}))
+    //   const messages: FieldError[] = errors.map(err => ({message: err.msg, field: err.param}))
+    
+    //   return res.status(StatusCodes.BAD_REQUEST).json({ "errorsMessages": messages });
       
+      const messages: FieldError[] = [{
+        message: errors[0].msg, field: errors[0].param
+      }]
+
       return res.status(StatusCodes.BAD_REQUEST).json({ "errorsMessages": messages });
 
     } else {
