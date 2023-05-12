@@ -1,0 +1,1 @@
+export type jestCookiesType = {[key: string]: string}
