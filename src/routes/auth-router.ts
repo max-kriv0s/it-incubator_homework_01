@@ -5,7 +5,6 @@ import { LoginValidation } from "../middlewares/Login-validation-middleware";
 import { StatusCodes } from "http-status-codes";
 import { usersService } from "../domain/users-service";
 import { ErrorsValidate } from "../middlewares/Errors-middleware";
-import { jwtService } from "../application/jwt-service";
 import { MeViewModel } from "../models/auth/MeViewModel";
 import { BearerAuthMiddleware } from "../middlewares/BearerAuth-middleware";
 import { UserCreateModel } from "../models/users/UserCreateModel";
@@ -13,6 +12,8 @@ import { UserValidate } from "../middlewares/Users-validation-middleware";
 import { RegistrationConfirmationCodeModel } from "../models/auth/RegistrationConfirmationCodeModel";
 import { AuthRegistrationConfirmationCodeValidate, AuthRegistrationEmailResendingValodate } from "../middlewares/Auth-validation-middleware";
 import { RegistrationEmailResendingModel } from "../models/auth/RegistrationEmailResendingModel";
+import { jwtService } from "../application/jwt-service";
+import { RefreshTokenMiddleware } from "../middlewares/RefreshToken-middleware";
 
 
 export const routerAuth = Router({})
@@ -22,10 +23,10 @@ routerAuth
         LoginValidation,
         ErrorsValidate,
         async (req: RequestsWithBody<LoginInputModel>, res: Response) => {
-            const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
-            if (user) {
-                const token = await jwtService.createJWT(user)
-                res.send({ accessToken: token })
+            const tokens = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+            if (tokens) {
+                res.cookie('refreshToken', tokens.refreshToken, {httpOnly: true,secure: true})
+                res.send({ accessToken: tokens.accessToken })                
             } else {
                 res.sendStatus(StatusCodes.UNAUTHORIZED)
             }
@@ -89,5 +90,38 @@ routerAuth
             } else {
                 res.status(StatusCodes.BAD_REQUEST).send(error)
             }
+        }
+    )
+
+    .post('/refresh-token',
+        RefreshTokenMiddleware,
+        async (req: Request, res: Response) => {
+
+            const userId = req.userId
+            if (!userId) {
+                return res.sendStatus(StatusCodes.UNAUTHORIZED)    
+            }
+
+            const tokens = await usersService.updateUserRefreshToken(userId!)
+            if (!tokens) return res.sendStatus(StatusCodes.UNAUTHORIZED)
+
+            res.cookie('refreshToken', tokens.refreshToken, {httpOnly: true,secure: true})
+            res.send({ accessToken: tokens.accessToken })
+        }
+    )
+
+    .post('/logout',
+        RefreshTokenMiddleware,
+        async (req: Request, res: Response) => {
+
+            const userId = req.userId
+            if (!userId) {
+                return res.sendStatus(StatusCodes.UNAUTHORIZED)
+            }
+
+            const isDeleted = usersService.deletedUserRefreshToken(userId!)
+            if (!isDeleted) return res.sendStatus(StatusCodes.UNAUTHORIZED)
+
+            res.sendStatus(StatusCodes.NO_CONTENT)
         }
     )
