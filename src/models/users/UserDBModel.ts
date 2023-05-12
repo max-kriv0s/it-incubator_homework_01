@@ -16,5 +16,6 @@ export type UserEmailConfirmationType = {
 export type UserDBModel = {
     _id: ObjectId
     accountData: accountData
-    emailConfirmation: UserEmailConfirmationType
+    emailConfirmation: UserEmailConfirmationType,
+    refreshToken: string
 }
