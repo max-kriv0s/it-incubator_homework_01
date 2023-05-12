@@ -8,6 +8,9 @@ export const settings = {
     JWT_SECRET_ACCESS_TOKEN: process.env.JWT_SECRET_ACCESS_TOKEN || "AM5G47fC3AZ2QxBUZoxD",
     JWT_SECRET_REFRESH_TOKEN: process.env.JWT_SECRET_REFRESH_TOKEN || "VNKyGTgpeVetIiUFsymC",
 
+    JWT_ACCESS_TOKEN_EXPIRES_IN: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '10s',
+    JWT_REFRESH_TOKEN_EXPIRES_IN: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '20s',
+
     APP_URL: process.env.APP_URL || "https://127.0.0.1:5000",
 
     TECH_EMAIL: process.env.TECH_EMAIL || "",
