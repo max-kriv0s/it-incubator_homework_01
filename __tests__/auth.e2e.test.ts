@@ -38,7 +38,7 @@ describe('/auth', () => {
                     password: randomString(10),
                     email: 'test@test.test'
                 }).expect(StatusCodes.BAD_REQUEST)
-
+                
             expect(res.body).toEqual({
                 "errorsMessages": [
                     {
@@ -166,7 +166,7 @@ describe('/auth', () => {
     )
 
     it(' -POST -> "auth/registration": with login exists',
-        async () => {email
+        async () => {
 
             const res = await request(app)
                 .post('/auth/registration')
@@ -375,7 +375,7 @@ describe('/auth', () => {
             emailAdapter.sendEmail = jest.fn()
             const sendEmail = jest.spyOn(emailAdapter, 'sendEmail',);
 
-            let res = await requemailest(app)
+            let res = await request(app)
                 .post('/auth/registration')
                 .send(userRegistration)
                 .expect(StatusCodes.NO_CONTENT)
@@ -434,4 +434,4 @@ describe('/auth', () => {
         }
     )
 
-})ghbdtn
+})
