@@ -2,9 +2,10 @@ import request from 'supertest'
 import { app } from '../src/app'
 import { StatusCodes } from 'http-status-codes'
 import { client } from '../src/repositories/db'
-import { randomString } from '../src/utils/utils'
+import { parseCookie, randomString } from '../src/utils/utils'
 import { emailAdapter } from '../src/adapter/email-adapter'
 import exp from 'constants'
+import cookieParser from 'cookie-parser'
 
 
 // import { emailAdapter } from "../src/adapter/email-adapter"
@@ -211,7 +212,7 @@ describe('/auth', () => {
         }
     )
 
-    it('POST -> "auth/registration-confirmation" with incorrect code',
+    it('- POST -> "auth/registration-confirmation" with incorrect code',
         async () => {
 
             const res = await request(app)
@@ -232,7 +233,7 @@ describe('/auth', () => {
         }
     )
 
-    it('POST -> "auth/registration-confirmation" with correct code',
+    it('- POST -> "auth/registration-confirmation" with correct code',
         async () => {
 
             const res = await request(app)
@@ -304,6 +305,7 @@ describe('/auth', () => {
     )
 
     let accessToken = ''
+    let refreshToken = ''
 
     it('- POST -> "auth/login": with correct data',
         async () => {
@@ -323,6 +325,15 @@ describe('/auth', () => {
             })
 
             accessToken = res.body.accessToken
+
+
+            const cookies = parseCookie(res.get('Set-Cookie'))
+   
+            if (cookies.refreshToken) {
+                refreshToken = cookies.refreshToken
+            }
+
+            expect(refreshToken).not.toBe('')
         }
     )
 
@@ -403,7 +414,7 @@ describe('/auth', () => {
         }
     )
     
-    it('POST -> "auth/registration-confirmation" with correct resending code',
+    it('- POST -> "auth/registration-confirmation" with correct resending code',
         async () => {
 
             const res = await request(app)
