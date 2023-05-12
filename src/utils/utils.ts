@@ -8,6 +8,7 @@ import { UserDBModel } from "../models/users/UserDBModel";
 import { UserViewModel } from "../models/users/UserViewModel";
 import { APIErrorResult } from "../types/APIErrorModels";
 import { DataBaseModel } from "../types/DataBaseMode";
+import { jestCookiesType } from "../types/JestCookiesType";
 
 export function randomString(n: number) {
     let rnd = '';
@@ -84,3 +85,13 @@ export function GetDescriptionOfError(message: string, field: string): APIErrorR
         ]
     }
 }
+
+export function parseCookie(jestCookies: String[]) {
+    const cookies = jestCookies.reduce((acc: jestCookiesType, curr) => {
+        const res = curr.split(';', 1)[0].split('=', 2)
+        acc[res[0].trim()] = res[1].trim()
+        return acc
+    }, {})
+    return cookies
+}
+
