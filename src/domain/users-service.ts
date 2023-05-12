@@ -10,6 +10,8 @@ import { UserServiceModel } from "../models/users/UserServiceModel";
 import { emailManager } from "../managers/email-managers";
 import { APIErrorResult } from "../types/APIErrorModels";
 import { GetDescriptionOfError } from "../utils/utils";
+import { UpdateTokenModel } from "../models/auth/UpdateTokenModel";
+import { jwtService } from "../application/jwt-service";
 
 
 const CODE_LIFE_TIME = {
@@ -124,7 +126,7 @@ export const usersService = {
 
     },
 
-    async checkCredentials(loginOrEmail: string, password: string): Promise<UserDBModel | null> {
+    async checkCredentials(loginOrEmail: string, password: string): Promise<UpdateTokenModel | null> {
 
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
         if (!user) return null
@@ -134,7 +136,7 @@ export const usersService = {
         const validPassword = await bcrypt.compare(password, user.accountData.password)
         if (!validPassword) return null
 
-        return user
+        return await this.updateUserToken(user)
     },
 
     async findUserById(userId: string): Promise<UserDBModel | null> {
@@ -175,5 +177,33 @@ export const usersService = {
 
         return null
         
+    },
+
+    async updateUserToken(user: UserDBModel): Promise<UpdateTokenModel | null> {
+        
+        const refreshToken = await jwtService.createJWTRefreshToken(user)
+        const accessToken = await jwtService.createJWTAccessToken(user)
+
+        const isUpdated = usersRepository.updateUserToken(user, refreshToken)
+        if (!isUpdated) return null
+
+        return {
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        }
+    },
+
+    async updateUserRefreshToken(userID: string): Promise<UpdateTokenModel | null> {
+        const user = await usersRepository.findUserById(userID)
+        if (!user) return null
+
+        return await this.updateUserToken(user)
+    },
+
+    async deletedUserRefreshToken(userID: string): Promise<boolean> {
+        const user = await usersRepository.findUserById(userID)
+        if (!user) return false
+        
+        return await usersRepository.updateUserToken(user, '')
     }
 }
