@@ -50,6 +50,7 @@ export const usersRepository = {
         const newUser: UserDBModel = {
             ...user,
             _id: new ObjectId(),
+            refreshToken: ''
         }
 
         const result = await usersCollection.insertOne(newUser)
@@ -103,5 +104,14 @@ export const usersRepository = {
     async updateDataEmailConfirmation(user: UserDBModel, emailConfirmation: UserEmailConfirmationType): Promise<boolean> {
         const isUpdated = await usersCollection.updateOne({_id: user._id}, {$set: {emailConfirmation: emailConfirmation}})
         return isUpdated.matchedCount === 1
-    }
+    },
+
+    async updateUserToken(user: UserDBModel, refreshToken: string): Promise<boolean> {
+        const result = await usersCollection.updateOne(
+                    {_id: user._id}, 
+                    {$set: {refreshToken: refreshToken}}
+                )
+
+        return result.matchedCount === 1
+    },
 }
