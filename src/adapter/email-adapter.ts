@@ -27,8 +27,18 @@ export const emailAdapter = {
             html: textMessage
         }
 
-        let info = await transport.sendMail(message);
+        // let info = await transport.sendMail(message);
         
+        const info = await new Promise((resolve, reject) => {
+            transport.sendMail(message, (err, info) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(info)
+                }
+            })
+        })
+
         return info
     }
 }
