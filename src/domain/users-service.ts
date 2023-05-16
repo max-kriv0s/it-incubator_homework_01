@@ -192,15 +192,15 @@ export const usersService = {
         if (!isUpdated) return null
         
         
-        const decodeRefreshToken = jwtService.decodeToken()
-        const securityDevice: SecurityDevicesDBModel = ({
-            _id: deviceId,
-            ip: '1',
-            title: '',
-            lastActiveDate = refreshToken,
-        })
+        // const decodeRefreshToken = jwtService.decodeToken()
+        // const securityDevice: SecurityDevicesDBModel = ({
+        //     _id: deviceId,
+        //     ip: '1',
+        //     title: '',
+        //     lastActiveDate = refreshToken,
+        // })
 
-        const isUpdateSecurityDevice = 
+        // const isUpdateSecurityDevice = 
 
         return {
             accessToken: accessToken,
