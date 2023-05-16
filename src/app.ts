@@ -10,7 +10,7 @@ import { routerPosts } from "./routes/posts-router";
 import { routerUsers } from "./routes/users-router";
 import { routerAuth } from "./routes/auth-router";
 import { commentsRouter } from "./routes/comments-router";
-import { SecurityDevicesRouter } from "./routes/securityDevices-router";
+import { SecurityDevicesRouter } from "./routes/security-devices-router";
 
 
 export const app = express()

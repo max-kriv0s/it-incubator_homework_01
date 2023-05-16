@@ -4,9 +4,8 @@ import { StatusCodes } from 'http-status-codes'
 import { client } from '../src/repositories/db'
 import { parseCookie, randomString } from '../src/utils/utils'
 import { emailAdapter } from '../src/adapter/email-adapter'
-import exp from 'constants'
-import cookieParser from 'cookie-parser'
 
+import cookie from 'cookie'
 
 // import { emailAdapter } from "../src/adapter/email-adapter"
 // import SMTPTransport from 'nodemailer/lib/smtp-transport'
@@ -325,7 +324,6 @@ describe('/auth', () => {
             })
 
             accessToken = res.body.accessToken
-
 
             const cookies = parseCookie(res.get('Set-Cookie'))
    

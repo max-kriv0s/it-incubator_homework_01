@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { UserDBModel } from "../models/users/UserDBModel";
 import { settings } from '../settings';
+import { ObjectId } from 'mongodb';
 
 const JWT_SECRET_ACCESS_TOKEN = settings.JWT_SECRET_ACCESS_TOKEN
 const JWT_SECRET_REFRESH_TOKEN = settings.JWT_SECRET_REFRESH_TOKEN
@@ -15,8 +16,8 @@ export const jwtService = {
         return token 
     },
 
-    async createJWTRefreshToken(user:UserDBModel): Promise<string> {
-        const refreshToken = jwt.sign({ UserId: user._id }, JWT_SECRET_REFRESH_TOKEN, { expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN })
+    async createJWTRefreshToken(user:UserDBModel, deviceId: ObjectId): Promise<string> {
+        const refreshToken = jwt.sign({ UserId: user._id, deviceId: deviceId}, JWT_SECRET_REFRESH_TOKEN, { expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN })
         return refreshToken 
     },
 
@@ -37,5 +38,10 @@ export const jwtService = {
         } catch (error) {
             return null
         }
+    },
+
+    async decodeToken(token: string) {
+        const result = jwt.decode(token, { complete: true })
+        return result
     }
 }

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 
-export type DeviceDBModel = {
+export type SecurityDevicesDBModel = {
     _id: ObjectId
     ip: string
     title: string

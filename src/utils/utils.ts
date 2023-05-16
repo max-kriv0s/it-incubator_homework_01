@@ -2,12 +2,13 @@ import { BlogDbModel } from "../models/blogs/BlogDbModel";
 import { BlogViewModel } from "../models/blogs/BlogViewModel";
 import { CommentDBModel } from "../models/comments/CommentDBModel";
 import { CommentViewModel } from "../models/comments/CommentViewModel";
+import { SecurityDevicesDBModel } from "../models/devices/SecurityDevicesDBModel";
+import { SecurityDevicesViewModel } from "../models/devices/SecurityDevicesViewModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostViewModel } from "../models/posts/PostViewModel";
 import { UserDBModel } from "../models/users/UserDBModel";
 import { UserViewModel } from "../models/users/UserViewModel";
 import { APIErrorResult } from "../types/APIErrorModels";
-import { DataBaseModel } from "../types/DataBaseMode";
 import { jestCookiesType } from "../types/JestCookiesType";
 
 export function randomString(n: number) {
@@ -60,6 +61,15 @@ export function userDBToUserView(user: UserDBModel): UserViewModel {
         login: user.accountData.login,
         email: user.accountData.email,
         createdAt: user.accountData.createdAt
+    }
+}
+
+export function securityDevicesDBTosecurityDevicesView(device: SecurityDevicesDBModel): SecurityDevicesViewModel {
+    return {
+        ip: device.ip,
+        title: device.title,
+        lastActiveDate: device.lastActiveDate,
+        deviceId: device._id.toString()
     }
 }
 

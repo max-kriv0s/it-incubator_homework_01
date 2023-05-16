@@ -12,6 +12,8 @@ import { APIErrorResult } from "../types/APIErrorModels";
 import { GetDescriptionOfError } from "../utils/utils";
 import { UpdateTokenModel } from "../models/auth/UpdateTokenModel";
 import { jwtService } from "../application/jwt-service";
+import { securityDevicesService } from "./security-devices-service";
+import { SecurityDevicesDBModel } from "../models/devices/SecurityDevicesDBModel";
 
 
 const CODE_LIFE_TIME = {
@@ -136,7 +138,7 @@ export const usersService = {
         const validPassword = await bcrypt.compare(password, user.accountData.password)
         if (!validPassword) return null
 
-        return await this.updateUserToken(user)
+        return await this.updateUserTokens(user)
     },
 
     async findUserById(userId: string): Promise<UserDBModel | null> {
@@ -179,13 +181,26 @@ export const usersService = {
         
     },
 
-    async updateUserToken(user: UserDBModel): Promise<UpdateTokenModel | null> {
+    async updateUserTokens(user: UserDBModel): Promise<UpdateTokenModel | null> {
         
-        const refreshToken = await jwtService.createJWTRefreshToken(user)
+        const deviceId = await securityDevicesService.getDeviceID()
+
+        const refreshToken = await jwtService.createJWTRefreshToken(user, deviceId)
         const accessToken = await jwtService.createJWTAccessToken(user)
 
         const isUpdated = usersRepository.updateUserToken(user, refreshToken)
         if (!isUpdated) return null
+        
+        
+        const decodeRefreshToken = jwtService.decodeToken()
+        const securityDevice: SecurityDevicesDBModel = ({
+            _id: deviceId,
+            ip: '1',
+            title: '',
+            lastActiveDate = refreshToken,
+        })
+
+        const isUpdateSecurityDevice = 
 
         return {
             accessToken: accessToken,

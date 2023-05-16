@@ -4,7 +4,7 @@ import { blogsRepository } from "../repositories/blogs-repository";
 import { postsRepository } from "../repositories/posts-repository";
 import { usersRepository } from "../repositories/users-repository";
 import { commentsRepository } from "../repositories/comments-repository";
-import { devicesRepository } from "../repositories/devices-repository";
+import { securityDevicesRepository } from "../repositories/security-devices-repository";
 
 
 export const routerTesting = Router()
@@ -15,7 +15,7 @@ routerTesting.delete('/all-data', async (req: Request, res: Response) => {
     await postsRepository.deletePosts()
     await usersRepository.deleteUsers()
     await commentsRepository.deleteComments()
-    await devicesRepository.deleteDevices()
+    await securityDevicesRepository.deleteDevicesAllUsers()
 
     res.send(204)
 })

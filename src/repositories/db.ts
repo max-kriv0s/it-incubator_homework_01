@@ -5,7 +5,7 @@ import { PostDbModel } from "../models/posts/PostDbModel"
 import { UserDBModel } from "../models/users/UserDBModel"
 import { settings } from "../settings"
 import { CommentDBModel } from "../models/comments/CommentDBModel"
-import { DeviceDBModel } from "../models/devices/DeviceDBModel"
+import { SecurityDevicesDBModel } from "../models/devices/SecurityDevicesDBModel"
 
 const MONGO_URI = settings.MONGO_URI
 
@@ -17,7 +17,7 @@ export const blogsCollection = db.collection<BlogDbModel>('blogs')
 export const postsCollection = db.collection<PostDbModel>('posts')
 export const usersCollection = db.collection<UserDBModel>('users')
 export const commentsCollection = db.collection<CommentDBModel>('comments')
-export const devicesCollection = db.collection<DeviceDBModel>('devices')
+export const securityDevicesCollection = db.collection<SecurityDevicesDBModel>('securityDevices')
 
 export const runDB = async () => {
     try {
