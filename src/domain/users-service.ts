@@ -171,10 +171,11 @@ export const usersService = {
         if (!isUpdated) return GetDescriptionOfError("User update error", "email")
 
         try {
-            await emailManager.sendPasswordRecoveryMessage(user.accountData.email, emailConfirmation.confirmationCode)
+            // await 
+            emailManager.sendPasswordRecoveryMessage(user.accountData.email, emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
-            return GetDescriptionOfError("Mail sending error", "email")
+            // return GetDescriptionOfError("Mail sending error", "email")
         }
 
         return null
