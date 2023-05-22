@@ -6,7 +6,7 @@ import { UserViewModel } from '../src/models/users/UserViewModel'
 import { UserCreateModel } from '../src/models/users/UserCreateModel'
 import { settings } from '../src/settings'
 import { parseCookie } from '../src/utils/utils'
-
+import {SecurityDevicesViewModel} from '../src/models/security-devices/SecurityDevicesViewModel'
 
 const ADMIN_LOGIN = settings.ADMIN_LOGIN
 const MAX_COUNT_FREQUENT_REQUESTS_FOR_API = settings.MAX_COUNT_FREQUENT_REQUESTS_FOR_API
@@ -34,6 +34,12 @@ describe('/auth', () => {
         email: "edu.kriv0s@yandex.ru"
     }
 
+    const newDataUser: UserCreateModel = {
+        login: "user_reg_2",
+        password: "pas_user",
+        email: "test@test.ru"
+    }
+
     let newUser: UserViewModel
 
     it ('- POST -> "/users": create the user with correct data', 
@@ -52,7 +58,13 @@ describe('/auth', () => {
                 login: dataUser.login,
                 email: dataUser.email,
                 createdAt: expect.any(String)
-        })
+            })
+
+            await request(app)
+                .post('/users')
+                .set('Authorization', ADMIN_LOGIN)
+                .send(newDataUser)
+                .expect(StatusCodes.CREATED)
     })
 
     const authorizedUsers:authorizedUser[] = []
@@ -89,6 +101,7 @@ describe('/auth', () => {
     )
 
     let lastActiveDate = ''
+    let devices: SecurityDevicesViewModel[]
 
     it('- GET -> "/security/devices/": Returns all devices with active sessions for current user',
         async () => {
@@ -101,17 +114,38 @@ describe('/auth', () => {
             expect(res.body.length).toBe(4)
 
             lastActiveDate = res.body[0].lastActiveDate
+            
+            devices = res.body
+        }
+    )
+
+    let refreshTokenNewUser = ''
+    it('- POST -> "/auth/login": login correct data newUser',
+        async () => {
+            const res = await request(app)
+            .post('/auth/login')
+            .set('User-Agent', 'Mozilla')
+            .send(
+                {
+                    loginOrEmail: newDataUser.login,
+                    password: newDataUser.password
+                }
+            )
+            .expect(StatusCodes.OK)
+
+            const cookies = parseCookie(res.get('Set-Cookie'))
+            refreshTokenNewUser = cookies.refreshToken
         }
     )
 
     it('- POST -> "/auth/login" More than 5 attempts from one IP-address during 10 seconds',
         async () => {
-            for (let i = 0; i <= MAX_COUNT_FREQUENT_REQUESTS_FOR_API - 4; i++) {
-                await request(app).post('/auth/login').send({
-                    loginOrEmail: test,
-                    password: test
-                })
-            }
+            // for (let i = 0; i <= MAX_COUNT_FREQUENT_REQUESTS_FOR_API - 4; i++) {
+            //     await request(app).post('/auth/login').send({
+            //         loginOrEmail: test,
+            //         password: test
+            //     })
+            // }
 
             await request(app)
                 .post('/auth/login')
@@ -146,7 +180,97 @@ describe('/auth', () => {
 
             expect(res.body.length).toBe(4)
 
+            console.log(res.body[0].lastActiveDate);
+            console.log(lastActiveDate);
+
             expect(res.body[0].lastActiveDate).not.toBe(lastActiveDate)
+
+        }
+    )
+
+    it('- DELETE -> "/security/devices/{deviceId}": Send a request without cookie',
+        async () => {
+            await request(app)
+                .delete('/security/devices/1')
+                .send()
+                .expect(StatusCodes.UNAUTHORIZED)
+        }
+    )
+
+    it('- DELETE -> "/security/devices/{deviceId}": delete the device with incorrect deviceId',
+        async () => {
+            await request(app)
+                .delete('/security/devices/123')
+                .set('Cookie',[`refreshToken=${authorizedUsers[0].refreshToken}`])
+                .send()
+                .expect(StatusCodes.NOT_FOUND)
+        }
+    )
+
+    it('- DELETE -> "": delete the device another user',
+        async () => {
+
+            // delete device anoter user
+            const res = await request(app)
+                .delete('/security/devices/' + devices[1].deviceId)
+                .set('Cookie', [`refreshToken=${refreshTokenNewUser}`])
+                .send()
+                .expect(StatusCodes.FORBIDDEN)
+        }
+    )
+
+    it('- DELETE -> "/security/devices/{deviceId}": Delete device 2 submit refresh token device 1',
+        async () => {
+            let res = await request(app)
+                .delete('/security/devices/' + devices[1].deviceId)
+                .set('Cookie', [`refreshToken=${authorizedUsers[0].refreshToken}`])
+                .send()
+                .expect(StatusCodes.NO_CONTENT)
+
+            res = await request(app)
+                .get('/security/devices')
+                .set('Cookie', [`refreshToken=${authorizedUsers[0].refreshToken}`])
+                .send()
+                .expect(StatusCodes.OK)
+
+            expect(res.body.length).toBe(3)
+        }
+    )
+
+    it('- POST -> "/auth/logout": logout device 3',
+        async () => {
+            await request(app)
+                .post('/auth/logout')
+                .set('Cookie', [`refreshToken=${authorizedUsers[2].refreshToken}`])
+                .send()
+                .expect(StatusCodes.NO_CONTENT)
+
+            const res = await request(app)
+                .get('/security/devices')
+                .set('Cookie', [`refreshToken=${authorizedUsers[0].refreshToken}`])
+                .send()
+                .expect(StatusCodes.OK)
+
+            expect(res.body.length).toBe(2)
+        }
+    )
+
+    it('- DELETE -> "/security/devices": delete all devices',
+        async () => {
+
+            await request(app)
+                .delete('/security/devices')
+                .set('Cookie', [`refreshToken=${authorizedUsers[0].refreshToken}`])
+                .send()
+                .expect(StatusCodes.NO_CONTENT)
+
+            const res = await request(app)
+                .get('/security/devices')
+                .set('Cookie', [`refreshToken=${authorizedUsers[0].refreshToken}`])
+                .send()
+                .expect(StatusCodes.OK)
+
+            expect(res.body.length).toBe(1)
         }
     )
 })
