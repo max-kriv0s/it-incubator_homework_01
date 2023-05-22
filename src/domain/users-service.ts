@@ -9,11 +9,13 @@ import { UserDBModel } from "../models/users/UserDBModel";
 import { UserServiceModel } from "../models/users/UserServiceModel";
 import { emailManager } from "../managers/email-managers";
 import { APIErrorResult } from "../types/APIErrorModels";
-import { GetDescriptionOfError } from "../utils/utils";
+import { GetDescriptionOfError, userAgentFromRequest } from "../utils/utils";
 import { UpdateTokenModel } from "../models/auth/UpdateTokenModel";
 import { jwtService } from "../application/jwt-service";
 import { securityDevicesService } from "./security-devices-service";
-import { SecurityDevicesDBModel } from "../models/devices/SecurityDevicesDBModel";
+import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel";
+import { ObjectId } from "mongodb";
+import { getIdDB } from "../repositories/db";
 
 
 const CODE_LIFE_TIME = {
@@ -117,9 +119,6 @@ export const usersService = {
             await emailManager.sendEmailConfirmationMessage(createdUser.accountData.email, createdUser.emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
-            
-            // нужно ли удалять пользователя в случае ошибки отправки email?
-            // const isDeleded = await this.deleteUserById(createdUser._id.toString())
 
             return GetDescriptionOfError("Mail sending error", "email")
         }
@@ -128,7 +127,8 @@ export const usersService = {
 
     },
 
-    async checkCredentials(loginOrEmail: string, password: string): Promise<UpdateTokenModel | null> {
+    async checkCredentials(loginOrEmail: string, password: string, ip: string, 
+            reqUserAgent: string | undefined): Promise<UpdateTokenModel | null> {
 
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
         if (!user) return null
@@ -138,7 +138,7 @@ export const usersService = {
         const validPassword = await bcrypt.compare(password, user.accountData.password)
         if (!validPassword) return null
 
-        return await this.updateUserTokens(user)
+        return await securityDevicesService.createUserTokens(user, ip, reqUserAgent)
     },
 
     async findUserById(userId: string): Promise<UserDBModel | null> {
@@ -181,44 +181,12 @@ export const usersService = {
         
     },
 
-    async updateUserTokens(user: UserDBModel): Promise<UpdateTokenModel | null> {
-        
-        const deviceId = await securityDevicesService.getDeviceID()
-
-        const refreshToken = await jwtService.createJWTRefreshToken(user, deviceId)
-        const accessToken = await jwtService.createJWTAccessToken(user)
-
-        const isUpdated = usersRepository.updateUserToken(user, refreshToken)
-        if (!isUpdated) return null
-        
-        
-        // const decodeRefreshToken = jwtService.decodeToken()
-        // const securityDevice: SecurityDevicesDBModel = ({
-        //     _id: deviceId,
-        //     ip: '1',
-        //     title: '',
-        //     lastActiveDate = refreshToken,
-        // })
-
-        // const isUpdateSecurityDevice = 
-
-        return {
-            accessToken: accessToken,
-            refreshToken: refreshToken
-        }
-    },
-
-    async updateUserRefreshToken(userID: string): Promise<UpdateTokenModel | null> {
+    async updateUserRefreshToken(userID: string, deviceId: string, ip: string, 
+        reqUserAgent: string | undefined): Promise<UpdateTokenModel | null> {
+    
         const user = await usersRepository.findUserById(userID)
         if (!user) return null
 
-        return await this.updateUserToken(user)
-    },
-
-    async deletedUserRefreshToken(userID: string): Promise<boolean> {
-        const user = await usersRepository.findUserById(userID)
-        if (!user) return false
-        
-        return await usersRepository.updateUserToken(user, '')
+        return await securityDevicesService.updateUserTokens(user, deviceId, ip, reqUserAgent)
     }
 }
