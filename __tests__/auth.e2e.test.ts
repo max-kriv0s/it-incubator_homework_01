@@ -5,7 +5,6 @@ import { client } from '../src/repositories/db'
 import { parseCookie, randomString } from '../src/utils/utils'
 import { emailAdapter } from '../src/adapter/email-adapter'
 
-import cookie from 'cookie'
 
 // import { emailAdapter } from "../src/adapter/email-adapter"
 // import SMTPTransport from 'nodemailer/lib/smtp-transport'
@@ -382,7 +381,7 @@ describe('/auth', () => {
                 .expect(StatusCodes.NO_CONTENT)
 
             emailAdapter.sendEmail = jest.fn()
-            const sendEmail = jest.spyOn(emailAdapter, 'sendEmail',);
+            const sendEmail = jest.spyOn(emailAdapter, 'sendEmail');
 
             let res = await request(app)
                 .post('/auth/registration')
