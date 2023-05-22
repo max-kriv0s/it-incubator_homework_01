@@ -2,8 +2,8 @@ import { BlogDbModel } from "../models/blogs/BlogDbModel";
 import { BlogViewModel } from "../models/blogs/BlogViewModel";
 import { CommentDBModel } from "../models/comments/CommentDBModel";
 import { CommentViewModel } from "../models/comments/CommentViewModel";
-import { SecurityDevicesDBModel } from "../models/devices/SecurityDevicesDBModel";
-import { SecurityDevicesViewModel } from "../models/devices/SecurityDevicesViewModel";
+import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel";
+import { SecurityDevicesViewModel } from "../models/security-devices/SecurityDevicesViewModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostViewModel } from "../models/posts/PostViewModel";
 import { UserDBModel } from "../models/users/UserDBModel";
@@ -105,3 +105,6 @@ export function parseCookie(jestCookies: String[]) {
     return cookies
 }
 
+export function userAgentFromRequest(reqUserAgent: string | undefined): string {
+    return reqUserAgent ? reqUserAgent : 'Chrome'
+}
