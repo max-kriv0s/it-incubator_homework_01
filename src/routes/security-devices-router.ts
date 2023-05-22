@@ -28,7 +28,7 @@ SecurityDevicesRouter
         RefreshTokenMiddleware,
         async (req: Request, res: Response) => {
 
-            const isDeleted = await securityDevicesService.deleteAllDevicesSessionsByUserID(req.userId!)
+            const isDeleted = await securityDevicesService.deleteAllDevicesSessionsByUserID(req.userId!, req.deviceId!)
             if (!isDeleted) return res.sendStatus(StatusCodes.UNAUTHORIZED)
 
             res.sendStatus(StatusCodes.NO_CONTENT)
@@ -39,7 +39,7 @@ SecurityDevicesRouter
         RefreshTokenMiddleware,
         async (req: RequestsURIParams<URIParamsServiceDeviceIDModel>, res: Response) => {
 
-            const isDeleted = securityDevicesService.deleteUserSessionByDeviceID(req.params.deviceId, req.userId!)
+            const isDeleted = await securityDevicesService.deleteUserSessionByDeviceID(req.params.deviceId, req.userId!)
             if (isDeleted === null) return res.sendStatus(StatusCodes.FORBIDDEN)
             if (!isDeleted) return res.sendStatus(StatusCodes.NOT_FOUND)
 
