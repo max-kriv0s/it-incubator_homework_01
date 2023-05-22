@@ -116,11 +116,12 @@ export const usersService = {
         const createdUser = await usersRepository.createUser(newUser)
             
         try {
-            await emailManager.sendEmailConfirmationMessage(createdUser.accountData.email, createdUser.emailConfirmation.confirmationCode)
+            // await 
+            emailManager.sendEmailConfirmationMessage(createdUser.accountData.email, createdUser.emailConfirmation.confirmationCode)
         } catch (error) {
             console.error(error)
 
-            return GetDescriptionOfError("Mail sending error", "email")
+            // return GetDescriptionOfError("Mail sending error", "email")
         }
 
         return null
