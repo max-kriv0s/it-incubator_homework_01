@@ -12,18 +12,24 @@ import { UserValidate } from "../middlewares/Users-validation-middleware";
 import { RegistrationConfirmationCodeModel } from "../models/auth/RegistrationConfirmationCodeModel";
 import { AuthRegistrationConfirmationCodeValidate, AuthRegistrationEmailResendingValodate } from "../middlewares/Auth-validation-middleware";
 import { RegistrationEmailResendingModel } from "../models/auth/RegistrationEmailResendingModel";
-import { jwtService } from "../application/jwt-service";
 import { RefreshTokenMiddleware } from "../middlewares/RefreshToken-middleware";
+import { securityDevicesService } from "../domain/security-devices-service";
+import { APICallsMiddleware } from "../middlewares/APICalls-middleware";
 
 
 export const routerAuth = Router({})
 
 routerAuth
-    .post('/login', 
+    .post('/login',
+        APICallsMiddleware,
         LoginValidation,
         ErrorsValidate,
         async (req: RequestsWithBody<LoginInputModel>, res: Response) => {
-            const tokens = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+            
+            const reqUserAgent = req.headers["user-agent"]
+            
+            const tokens = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password, 
+                    req.ip, reqUserAgent)
             if (tokens) {
                 res.cookie('refreshToken', tokens.refreshToken, {httpOnly: true,secure: true})
                 res.send({ accessToken: tokens.accessToken })                
@@ -36,9 +42,7 @@ routerAuth
         BearerAuthMiddleware,
         async (req: Request, res: Response<MeViewModel>) => {
             const userId = req.userId
-            if (!userId) {
-                res.sendStatus(StatusCodes.UNAUTHORIZED)    
-            }
+            if (!userId) res.sendStatus(StatusCodes.UNAUTHORIZED)
             
             const userDB = await usersService.findUserById(userId!)
             if (userDB) {     
@@ -53,6 +57,7 @@ routerAuth
     })
 
     .post('/registration',
+        APICallsMiddleware,
         UserValidate,
         ErrorsValidate,
         async (req: RequestsWithBody<UserCreateModel>, res: Response) => {
@@ -66,6 +71,7 @@ routerAuth
     })
 
     .post('/registration-confirmation',
+        APICallsMiddleware,
         AuthRegistrationConfirmationCodeValidate,
         ErrorsValidate,
         async (req: RequestsWithBody<RegistrationConfirmationCodeModel>, res: Response) => {
@@ -80,6 +86,7 @@ routerAuth
     )
 
     .post('/registration-email-resending',
+        APICallsMiddleware,
         AuthRegistrationEmailResendingValodate,
         ErrorsValidate,
         async (req: RequestsWithBody<RegistrationEmailResendingModel>, res: Response) => {
@@ -98,11 +105,12 @@ routerAuth
         async (req: Request, res: Response) => {
 
             const userId = req.userId
-            if (!userId) {
-                return res.sendStatus(StatusCodes.UNAUTHORIZED)    
-            }
+            const deviceId = req.deviceId
+            if (!userId || !deviceId) return res.sendStatus(StatusCodes.UNAUTHORIZED)
 
-            const tokens = await usersService.updateUserRefreshToken(userId!)
+            const reqUserAgent = req.headers["user-agent"]
+
+            const tokens = await usersService.updateUserRefreshToken(userId, deviceId, req.ip, reqUserAgent)
             if (!tokens) return res.sendStatus(StatusCodes.UNAUTHORIZED)
 
             res.cookie('refreshToken', tokens.refreshToken, {httpOnly: true,secure: true})
@@ -115,13 +123,13 @@ routerAuth
         async (req: Request, res: Response) => {
 
             const userId = req.userId
-            if (!userId) {
-                return res.sendStatus(StatusCodes.UNAUTHORIZED)
-            }
+            const deviceId = req.deviceId
+            if (!userId || !deviceId) return res.sendStatus(StatusCodes.UNAUTHORIZED)
 
-            const isDeleted = usersService.deletedUserRefreshToken(userId!)
+            const isDeleted = securityDevicesService.logoutUserSessionByDeviceID(deviceId, userId)
             if (!isDeleted) return res.sendStatus(StatusCodes.UNAUTHORIZED)
 
+            res.clearCookie('refreshToken')
             res.sendStatus(StatusCodes.NO_CONTENT)
         }
     )
