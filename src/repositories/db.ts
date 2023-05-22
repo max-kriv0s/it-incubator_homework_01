@@ -1,11 +1,12 @@
-import { MongoClient } from "mongodb"
+import { MongoClient, ObjectId } from "mongodb"
 import { VideoViewModel } from "../models/videos/VideoViewModel"
 import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { PostDbModel } from "../models/posts/PostDbModel"
 import { UserDBModel } from "../models/users/UserDBModel"
 import { settings } from "../settings"
 import { CommentDBModel } from "../models/comments/CommentDBModel"
-import { SecurityDevicesDBModel } from "../models/devices/SecurityDevicesDBModel"
+import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel"
+import { APICallsModel } from "../models/APICallsModel"
 
 const MONGO_URI = settings.MONGO_URI
 
@@ -18,6 +19,7 @@ export const postsCollection = db.collection<PostDbModel>('posts')
 export const usersCollection = db.collection<UserDBModel>('users')
 export const commentsCollection = db.collection<CommentDBModel>('comments')
 export const securityDevicesCollection = db.collection<SecurityDevicesDBModel>('securityDevices')
+export const apiCallsCollection = db.collection<APICallsModel>('apiCalls') 
 
 export const runDB = async () => {
     try {
@@ -28,4 +30,16 @@ export const runDB = async () => {
         console.log('Don\'t connected successfully to server')
         await client.close()
     }
+}
+
+export function validID(id: string): boolean {
+    return ObjectId.isValid(id)
+}
+
+export function getIdDB(id: string): ObjectId | null {
+    if (!id) return new ObjectId()
+
+    if (!validID(id)) return null
+
+    return new ObjectId(id)
 }
