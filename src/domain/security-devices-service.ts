@@ -14,8 +14,8 @@ export const securityDevicesService = {
         return await securityDevicesRepository.getAllDevicesSessionsByUserID(userId)
     },
 
-    async deleteAllDevicesSessionsByUserID(userId: string): Promise<boolean> {
-        return await securityDevicesRepository.deleteAllDevicesSessionsByUserID(userId)
+    async deleteAllDevicesSessionsByUserID(userId: string, deviceId: string): Promise<boolean> {
+        return await securityDevicesRepository.deleteAllDevicesSessionsByUserID(userId, deviceId)
     },
 
     async logoutUserSessionByDeviceID(deviceID: string, userId: string): Promise<boolean> {
@@ -24,7 +24,7 @@ export const securityDevicesService = {
     },
 
     async deleteUserSessionByDeviceID(deviceID: string, userId: string): Promise<boolean | null> {
-        const securitySession = await securityDevicesRepository.findUserSessionByDeviceID(userId, deviceID)
+        const securitySession = await securityDevicesRepository.findSessionByDeviceID(deviceID)
         if (!securitySession) return false
         
         if (securitySession.userId.toString() !== userId) return null
