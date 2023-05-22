@@ -51,7 +51,8 @@ describe('/users', () => {
             .post('/users')
             .send(data)
             .expect(StatusCodes.UNAUTHORIZED)
-    })
+    })JWT_ACCESS_TOKEN_EXPIRES_IN='5m'
+    JWT_REFRESH_TOKEN_EXPIRES_IN='10m'
 
 
     it ('- POST create the user with incorrect login', async () => {
