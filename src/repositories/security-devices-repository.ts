@@ -1,42 +1,68 @@
 import { ObjectId } from "mongodb"
-import { SecurityDevicesDBModel } from "../models/devices/SecurityDevicesDBModel"
-import { securityDevicesCollection } from "./db"
+import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel"
+import { getIdDB, securityDevicesCollection, validID } from "./db"
+import { DataTokenModel } from "../models/token/DataTokenModel"
 
 
 export const securityDevicesRepository = {
-    async deleteDevicesAllUsers() {
+    async deleteAllDevicesSessions() {
         await securityDevicesCollection.deleteMany({})
     },
 
-    async getAllUserDevices(userId: string): Promise<SecurityDevicesDBModel[] | null> {
+    async getAllDevicesSessionsByUserID(userId: string): Promise<SecurityDevicesDBModel[] | null> {
         if (!ObjectId.isValid(userId)) return null
 
         const devices = await securityDevicesCollection.find({userId: new ObjectId(userId)}).toArray()
         return devices
     },
 
-    async deleteAllUserDevices(userId: string): Promise<boolean> {
-        if (!ObjectId.isValid(userId)) return false
+    async deleteAllDevicesSessionsByUserID(userId: string): Promise<boolean> {
+        if (!validID(userId)) return false
         
         const result = await securityDevicesCollection.deleteMany({userId: new ObjectId(userId)})
-        return result.deletedCount > 0
+        return result.acknowledged
     },
 
-    async deleteUserDevice(deviceID: string): Promise<boolean> {
-        if (!ObjectId.isValid(deviceID)) return false
+    async deleteUserSessionByDeviceID(deviceID: string, userId: string): Promise<boolean> {
+        if (!validID(deviceID) || !validID(userId)) return false
 
-        const result = securityDevicesCollection.deleteOne({_id: new ObjectId(deviceID)})
-        return (await result).deletedCount === 1
+        const result = await securityDevicesCollection.deleteOne({
+            _id: new ObjectId(deviceID),
+            userId: new ObjectId(userId)
+        })
+        return result.deletedCount === 1
     },
 
-    async findDeviceByID(deviceID: string): Promise<SecurityDevicesDBModel | null> {
-        if (!ObjectId.isValid(deviceID)) return null
-
-        const device = securityDevicesCollection.findOne({_id: new ObjectId(deviceID)})
-        return device
+    async getDeviceID(deviceId: string): Promise<ObjectId | null> {
+        return getIdDB(deviceId)
     },
 
-    async getDeviceID(): Promise<ObjectId> {
-        return new ObjectId()
+    async createSecurityDeviceSession(securityDevice: SecurityDevicesDBModel): Promise<boolean> {
+            const result = await securityDevicesCollection.insertOne(securityDevice)
+            return result.acknowledged
+    },
+
+    async updateSecurityDeviceSession(securityDevice: SecurityDevicesDBModel): Promise<boolean> {
+        const {_id, ...rest} = {...securityDevice}
+
+        const result = await securityDevicesCollection.updateOne({_id}, {$set: {
+            ip: rest.ip,
+            title: rest.title,
+            lastActiveDate: rest.lastActiveDate,
+            expirationTime: rest.expirationTime,
+            userId: rest.userId
+        }})
+        return result.matchedCount === 1
+    },
+
+    async findUserSessionByDeviceID(userId: string, deviceId: string): Promise<SecurityDevicesDBModel | null> {
+        if (!validID(deviceId) || !validID(userId)) return null
+
+        const securitySession = await securityDevicesCollection.findOne({
+            _id: new ObjectId(deviceId), 
+            userId: new ObjectId(userId)
+        })
+        
+        return securitySession
     }
 }
