@@ -106,12 +106,4 @@ export const usersRepository = {
         return isUpdated.matchedCount === 1
     },
 
-    async updateUserToken(user: UserDBModel, refreshToken: string): Promise<boolean> {
-        const result = await usersCollection.updateOne(
-                    {_id: user._id}, 
-                    {$set: {refreshToken: refreshToken}}
-                )
-
-        return result.matchedCount === 1
-    },
 }
