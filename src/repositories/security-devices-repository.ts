@@ -16,10 +16,13 @@ export const securityDevicesRepository = {
         return devices
     },
 
-    async deleteAllDevicesSessionsByUserID(userId: string): Promise<boolean> {
-        if (!validID(userId)) return false
+    async deleteAllDevicesSessionsByUserID(userId: string, deviceId: string): Promise<boolean> {
+        if (!validID(userId) || !validID(deviceId)) return false
         
-        const result = await securityDevicesCollection.deleteMany({userId: new ObjectId(userId)})
+        const result = await securityDevicesCollection.deleteMany({
+            userId: new ObjectId(userId), 
+            _id: {$ne: new ObjectId(deviceId)}
+        })
         return result.acknowledged
     },
 
@@ -61,6 +64,16 @@ export const securityDevicesRepository = {
         const securitySession = await securityDevicesCollection.findOne({
             _id: new ObjectId(deviceId), 
             userId: new ObjectId(userId)
+        })
+        
+        return securitySession
+    },
+
+    async findSessionByDeviceID(deviceId: string): Promise<SecurityDevicesDBModel | null> {
+        if (!validID(deviceId)) return null
+
+        const securitySession = await securityDevicesCollection.findOne({
+            _id: new ObjectId(deviceId)
         })
         
         return securitySession
