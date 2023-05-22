@@ -1,3 +1,4 @@
+
 export type SecurityDevicesViewModel = {
     ip: string
     title: string
