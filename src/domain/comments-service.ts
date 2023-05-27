@@ -1,5 +1,5 @@
 import { CommentInputModel } from "../models/comments/CommentInputModel"
-import { CommentDBModel } from "../models/comments/CommentDBModel"
+import { CommentDBModel } from "../models/comments/CommentModel"
 import { commentsRepository } from "../repositories/comments-repository"
 import { QueryParamsModels } from "../types/QueryParamsModels"
 import { PaginatorCommentDBModel } from "../types/PaginatorType"

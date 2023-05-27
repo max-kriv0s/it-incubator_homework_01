@@ -1,40 +1,46 @@
 import { ObjectId } from "mongodb";
-import { CommentDBModel } from "../models/comments/CommentDBModel";
-import { commentsCollection, usersCollection } from "./db";
+import { CommentDBModel, CommentModel } from "../models/comments/CommentModel";
 import { CommentInputModel } from "../models/comments/CommentInputModel";
 import { PaginatorCommentDBModel } from "../types/PaginatorType";
 
 export const commentsRepository = {
 
     async findCommentByID(id: string): Promise<CommentDBModel | null> {
-        if (!ObjectId.isValid(id)) return null
-
-        const comment = commentsCollection.findOne({ _id: new ObjectId(id) })
-        return comment
+        try {
+            const comment = CommentModel.findById(id).exec()
+            return comment
+            
+        } catch (error) {
+            return null
+        }
     }, 
 
     async updatedComment(id: string, body: CommentInputModel): Promise<boolean> {
-        if (!ObjectId.isValid(id)) return false
-
-        const result = await commentsCollection.updateOne(
-            { _id: new ObjectId(id) }, 
-            {$set: 
+        try {
+            const result = await CommentModel.updateOne(
+                { _id: id}, 
                 {content: body.content}
-            }
-        )
-
-        return result.matchedCount === 1
+            )
+    
+            return result.matchedCount === 1
+            
+        } catch (error) {
+            return false
+        }
     },
 
     async deleteCommentByID(id: string): Promise<boolean> {
-        if (!ObjectId.isValid(id)) return false
-
-        const result = await commentsCollection.deleteOne({ _id: new ObjectId(id) })
-        return result.deletedCount === 1
+        try {
+            const result = await CommentModel.deleteOne({ _id: id })
+            return result.deletedCount === 1
+            
+        } catch (error) {
+            return false
+        }
     },
 
     async deleteComments() {
-        await usersCollection.deleteMany({})
+        await CommentModel.deleteMany({})
     },
     
     async findCommentsByPostId(
@@ -44,23 +50,29 @@ export const commentsRepository = {
         sortBy: string,
         sortDirection: string): Promise<PaginatorCommentDBModel | null> {
 
-            if (!ObjectId.isValid(postId)) return null
-
-            const totalCount: number = await commentsCollection.countDocuments({ postId: new ObjectId(postId) })
-
-            const skip = (pageNumber - 1) * pageSize
-            const comments = await commentsCollection.find({ postId: new ObjectId(postId) })
-                .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
-                .skip(skip)
-                .limit(pageSize).toArray()
+            try {
+                const totalCount: number = await CommentModel.countDocuments({ postId: postId })
     
-            return {
-                pagesCount: Math.ceil(totalCount / pageSize),
-                page: pageNumber,
-                pageSize: pageSize,
-                totalCount: totalCount,
-                items: comments
-            }           
+                const skip = (pageNumber - 1) * pageSize
+                const comments = await CommentModel.find({ postId: postId }, null, 
+                    {
+                        sort: { [sortBy]: sortDirection === 'asc' ? 1 : -1 },
+                        skip: skip,
+                        limit: pageSize
+                    }
+                ).exec()
+        
+                return {
+                    pagesCount: Math.ceil(totalCount / pageSize),
+                    page: pageNumber,
+                    pageSize: pageSize,
+                    totalCount: totalCount,
+                    items: comments
+                }           
+                
+            } catch (error) {
+                return null
+            }
     },
 
     async createCommentByPostId(postId: string, userId: string, userLogin: string, body: CommentInputModel): Promise<CommentDBModel> {
@@ -76,7 +88,7 @@ export const commentsRepository = {
             postId: new ObjectId(postId)
         } 
 
-        const result = await commentsCollection.insertOne(newCommetn)
+        const result = await CommentModel.create(newCommetn)
         return newCommetn
     }
 }
