@@ -5,17 +5,13 @@ import { UserCreateModel } from "../models/users/UserCreateModel";
 import { usersRepository } from "../repositories/users-repository";
 import { PaginatorUserDBModel } from "../types/PaginatorType";
 import { QueryParamsUsersModel } from "../types/QueryParamsModels";
-import { UserDBModel } from "../models/users/UserDBModel";
+import { UserDBModel } from "../models/users/UserModel";
 import { UserServiceModel } from "../models/users/UserServiceModel";
 import { emailManager } from "../managers/email-managers";
 import { APIErrorResult } from "../types/APIErrorModels";
-import { GetDescriptionOfError, userAgentFromRequest } from "../utils/utils";
+import { GetDescriptionOfError } from "../utils/utils";
 import { UpdateTokenModel } from "../models/auth/UpdateTokenModel";
-import { jwtService } from "../application/jwt-service";
 import { securityDevicesService } from "./security-devices-service";
-import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel";
-import { ObjectId } from "mongodb";
-import { getIdDB } from "../repositories/db";
 
 
 const CODE_LIFE_TIME = {
@@ -45,7 +41,7 @@ export const usersService = {
         return users
     },
 
-    async createUser(body: UserCreateModel): Promise<UserDBModel> {
+    async createUser(body: UserCreateModel): Promise<UserDBModel | null> {
 
         const passwordHash = await this._generatePasswordHash(body.password)
 
@@ -64,12 +60,12 @@ export const usersService = {
         }
 
         const createdUser = await usersRepository.createUser(newUser)
-        
+    
         return createdUser
     },
 
     async deleteUserById(id: string): Promise<boolean> {
-        return await usersRepository.deleteUserById(id)
+        return usersRepository.deleteUserById(id)
     },
 
     async _generateHash(password: string, salt: string) {
@@ -114,7 +110,8 @@ export const usersService = {
         }
         
         const createdUser = await usersRepository.createUser(newUser)
-            
+        if (!createdUser) return null    
+
         try {
             // await 
             emailManager.sendEmailConfirmationMessage(createdUser.accountData.email, createdUser.emailConfirmation.confirmationCode)
@@ -139,12 +136,11 @@ export const usersService = {
         const validPassword = await bcrypt.compare(password, user.accountData.password)
         if (!validPassword) return null
 
-        return await securityDevicesService.createUserTokens(user, ip, reqUserAgent)
+        return securityDevicesService.createUserTokens(user, ip, reqUserAgent)
     },
 
     async findUserById(userId: string): Promise<UserDBModel | null> {
-        const user = await usersRepository.findUserById(userId)
-        return user
+        return usersRepository.findUserById(userId)
     },
 
     async confirmRegistration(code: string): Promise<APIErrorResult | null> {
@@ -189,6 +185,6 @@ export const usersService = {
         const user = await usersRepository.findUserById(userID)
         if (!user) return null
 
-        return await securityDevicesService.updateUserTokens(user, deviceId, ip, reqUserAgent)
+        return securityDevicesService.updateUserTokens(user, deviceId, ip, reqUserAgent)
     }
 }

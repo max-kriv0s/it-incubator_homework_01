@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb"
-import { UserDBModel, UserEmailConfirmationType } from "../models/users/UserDBModel"
+import { UserDBModel, UserEmailConfirmationType, UserModel } from "../models/users/UserModel"
 import { PaginatorUserDBModel } from "../types/PaginatorType"
-import { usersCollection } from "./db"
 import { UserServiceModel } from "../models/users/UserServiceModel"
 
 
@@ -29,13 +28,14 @@ export const usersRepository = {
             filter = { "accountData.email": {$regex: searchEmailTerm, $options: 'i' } }
         }
 
-        const totalCount: number = await usersCollection.countDocuments(filter)
+        const totalCount: number = await UserModel.countDocuments(filter)
         const skip = (pageNumber - 1) * pageSize
 
-        const users: UserDBModel[] = await usersCollection.find(filter)
-            .sort({ ["accountData." + sortBy]: sortDirection === 'asc' ? 1 : -1 })
-            .skip(skip)
-            .limit(pageSize).toArray()
+        const users: UserDBModel[] = await UserModel.find(filter, null,{
+            sort: { ["accountData." + sortBy]: sortDirection === 'asc' ? 1 : -1 },
+            skip: skip,
+            limit: pageSize
+        }).exec()
 
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
@@ -46,64 +46,98 @@ export const usersRepository = {
         }
     },
 
-    async createUser(user: UserServiceModel): Promise<UserDBModel> {
-        const newUser: UserDBModel = {
-            ...user,
-            _id: new ObjectId(),
-            refreshToken: ''
+    async createUser(user: UserServiceModel): Promise<UserDBModel | null> {
+        try {
+            const newUser: UserDBModel = {
+                ...user,
+                _id: new ObjectId(),
+                refreshToken: ''
+            }
+    
+            const result = await UserModel.create(newUser)
+            return result
+            
+        } catch (error) {
+            return null
         }
-
-        const result = await usersCollection.insertOne(newUser)
-        return newUser
     },
 
     async deleteUserById(id: string): Promise<boolean> {
-
-        if (!ObjectId.isValid(id)) return false
-
-        const result = await usersCollection.deleteOne({ _id: new ObjectId(id) })
-        return result.deletedCount === 1
+        try {
+            const result = await UserModel.deleteOne({ _id: id })
+            return result.deletedCount === 1
+            
+        } catch (error) {
+            return false
+        }
     },
 
     async deleteUsers() {
-        await usersCollection.deleteMany({})
+        await UserModel.deleteMany({})
     },
 
     async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBModel | null> {
-
-        const user = await usersCollection.findOne({ $or: [{ "accountData.login": loginOrEmail }, { "accountData.email": loginOrEmail }] })
-        return user
+        try {
+            const user = await UserModel.findOne({ 
+                $or: [
+                    { "accountData.login": loginOrEmail }, 
+                    { "accountData.email": loginOrEmail }
+                ] 
+            }).exec()
+            return user
+            
+        } catch (error) {
+            return null
+        }
     },
 
     async findUserById(userId: string): Promise<UserDBModel | null> {
-        if (!ObjectId.isValid(userId)) return null
-
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
-        return user
+        try {
+            const user = await UserModel.findById(userId).exec()
+            return user
+            
+        } catch (error) {
+            return null
+        }
     },
 
     async confirmRegistration(code: string): Promise<boolean> {
-        const user = await this.findUserByCodeConfirmation(code)
-        if (!user) return false
-
-        if (user.emailConfirmation.isConfirmed) return false
-
-        const isUpdated = await usersCollection.updateOne({_id: user._id}, {$set: {"emailConfirmation.isConfirmed": true}})
-        return isUpdated.matchedCount === 1
+        try {
+            const user = await this.findUserByCodeConfirmation(code)
+            if (!user) return false
+    
+            if (user.emailConfirmation.isConfirmed) return false
+    
+            const isUpdated = await UserModel.updateOne({_id: user._id}, {"emailConfirmation.isConfirmed": true})
+            return isUpdated.matchedCount === 1
+            
+        } catch (error) {
+            return false
+        }
     },
 
     async findUserByCodeConfirmation(code: string): Promise<UserDBModel | null> {
-        const user = await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
-        if (user && user.emailConfirmation.expirationDate > new Date()) {
-            return user
-        } else {
+        try {
+            const user = await UserModel.findOne({"emailConfirmation.confirmationCode": code}).exec()
+            if (user && user.emailConfirmation.expirationDate > new Date()) {
+                return user
+            } else {
+                return null
+            }
+            
+        } catch (error) {
             return null
         }
     },
 
     async updateDataEmailConfirmation(user: UserDBModel, emailConfirmation: UserEmailConfirmationType): Promise<boolean> {
-        const isUpdated = await usersCollection.updateOne({_id: user._id}, {$set: {emailConfirmation: emailConfirmation}})
-        return isUpdated.matchedCount === 1
+        try {
+            const isUpdated = await UserModel.updateOne({_id: user._id}, {emailConfirmation: emailConfirmation})
+            return isUpdated.matchedCount === 1
+
+        } catch (error) {
+            return false
+        }
     },
 
 }

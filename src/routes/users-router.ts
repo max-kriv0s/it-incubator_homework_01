@@ -36,7 +36,10 @@ routerUsers.post('/',
     ErrorsValidate,
     async (req: RequestsWithBody<UserCreateModel>, res: Response<UserViewModel>) => {
         const newUserDB = await usersService.createUser(req.body)
+        if (!newUserDB) return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
+
         const newUser = userDBToUserView(newUserDB)
+        
         res.status(StatusCodes.CREATED).send(newUser)
     })
 
