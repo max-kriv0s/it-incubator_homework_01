@@ -1,5 +1,5 @@
+import { APICallsModel } from "../models/api-calls/APICallsModel"
 import { settings } from "../settings"
-import { apiCallsCollection } from "./db"
 
 
 const MAX_COUNT_FREQUENT_REQUESTS_FOR_API = settings.MAX_COUNT_FREQUENT_REQUESTS_FOR_API
@@ -8,24 +8,32 @@ const QUERY_CHECKING_TIME = settings.QUERY_CHECKING_TIME
 export const apiCallsRepository = {
     async addСallRecord(ip: string, url: string): Promise<boolean> {
 
-        const result = await apiCallsCollection.insertOne({
-            IP: ip,
-            URL: url,
-            date: new Date()
-        })
-
-        return result.acknowledged
+        try {
+            await APICallsModel.create({
+                IP: ip,
+                URL: url,
+                date: new Date()
+            })
+            return true
+        } catch (error) {
+            return false
+        }
     },
 
     async requestAllowed(ip: string, url: string): Promise<boolean> {
-        const VerificationDate = new Date();
-        VerificationDate.setSeconds(VerificationDate.getSeconds() - QUERY_CHECKING_TIME);
-
-        const countRequest = await apiCallsCollection.countDocuments({IP: ip, URL: url, date: {$gte: VerificationDate}})
-        return countRequest <= MAX_COUNT_FREQUENT_REQUESTS_FOR_API
+        
+        try {
+            const VerificationDate = new Date();
+            VerificationDate.setSeconds(VerificationDate.getSeconds() - QUERY_CHECKING_TIME);
+    
+            const countRequest = await APICallsModel.countDocuments({IP: ip, URL: url, date: {$gte: VerificationDate}})
+            return countRequest <= MAX_COUNT_FREQUENT_REQUESTS_FOR_API
+        } catch (error) {
+            return false
+        }
     },
 
     async deleteCalls() {
-        await apiCallsCollection.deleteMany({})
-    },
+        await APICallsModel.deleteMany({})
+    }
 }
