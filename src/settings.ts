@@ -2,6 +2,7 @@ export const settings = {
     PORT: process.env.PORT || 5000,
 
     MONGO_URI: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/",
+    DB_NAME: process.env.DB_NAME || '',
 
     ADMIN_LOGIN: process.env.ADMIN_LOGIN || '',
 
