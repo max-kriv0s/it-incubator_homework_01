@@ -14,7 +14,6 @@ export const routerTesting = Router()
 routerTesting.delete('/all-data', async (req: Request, res: Response) => {
     try {
         await Promise.all([
-            videoRepository.deleteVideos(),
             blogsRepository.deleteBlogs(),
             postsRepository.deletePosts(),
             usersRepository.deleteUsers(),
