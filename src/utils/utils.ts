@@ -1,12 +1,12 @@
 import { BlogDbModel } from "../models/blogs/BlogModel";
 import { BlogViewModel } from "../models/blogs/BlogViewModel";
-import { CommentDBModel } from "../models/comments/CommentDBModel";
+import { CommentDBModel } from "../models/comments/CommentModel";
 import { CommentViewModel } from "../models/comments/CommentViewModel";
-import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel";
+import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesModel";
 import { SecurityDevicesViewModel } from "../models/security-devices/SecurityDevicesViewModel";
 import { PostDbModel } from "../models/posts/PostModel";
 import { PostViewModel } from "../models/posts/PostViewModel";
-import { UserDBModel } from "../models/users/UserDBModel";
+import { UserDBModel } from "../models/users/UserModel";
 import { UserViewModel } from "../models/users/UserViewModel";
 import { APIErrorResult } from "../types/APIErrorModels";
 import { jestCookiesType } from "../types/JestCookiesType";
