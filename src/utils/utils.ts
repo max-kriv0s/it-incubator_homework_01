@@ -1,10 +1,10 @@
-import { BlogDbModel } from "../models/blogs/BlogDbModel";
+import { BlogDbModel } from "../models/blogs/BlogModel";
 import { BlogViewModel } from "../models/blogs/BlogViewModel";
 import { CommentDBModel } from "../models/comments/CommentDBModel";
 import { CommentViewModel } from "../models/comments/CommentViewModel";
 import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel";
 import { SecurityDevicesViewModel } from "../models/security-devices/SecurityDevicesViewModel";
-import { PostDbModel } from "../models/posts/PostDbModel";
+import { PostDbModel } from "../models/posts/PostModel";
 import { PostViewModel } from "../models/posts/PostViewModel";
 import { UserDBModel } from "../models/users/UserDBModel";
 import { UserViewModel } from "../models/users/UserViewModel";
