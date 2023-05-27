@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
-import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesDBModel";
+import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesModel";
 import { securityDevicesRepository } from "../repositories/security-devices-repository";
 import { DataTokenModel } from "../models/token/DataTokenModel";
-import { UserDBModel } from "../models/users/UserDBModel";
+import { UserDBModel } from "../models/users/UserModel";
 import { UpdateTokenModel } from "../models/auth/UpdateTokenModel";
 import { jwtService } from "../application/jwt-service";
 import { userAgentFromRequest } from "../utils/utils";
