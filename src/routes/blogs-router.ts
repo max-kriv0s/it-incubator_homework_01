@@ -14,6 +14,7 @@ import { blogsService } from "../domain/blogs-service"
 import { PostViewModel } from "../models/posts/PostViewModel"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 import { PostValidate } from "../middlewares/Post-validation-middleware"
+import { BlogDbModel } from "../models/blogs/BlogDbModel"
 import { blogDBToBlogView, postDBToPostView } from "../utils/utils"
 
 
@@ -21,7 +22,6 @@ export const routerBlogs = Router()
 
 routerBlogs.get('/',
     async (req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorBlogViewTypes>) => {
-        
         const blogsDB = await blogsService.getBlogs(req.query)
 
         const blogs: PaginatorBlogViewTypes = {
