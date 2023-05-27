@@ -7,7 +7,7 @@ import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 import { PaginatorCommentDBModel, PaginatorPostDbTypes } from "../types/PaginatorType"
 import { PostDbModel } from "../models/posts/PostModel"
 import { commentsService } from "./comments-service"
-import { CommentDBModel } from "../models/comments/CommentDBModel"
+import { CommentDBModel } from "../models/comments/CommentModel"
 import { CommentInputModel } from "../models/comments/CommentInputModel"
 
 export const postsService = {
