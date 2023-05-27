@@ -1,9 +1,7 @@
 import jwt from 'jsonwebtoken'
-import { UserDBModel } from "../models/users/UserDBModel";
+import { UserDBModel } from "../models/users/UserModel";
 import { settings } from '../settings';
 import { ObjectId } from 'mongodb';
-import { DecodeTokenModel } from '../models/token/DecodeTokenModel';
-import { validID } from '../repositories/db';
 import { DataTokenModel } from '../models/token/DataTokenModel';
 
 const JWT_SECRET_ACCESS_TOKEN = settings.JWT_SECRET_ACCESS_TOKEN
