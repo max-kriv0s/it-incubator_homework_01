@@ -1,7 +1,6 @@
 import { BlogUpdateModel } from "../models/blogs/BlogUpdateModel"
-import { BlogModel } from "./db"
 import { PaginatorBlogDbTypes } from "../types/PaginatorType"
-import { BlogDbModel } from "../models/blogs/BlogDbModel"
+import { BlogDbModel, BlogModel } from "../models/blogs/BlogModel"
 import { ObjectId } from "mongodb"
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
 
