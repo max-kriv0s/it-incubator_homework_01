@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import { videoRepository } from "../repositories/videos-repository";
 import { blogsRepository } from "../repositories/blogs-repository";
 import { postsRepository } from "../repositories/posts-repository";
 import { usersRepository } from "../repositories/users-repository";
