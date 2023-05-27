@@ -12,15 +12,6 @@ import { StatusCodes } from "http-status-codes";
 export const routerTesting = Router()
 
 routerTesting.delete('/all-data', async (req: Request, res: Response) => {
-    // await videoRepository.deleteVideos()
-    // await blogsRepository.deleteBlogs()
-    // await postsRepository.deletePosts()
-    // await usersRepository.deleteUsers()
-    // await commentsRepository.deleteComments()
-    // await securityDevicesRepository.deleteAllDevicesSessions()
-    // await apiCallsRepository.deleteCalls()
-
-// можно написать так
     try {
         await Promise.all([
             videoRepository.deleteVideos(),
@@ -35,5 +26,4 @@ routerTesting.delete('/all-data', async (req: Request, res: Response) => {
     } catch (error) {
         return res.send(StatusCodes.INTERNAL_SERVER_ERROR)
     }
-
 })
