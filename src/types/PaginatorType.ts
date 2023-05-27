@@ -1,10 +1,10 @@
 import { BlogDbModel } from "../models/blogs/BlogModel"
 import { BlogViewModel } from "../models/blogs/BlogViewModel"
-import { CommentDBModel } from "../models/comments/CommentDBModel"
+import { CommentDBModel } from "../models/comments/CommentModel"
 import { CommentViewModel } from "../models/comments/CommentViewModel"
 import { PostDbModel } from "../models/posts/PostModel"
 import { PostViewModel } from "../models/posts/PostViewModel"
-import { UserDBModel } from "../models/users/UserDBModel"
+import { UserDBModel } from "../models/users/UserModel"
 import { UserViewModel } from "../models/users/UserViewModel"
 
 export type PaginatorTypes<T> = {
