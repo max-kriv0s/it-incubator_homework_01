@@ -5,19 +5,24 @@ import { BlogViewModel } from "../src/models/blogs/BlogViewModel";
 import { BlogCreateModel } from "../src/models/blogs/BlogCreateModel";
 import { randomString } from "../src/utils/utils";
 import { BlogUpdateModel } from "../src/models/blogs/BlogUpdateModel";
-import { client } from "../src/repositories/db";
+import { settings } from "../src/settings";
+import mongoose from "mongoose";
 
 
 describe('/blogs', () => {
 
+    const MONGO_URI = settings.MONGO_URI
+    const DB_NAME = settings.DB_NAME
+    
     const ADMIN_LOGIN = process.env.ADMIN_LOGIN ? process.env.ADMIN_LOGIN : ''
 
     beforeAll(async () => {
+        await mongoose.connect(MONGO_URI, {dbName: DB_NAME})
         await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
     })
     
     afterAll(async () => {
-        client.close()
+        await mongoose.connection.close()
     })
 
     it ('- GET blogs = []', async () => {

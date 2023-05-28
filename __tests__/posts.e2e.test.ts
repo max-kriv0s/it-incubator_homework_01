@@ -7,15 +7,19 @@ import { randomString } from "../src/utils/utils";
 import { BlogCreateModel } from "../src/models/blogs/BlogCreateModel";
 import { BlogViewModel } from "../src/models/blogs/BlogViewModel";
 import { PostUpdateModel } from "../src/models/posts/PostUpdateModel";
-import { client } from "../src/repositories/db";
+import { settings } from "../src/settings";
+import mongoose from "mongoose";
 
 
 describe('/blogs', () => {
 
+    const MONGO_URI = settings.MONGO_URI
+    const DB_NAME = settings.DB_NAME
     const ADMIN_LOGIN = process.env.ADMIN_LOGIN ? process.env.ADMIN_LOGIN : ''
     let blog: BlogViewModel;
 
     beforeAll(async () => {
+        await mongoose.connect(MONGO_URI, {dbName: DB_NAME})
         await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
 
         const dataBlog:BlogCreateModel = {
@@ -34,7 +38,7 @@ describe('/blogs', () => {
     })
 
     afterAll(async () => {
-        client.close()
+        await mongoose.connection.close()
     })
 
     it ('- GET posts = []', async () => {

@@ -1,30 +1,28 @@
 import request from 'supertest'
 import { app } from '../src/app'
 import { StatusCodes } from 'http-status-codes'
-import { client } from '../src/repositories/db'
 import { parseCookie, randomString } from '../src/utils/utils'
 import { emailAdapter } from '../src/adapter/email-adapter'
+import mongoose from 'mongoose'
+import { settings } from '../src/settings'
 
-
-// import { emailAdapter } from "../src/adapter/email-adapter"
-// import SMTPTransport from 'nodemailer/lib/smtp-transport'
-
-// emailAdapter.sendEmail = async (email: string, subject: string, textMessage: string): Promise<string> => {
-//     return new Promise(textMessage)
-// }
 
 const ADMIN_LOGIN = process.env.ADMIN_LOGIN ? process.env.ADMIN_LOGIN : ''
 
 describe('/auth', () => {
 
+    const MONGO_URI = settings.MONGO_URI
+    const DB_NAME = settings.DB_NAME
+
     beforeAll(async () => {
+        await mongoose.connect(MONGO_URI, {dbName: DB_NAME})
         await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
 
         jest.clearAllMocks()
     })
 
     afterAll(async () => {
-        client.close()
+        await mongoose.connection.close()
     })
 
     it(' -POST -> "auth/registration": with incorrect login',

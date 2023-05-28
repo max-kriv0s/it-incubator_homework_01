@@ -1,5 +1,4 @@
 import request from 'supertest'
-import { client } from '../src/repositories/db'
 import { app } from '../src/app'
 import { StatusCodes } from 'http-status-codes'
 import { UserViewModel } from '../src/models/users/UserViewModel'
@@ -7,6 +6,7 @@ import { UserCreateModel } from '../src/models/users/UserCreateModel'
 import { settings } from '../src/settings'
 import { parseCookie } from '../src/utils/utils'
 import {SecurityDevicesViewModel} from '../src/models/security-devices/SecurityDevicesViewModel'
+import mongoose from 'mongoose'
 
 const ADMIN_LOGIN = settings.ADMIN_LOGIN
 const MAX_COUNT_FREQUENT_REQUESTS_FOR_API = settings.MAX_COUNT_FREQUENT_REQUESTS_FOR_API
@@ -20,12 +20,16 @@ type authorizedUser = {
 
 describe('/auth', () => {
 
+    const MONGO_URI = settings.MONGO_URI
+    const DB_NAME = settings.DB_NAME
+
     beforeAll(async () => {
+        await mongoose.connect(MONGO_URI, {dbName: DB_NAME})
         await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
     })
 
     afterAll(async () => {
-        client.close()
+        await mongoose.connection.close()
     })
     
     const dataUser: UserCreateModel = {

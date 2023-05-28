@@ -1,22 +1,27 @@
 import request from "supertest"
 import { app } from "../src/app"
 import { StatusCodes } from "http-status-codes"
-import { client } from "../src/repositories/db"
 import { UserCreateModel } from "../src/models/users/UserCreateModel"
 import { randomString } from "../src/utils/utils"
 import { UserViewModel } from "../src/models/users/UserViewModel"
+import { settings } from "../src/settings"
+import mongoose from "mongoose"
 
 
 const ADMIN_LOGIN = process.env.ADMIN_LOGIN ? process.env.ADMIN_LOGIN : ''
 
 describe('/users', () => {
 
+    const MONGO_URI = settings.MONGO_URI
+    const DB_NAME = settings.DB_NAME
+
     beforeAll(async () => {
+        await mongoose.connect(MONGO_URI, {dbName: DB_NAME})
         await request(app).delete('/testing/all-data').expect(StatusCodes.NO_CONTENT)
     })
     
     afterAll(async () => {
-        client.close()
+        await mongoose.connection.close()
     })
 
     it ('- GET users authorization error', async () => {
@@ -51,9 +56,7 @@ describe('/users', () => {
             .post('/users')
             .send(data)
             .expect(StatusCodes.UNAUTHORIZED)
-    })JWT_ACCESS_TOKEN_EXPIRES_IN='5m'
-    JWT_REFRESH_TOKEN_EXPIRES_IN='10m'
-
+    })
 
     it ('- POST create the user with incorrect login', async () => {
         const data: UserCreateModel = {
