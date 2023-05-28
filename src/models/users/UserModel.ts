@@ -28,7 +28,7 @@ const accountDataSchema = new mongoose.Schema<accountData>({
 })
 
 const UserEmailConfirmationSchema = new mongoose.Schema<UserEmailConfirmationType>({
-    confirmationCode: {type: String, required: true},
+    confirmationCode: {type: String},
     expirationDate: {type: Date, required: true},
     isConfirmed: {type: Boolean, required: true}
 })
@@ -36,7 +36,7 @@ const UserEmailConfirmationSchema = new mongoose.Schema<UserEmailConfirmationTyp
 const UserSchema = new mongoose.Schema<UserDBModel>({
     accountData: {type: accountDataSchema, required: true},
     emailConfirmation: {type: UserEmailConfirmationSchema, required: true},
-    refreshToken: {type: String, required: true}
+    refreshToken: {type: String}
 })
 
 export const UserModel = mongoose.model<UserDBModel>('users', UserSchema)

@@ -12,11 +12,10 @@ import { APIErrorResult } from "../types/APIErrorModels";
 import { GetDescriptionOfError } from "../utils/utils";
 import { UpdateTokenModel } from "../models/auth/UpdateTokenModel";
 import { securityDevicesService } from "./security-devices-service";
+import { settings } from "../settings";
 
 
-const CODE_LIFE_TIME = {
-    hours: 1,
-}
+const CODE_LIFE_TIME = settings.CODE_LIFE_TIME
 
 export const usersService = {
 

@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb"
 import { UserDBModel, UserEmailConfirmationType, UserModel } from "../models/users/UserModel"
 import { PaginatorUserDBModel } from "../types/PaginatorType"
 import { UserServiceModel } from "../models/users/UserServiceModel"
+import { validID } from "./db"
 
 
 export const usersRepository = {
@@ -63,6 +64,8 @@ export const usersRepository = {
     },
 
     async deleteUserById(id: string): Promise<boolean> {
+        if (!validID(id)) return false
+        
         try {
             const result = await UserModel.deleteOne({ _id: id })
             return result.deletedCount === 1
