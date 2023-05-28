@@ -4,6 +4,7 @@ import { PostUpdateModel } from "../models/posts/PostUpdateModel"
 import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
 import { PaginatorPostDbTypes } from "../types/PaginatorType"
+import { validID } from "./db"
 
 
 export const postsRepository = {
@@ -33,8 +34,15 @@ export const postsRepository = {
     },
 
     async findPostById(id: string): Promise<PostDbModel | null> {
-        const post = await PostModel.findById({ id })
-        return post
+        if (!validID(id)) return null
+
+        try {
+            const post = await PostModel.findById(id)
+            return post
+            
+        } catch (error) {
+            return null
+        }
     },
 
     async findPostsByBlogId(
@@ -44,10 +52,12 @@ export const postsRepository = {
         sortBy: string,
         sortDirection: string): Promise<PaginatorPostDbTypes | null> {
 
-        const totalCount: number = await PostModel.countDocuments({ blogId: new ObjectId(blogId) })
+        if (!validID(blogId)) return null
+
+        const totalCount: number = await PostModel.countDocuments({ blogId })
 
         const skip = (pageNumber - 1) * pageSize
-        const posts: PostDbModel[] = await PostModel.find({blogId: blogId}, null, 
+        const posts: PostDbModel[] = await PostModel.find({blogId}, null, 
             {
                 sort: { [sortBy]: sortDirection === 'asc' ? 1 : -1 },
                 skip: skip,
@@ -99,9 +109,10 @@ export const postsRepository = {
     },
 
     async updatePost(id: string, body: PostUpdateModel, blogId: ObjectId, blogName: string): Promise<boolean> {
+        if (!validID(id)) return false
 
         const result = await PostModel.updateOne(
-            { id },
+            { _id: id },
             {
                 $set: {
                     title: body.title,
@@ -117,7 +128,9 @@ export const postsRepository = {
     },
 
     async deletePostById(id: string): Promise<boolean> {
-        const result = await PostModel.deleteOne({ id })
+        if (!validID(id)) return false
+
+        const result = await PostModel.deleteOne({ _id: id })
         return result.deletedCount === 1
     },
 

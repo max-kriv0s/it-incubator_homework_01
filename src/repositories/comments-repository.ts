@@ -2,10 +2,13 @@ import { ObjectId } from "mongodb";
 import { CommentDBModel, CommentModel } from "../models/comments/CommentModel";
 import { CommentInputModel } from "../models/comments/CommentInputModel";
 import { PaginatorCommentDBModel } from "../types/PaginatorType";
+import { validID } from "./db";
 
 export const commentsRepository = {
 
     async findCommentByID(id: string): Promise<CommentDBModel | null> {
+        if (!validID(id)) return null
+        
         try {
             const comment = CommentModel.findById(id).exec()
             return comment
@@ -16,6 +19,8 @@ export const commentsRepository = {
     }, 
 
     async updatedComment(id: string, body: CommentInputModel): Promise<boolean> {
+        if (!validID(id)) return false
+
         try {
             const result = await CommentModel.updateOne(
                 { _id: id}, 
@@ -30,6 +35,8 @@ export const commentsRepository = {
     },
 
     async deleteCommentByID(id: string): Promise<boolean> {
+        if (!validID(id)) return false
+        
         try {
             const result = await CommentModel.deleteOne({ _id: id })
             return result.deletedCount === 1
@@ -50,11 +57,13 @@ export const commentsRepository = {
         sortBy: string,
         sortDirection: string): Promise<PaginatorCommentDBModel | null> {
 
+            if (!validID(postId)) return null
+
             try {
                 const totalCount: number = await CommentModel.countDocuments({ postId: postId })
     
                 const skip = (pageNumber - 1) * pageSize
-                const comments = await CommentModel.find({ postId: postId }, null, 
+                const comments = await CommentModel.find({ postId }, null, 
                     {
                         sort: { [sortBy]: sortDirection === 'asc' ? 1 : -1 },
                         skip: skip,

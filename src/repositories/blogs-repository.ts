@@ -3,6 +3,7 @@ import { PaginatorBlogDbTypes } from "../types/PaginatorType"
 import { BlogDbModel, BlogModel } from "../models/blogs/BlogModel"
 import { ObjectId } from "mongodb"
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel"
+import { validID } from "./db"
 
 
 export const blogsRepository = {
@@ -21,7 +22,7 @@ export const blogsRepository = {
         const totalCount: number = await BlogModel.countDocuments(filter)
 
         const skip = (pageNumber - 1) * pageSize
-        const blogs: BlogDbModel[] = await BlogModel.find({filter}, null, 
+        const blogs: BlogDbModel[] = await BlogModel.find(filter, null, 
             {
                 sort: { [sortBy]: sortDirection === 'asc' ? 1 : -1 },
                 skip: skip,
@@ -38,6 +39,8 @@ export const blogsRepository = {
     },
 
     async findBlogById(id: string): Promise<BlogDbModel | null> {
+        if (!validID(id)) return null
+        
         const blog = await BlogModel.findById(id).exec()
         return blog
     },
@@ -57,12 +60,20 @@ export const blogsRepository = {
     },
 
     async updateBlog(id: string, body: BlogUpdateModel): Promise<boolean> {
-        const result = await BlogModel.updateOne({ id }, { body })
+        if (!validID(id)) return false
+
+        const result = await BlogModel.updateOne({ _id: id }, {
+            name: body.name,
+            description: body.description,
+            websiteUrl: body.websiteUrl
+        })
         return result.matchedCount === 1
     },
 
     async deleteBlogById(id: string): Promise<boolean> {
-        const result = await BlogModel.deleteOne({ id })
+        if (!validID(id)) return false 
+        
+        const result = await BlogModel.deleteOne({ _id: id })
         return result.deletedCount === 1
     },
 

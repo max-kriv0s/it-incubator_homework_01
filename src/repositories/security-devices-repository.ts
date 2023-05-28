@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { SecurityDevicesDBModel, SecurityDevicesModel } from "../models/security-devices/SecurityDevicesModel"
-import { getIdDB } from "./db"
+import { getIdDB, validID } from "./db"
 
 
 export const securityDevicesRepository = {
@@ -9,8 +9,10 @@ export const securityDevicesRepository = {
     },
 
     async getAllDevicesSessionsByUserID(userId: string): Promise<SecurityDevicesDBModel[] | null> {
+        if (!validID(userId)) return null
+        
         try {
-            const devices = await SecurityDevicesModel.find({userId: userId}).exec()
+            const devices = await SecurityDevicesModel.find({userId}).exec()
             return devices
 
         } catch (error) {
@@ -19,9 +21,11 @@ export const securityDevicesRepository = {
     },
 
     async deleteAllDevicesSessionsByUserID(userId: string, deviceId: string): Promise<boolean> {
+        if (!validID(userId) || !validID(deviceId)) return false
+        
         try {
             const result = await SecurityDevicesModel.deleteMany({
-                userId: userId, 
+                userId, 
                 _id: {$ne: deviceId}
             })
 
@@ -33,10 +37,12 @@ export const securityDevicesRepository = {
     },
 
     async deleteUserSessionByDeviceID(deviceID: string, userId: string): Promise<boolean> {
+        if (!validID(deviceID) || !validID(userId)) return false
+
         try {
             const result = await SecurityDevicesModel.deleteOne({
                 _id: deviceID,
-                userId: userId
+                userId
             })
 
             return result.deletedCount === 1
@@ -80,10 +86,12 @@ export const securityDevicesRepository = {
     },
 
     async findUserSessionByDeviceID(userId: string, deviceId: string): Promise<SecurityDevicesDBModel | null> {
+        if (!validID(userId) || !validID(deviceId)) return null
+        
         try {
             const securitySession = await SecurityDevicesModel.findOne({
                 _id: deviceId, 
-                userId: userId
+                userId
             }).exec()
             
             return securitySession
@@ -94,6 +102,8 @@ export const securityDevicesRepository = {
     },
 
     async findSessionByDeviceID(deviceId: string): Promise<SecurityDevicesDBModel | null> {
+        if (!validID(deviceId)) return null
+        
         try {
             const securitySession = await SecurityDevicesModel.findOne({
                 _id: deviceId
