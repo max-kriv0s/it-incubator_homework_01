@@ -20,8 +20,8 @@ routerTesting.delete('/all-data', async (req: Request, res: Response) => {
             securityDevicesRepository.deleteAllDevicesSessions(),
             apiCallsRepository.deleteCalls()
         ])
-        return res.send(StatusCodes.NO_CONTENT)
+        return res.sendStatus(StatusCodes.NO_CONTENT)
     } catch (error) {
-        return res.send(StatusCodes.INTERNAL_SERVER_ERROR)
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
     }
 })
