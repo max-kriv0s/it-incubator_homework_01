@@ -10,11 +10,12 @@ import { BearerAuthMiddleware } from "../middlewares/BearerAuth-middleware";
 import { UserCreateModel } from "../models/users/UserCreateModel";
 import { UserValidate } from "../middlewares/Users-validation-middleware";
 import { RegistrationConfirmationCodeModel } from "../models/auth/RegistrationConfirmationCodeModel";
-import { AuthRegistrationConfirmationCodeValidate, AuthRegistrationEmailResendingValodate } from "../middlewares/Auth-validation-middleware";
+import { AuthNewPasswordRecoveryValidate, AuthRegistrationConfirmationCodeValidate, AuthRegistrationEmailResendingValidate } from "../middlewares/Auth-validation-middleware";
 import { RegistrationEmailResendingModel } from "../models/auth/RegistrationEmailResendingModel";
 import { RefreshTokenMiddleware } from "../middlewares/RefreshToken-middleware";
 import { securityDevicesService } from "../domain/security-devices-service";
 import { APICallsMiddleware } from "../middlewares/APICalls-middleware";
+import { NewPasswordRecoveryInputModel } from "../models/auth/NewPasswordRecoveryInputModel";
 
 
 export const routerAuth = Router({})
@@ -87,7 +88,7 @@ routerAuth
 
     .post('/registration-email-resending',
         APICallsMiddleware,
-        AuthRegistrationEmailResendingValodate,
+        AuthRegistrationEmailResendingValidate,
         ErrorsValidate,
         async (req: RequestsWithBody<RegistrationEmailResendingModel>, res: Response) => {
             
@@ -131,5 +132,28 @@ routerAuth
 
             res.clearCookie('refreshToken')
             res.sendStatus(StatusCodes.NO_CONTENT)
+        }
+    )
+
+    .post('/password-recovery',
+        APICallsMiddleware,
+        AuthRegistrationEmailResendingValidate,
+        ErrorsValidate,
+        async (req: RequestsWithBody<RegistrationEmailResendingModel>, res: Response) => {
+            await usersService.passwordRecovery(req.body.email)
+            res.sendStatus(StatusCodes.NO_CONTENT)
+        }
+    )
+
+    .post('/new-password',
+        APICallsMiddleware,
+        AuthNewPasswordRecoveryValidate,
+        ErrorsValidate,
+        async (req:RequestsWithBody<NewPasswordRecoveryInputModel>, res: Response) => {
+
+            const isValid = await usersService.newPassword(req.body.newPassword, req.body.recoveryCode)
+            if (!isValid) return res.sendStatus(StatusCodes.BAD_REQUEST)
+
+            return res.sendStatus(StatusCodes.NO_CONTENT)
         }
     )
