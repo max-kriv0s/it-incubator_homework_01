@@ -16,6 +16,7 @@ import { RefreshTokenMiddleware } from "../middlewares/RefreshToken-middleware";
 import { securityDevicesService } from "../domain/security-devices-service";
 import { APICallsMiddleware } from "../middlewares/APICalls-middleware";
 import { NewPasswordRecoveryInputModel } from "../models/auth/NewPasswordRecoveryInputModel";
+import { GetDescriptionOfError } from "../utils/utils";
 
 
 export const routerAuth = Router({})
@@ -151,9 +152,12 @@ routerAuth
         ErrorsValidate,
         async (req:RequestsWithBody<NewPasswordRecoveryInputModel>, res: Response) => {
 
-            const isValid = await usersService.newPassword(req.body.newPassword, req.body.recoveryCode)
-            if (!isValid) return res.sendStatus(StatusCodes.BAD_REQUEST)
-
+            const isUpdate = await usersService.newPassword(req.body.newPassword, req.body.recoveryCode)
+            if (!isUpdate) {
+                const error = GetDescriptionOfError('incorrect recovery code', 'recoveryCode')
+                return res.status(StatusCodes.BAD_REQUEST).send(error)
+            }    
+             
             return res.sendStatus(StatusCodes.NO_CONTENT)
         }
     )

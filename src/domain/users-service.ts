@@ -213,6 +213,7 @@ export const usersService = {
 
         const passwordHash = await this._generatePasswordHash(newPassword)
 
+
         return usersRepository.updateUserPassword(user, passwordHash)
     }
 }
