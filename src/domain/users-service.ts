@@ -5,7 +5,7 @@ import { UserCreateModel } from "../models/users/UserCreateModel";
 import { usersRepository } from "../repositories/users-repository";
 import { PaginatorUserDBModel } from "../types/PaginatorType";
 import { QueryParamsUsersModel } from "../types/QueryParamsModels";
-import { UserDBModel } from "../models/users/UserModel";
+import { UserDBModel, UserPasswordRecovery } from "../models/users/UserModel";
 import { UserServiceModel } from "../models/users/UserServiceModel";
 import { emailManager } from "../managers/email-managers";
 import { APIErrorResult } from "../types/APIErrorModels";
@@ -185,5 +185,34 @@ export const usersService = {
         if (!user) return null
 
         return securityDevicesService.updateUserTokens(user, deviceId, ip, reqUserAgent)
+    },
+
+    async passwordRecovery(email: string) {
+        
+        const passwordRecovery: UserPasswordRecovery = {
+            recoveryCode: uuidv4(),
+            expirationDate: add(new Date(), CODE_LIFE_TIME),
+        }
+
+        const user = await usersRepository.findByLoginOrEmail(email)
+        if (user) {
+            await usersRepository.updatePasswordRecovery(user, passwordRecovery)
+        }
+
+        try {
+            emailManager.sendPasswordRecovery(email, passwordRecovery.recoveryCode)
+        } catch (error) {
+            console.error(error)
+        }
+    },
+
+    async newPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
+        const user = await usersRepository.findUserByRecoveryCode(recoveryCode)
+        if (!user) return false
+        if (user.passwordRecovery.expirationDate < new Date()) return false
+
+        const passwordHash = await this._generatePasswordHash(newPassword)
+
+        return usersRepository.updateUserPassword(user, passwordHash)
     }
 }
