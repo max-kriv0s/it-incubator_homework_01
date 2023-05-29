@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { UserDBModel, UserEmailConfirmationType, UserModel } from "../models/users/UserModel"
+import { UserDBModel, UserEmailConfirmationType, UserModel, UserPasswordRecovery } from "../models/users/UserModel"
 import { PaginatorUserDBModel } from "../types/PaginatorType"
 import { UserServiceModel } from "../models/users/UserServiceModel"
 import { validID } from "./db"
@@ -52,7 +52,11 @@ export const usersRepository = {
             const newUser: UserDBModel = {
                 ...user,
                 _id: new ObjectId(),
-                refreshToken: ''
+                refreshToken: '',
+                passwordRecovery: {
+                    recoveryCode: '',
+                    expirationDate: new Date(0)
+                }
             }
     
             const result = await UserModel.create(newUser)
@@ -143,4 +147,31 @@ export const usersRepository = {
         }
     },
 
+    async updatePasswordRecovery(user: UserDBModel, passwordRecovery: UserPasswordRecovery) {
+        try {
+            await UserModel.updateOne({ _id: user._id }, {passwordRecovery: passwordRecovery})
+        } catch (error) {
+            console.error(error)
+        }
+    },
+
+    async findUserByRecoveryCode(recoveryCode: string): Promise<UserDBModel | null> {
+        try {
+            const user = await UserModel.findOne({'passwordRecovery.recoveryCode': recoveryCode}).exec()
+            return user
+
+        } catch (error) {
+            return null
+        }
+    },
+
+    async updateUserPassword(user: UserDBModel, passwordHash: string): Promise<boolean> {
+        try {
+            const result = await UserModel.updateOne({ _id: user._id }, {'accountData.password': passwordHash})
+            return result.acknowledged
+
+        } catch (error) {
+            return false
+        }
+    }
 }
