@@ -14,10 +14,16 @@ export type UserEmailConfirmationType = {
     isConfirmed: boolean
 }
 
+export type UserPasswordRecovery = {
+    recoveryCode: string
+    expirationDate: Date
+}
+
 export type UserDBModel = WithId<{
     accountData: accountData
     emailConfirmation: UserEmailConfirmationType,
-    refreshToken: string
+    refreshToken: string,
+    passwordRecovery: UserPasswordRecovery
 }>
 
 const accountDataSchema = new mongoose.Schema<accountData>({
@@ -33,10 +39,18 @@ const UserEmailConfirmationSchema = new mongoose.Schema<UserEmailConfirmationTyp
     isConfirmed: {type: Boolean, required: true}
 })
 
+const UserPasswordRecoverySchema = new mongoose.Schema<UserPasswordRecovery>({
+    recoveryCode: {type: String},
+    expirationDate: {type: Date}
+})
+
 const UserSchema = new mongoose.Schema<UserDBModel>({
     accountData: {type: accountDataSchema, required: true},
     emailConfirmation: {type: UserEmailConfirmationSchema, required: true},
-    refreshToken: {type: String}
+    refreshToken: {type: String},
+    passwordRecovery: {
+        type : UserPasswordRecoverySchema, 
+        required: true}
 })
 
 export const UserModel = mongoose.model<UserDBModel>('users', UserSchema)
