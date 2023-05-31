@@ -1,6 +1,25 @@
 import { WithId } from "mongodb"
 import mongoose from "mongoose"
 
+// interface IBaseEntity {
+//     setEvent(event): void
+//     getEvents(): Event[]
+// }
+
+// export class accountData {
+//     constructor(dto: {login: string, email: string, password: string}) {
+//         this.login = dto.login
+//         this.email = dto.email
+//         this.password = dto.password
+//         this.createdAt = new Date().toString()
+//     }
+
+//     login: string
+//     password: string
+//     email: string
+//     createdAt: string
+// }
+
 export type accountData = {
     login: string
     password: string
@@ -54,3 +73,40 @@ const UserSchema = new mongoose.Schema<UserDBModel>({
 })
 
 export const UserModel = mongoose.model<UserDBModel>('users', UserSchema)
+
+
+
+// UserSchema.methods = {
+//     updateProfile(dto: Omit<accountData, 'createdAt'>) {
+//         if(!this.isConfirmed) return false 
+
+//         this.accountData = new accountData(dto)
+//     }
+// }
+
+// class DomainUser implements IBaseEntity {
+//     profile: Profile
+//     confirmCode: string
+//     constructor(data) {
+//     this.profile = data.profile
+//     }
+
+//     events: string[]
+
+//     setEvent(event: any): void {
+//         this.events.push(event)
+//     }
+
+//     update(dto) {
+//         this.confirmCode = dto.confirmCode
+//         this.setEvent(new UserUpdatedEvent())
+//     }
+// }
+
+//const user = repo.getUserById(id)
+//user.canBlogUpdate(blog.id)
+//const blog = blogRepo.get(id)
+//blog.updateName()
+//repo.save(user)
+//blogrepo.save(blog)
+//sendNotification()
