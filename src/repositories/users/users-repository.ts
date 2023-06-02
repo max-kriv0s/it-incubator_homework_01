@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb"
-import { UserDBModel, UserEmailConfirmationType, UserModel, UserPasswordRecovery } from "../models/users/UserModel"
-import { PaginatorUserDBModel } from "../types/PaginatorType"
-import { UserServiceModel } from "../models/users/UserServiceModel"
-import { validID } from "./db"
+import { UserDBModel, UserEmailConfirmationType, UserModel, UserPasswordRecovery } from "../../models/users/UserModel"
+import { PaginatorUserDBModel } from "../../types/PaginatorType"
+import { UserServiceModel } from "../../models/users/UserServiceModel"
+import { validID } from "../db"
 
 export class UsersRepository {
     async getAllUsers(
