@@ -1,24 +1,13 @@
-import { WithId } from "mongodb"
 import mongoose from "mongoose"
 
-// interface IBaseEntity {
-//     setEvent(event): void
-//     getEvents(): Event[]
-// }
 
-// export class accountData {
-//     constructor(dto: {login: string, email: string, password: string}) {
-//         this.login = dto.login
-//         this.email = dto.email
-//         this.password = dto.password
-//         this.createdAt = new Date().toString()
-//     }
-
-//     login: string
-//     password: string
-//     email: string
-//     createdAt: string
-// }
+export class UserDBModel {
+    constructor(public accountData: accountData,
+                public emailConfirmation: UserEmailConfirmationType,
+                public refreshToken: string,
+                public passwordRecovery: UserPasswordRecovery
+    ) {}
+}
 
 export type accountData = {
     login: string
@@ -37,13 +26,6 @@ export type UserPasswordRecovery = {
     recoveryCode: string
     expirationDate: Date
 }
-
-export type UserDBModel = WithId<{
-    accountData: accountData
-    emailConfirmation: UserEmailConfirmationType,
-    refreshToken: string,
-    passwordRecovery: UserPasswordRecovery
-}>
 
 const accountDataSchema = new mongoose.Schema<accountData>({
     login: {type: String, required: true},
@@ -75,6 +57,25 @@ const UserSchema = new mongoose.Schema<UserDBModel>({
 export const UserModel = mongoose.model<UserDBModel>('users', UserSchema)
 
 
+
+// interface IBaseEntity {
+//     setEvent(event): void
+//     getEvents(): Event[]
+// }
+
+// export class accountData {
+//     constructor(dto: {login: string, email: string, password: string}) {
+//         this.login = dto.login
+//         this.email = dto.email
+//         this.password = dto.password
+//         this.createdAt = new Date().toString()
+//     }
+
+//     login: string
+//     password: string
+//     email: string
+//     createdAt: string
+// }
 
 // UserSchema.methods = {
 //     updateProfile(dto: Omit<accountData, 'createdAt'>) {
