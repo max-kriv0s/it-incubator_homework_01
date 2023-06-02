@@ -1,16 +1,16 @@
 import { Request, Response, Router } from "express";
-import { BasicAuthValidate } from "../middlewares/BasicAuth-validation-middleware";
-import { PaginatorUserViewModel } from "../types/PaginatorType";
-import { RequestsQuery, RequestsWithBody } from "../types/types";
-import { QueryParamsUsersModel } from "../types/QueryParamsModels";
-import { usersService } from "../domain/users-service";
-import { URIParamsIdModel } from "../types/URIParamsModel";
+import { BasicAuthValidate } from "../../middlewares/BasicAuth-validation-middleware";
+import { PaginatorUserViewModel } from "../../types/PaginatorType";
+import { RequestsQuery, RequestsWithBody } from "../../types/types";
+import { QueryParamsUsersModel } from "../../types/QueryParamsModels";
+import { usersService } from "../../domain/users-service";
+import { URIParamsIdModel } from "../../types/URIParamsModel";
 import { StatusCodes } from "http-status-codes";
-import { UserCreateModel } from "../models/users/UserCreateModel";
-import { UserViewModel } from "../models/users/UserViewModel";
-import { UserValidate } from "../middlewares/Users-validation-middleware";
-import { ErrorsValidate } from "../middlewares/Errors-middleware";
-import { userDBToUserView } from "../utils/utils";
+import { UserCreateModel } from "../../models/users/UserCreateModel";
+import { UserViewModel } from "../../models/users/UserViewModel";
+import { UserValidate } from "../../middlewares/Users-validation-middleware";
+import { ErrorsValidate } from "../../middlewares/Errors-middleware";
+import { userDBToUserView } from "../../utils/utils";
 
 
 export const routerUsers = Router({})
