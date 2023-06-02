@@ -1,8 +1,10 @@
+import { ObjectId } from "mongodb"
 import mongoose from "mongoose"
 
 
 export class UserDBModel {
-    constructor(public accountData: accountData,
+    constructor(public _id: ObjectId,
+                public accountData: accountData,
                 public emailConfirmation: UserEmailConfirmationType,
                 public refreshToken: string,
                 public passwordRecovery: UserPasswordRecovery
