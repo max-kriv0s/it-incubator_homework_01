@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { SecurityDevicesDBModel } from "../models/security-devices/SecurityDevicesModel";
-import { securityDevicesRepository } from "../repositories/security-devices-repository";
+import { SecurityDevicesRepository } from "../repositories/security-devices/security-devices-repository";
 import { DataTokenModel } from "../models/token/DataTokenModel";
 import { UserDBModel } from "../models/users/UserModel";
 import { UpdateTokenModel } from "../models/auth/UpdateTokenModel";
@@ -8,55 +8,50 @@ import { jwtService } from "../application/jwt-service";
 import { userAgentFromRequest } from "../utils/utils";
 
 
-export const securityDevicesService = {
-
-    async getAllDevicesSessionsByUserID(userId: string): Promise<SecurityDevicesDBModel[] | null> {
-        return await securityDevicesRepository.getAllDevicesSessionsByUserID(userId)
-    },
+export class SecurityDevicesService {
+    constructor(protected securityDevicesRepository: SecurityDevicesRepository) {}
 
     async deleteAllDevicesSessionsByUserID(userId: string, deviceId: string): Promise<boolean> {
-        return await securityDevicesRepository.deleteAllDevicesSessionsByUserID(userId, deviceId)
-    },
+        return this.securityDevicesRepository.deleteAllDevicesSessionsByUserID(userId, deviceId)
+    }
 
     async logoutUserSessionByDeviceID(deviceID: string, userId: string): Promise<boolean> {
-        const isDeleted = await securityDevicesRepository.deleteUserSessionByDeviceID(deviceID, userId)
-        return isDeleted
-    },
+        return this.securityDevicesRepository.deleteUserSessionByDeviceID(deviceID, userId)
+    }
 
     async deleteUserSessionByDeviceID(deviceID: string, userId: string): Promise<boolean | null> {
-        const securitySession = await securityDevicesRepository.findSessionByDeviceID(deviceID)
+        const securitySession = await this.securityDevicesRepository.findSessionByDeviceID(deviceID)
         if (!securitySession) return false
         
         if (securitySession.userId.toString() !== userId) return null
 
-        const isDeleted = await securityDevicesRepository.deleteUserSessionByDeviceID(deviceID, userId)
-        return isDeleted
-    },
+        return this.securityDevicesRepository.deleteUserSessionByDeviceID(deviceID, userId)
+    }
 
     async getDeviceID(deviceId: string = ''): Promise<ObjectId | null> {
-        return await securityDevicesRepository.getDeviceID(deviceId)
-    },
+        return this.securityDevicesRepository.getDeviceID(deviceId)
+    }
 
     async createSecurityDeviceSession(securityDevice: SecurityDevicesDBModel): Promise<boolean> {
-        return await securityDevicesRepository.createSecurityDeviceSession(securityDevice)
-    },
+        return this.securityDevicesRepository.createSecurityDeviceSession(securityDevice)
+    }
 
     async updateSecurityDeviceSession(securityDevice: SecurityDevicesDBModel): Promise<boolean> {
-        return await securityDevicesRepository.updateSecurityDeviceSession(securityDevice)
-    }, 
+        return this.securityDevicesRepository.updateSecurityDeviceSession(securityDevice)
+    }
 
     async verifySecurityDeviceByToken(dataToken: DataTokenModel): Promise<boolean> {
-        const securitySession = await securityDevicesRepository.findUserSessionByDeviceID(dataToken.userId, dataToken.deviceId)
+        const securitySession = await this.securityDevicesRepository.findUserSessionByDeviceID(dataToken.userId, dataToken.deviceId)
         if (!securitySession) return false
 
         return securitySession.lastActiveDate === dataToken.issuedAd 
             && securitySession._id.toString() === dataToken.deviceId 
             && securitySession.userId.toString() === dataToken.userId
-    },
+    }
 
     async createUserTokens(user: UserDBModel, ip: string, reqUserAgent: string | undefined):Promise<UpdateTokenModel | null> {
         
-        const deviceIdObject = await securityDevicesService.getDeviceID()
+        const deviceIdObject = await this.getDeviceID()
         if (!deviceIdObject) return null
         
         const refreshToken = await jwtService.createJWTRefreshToken(user, deviceIdObject)
@@ -66,19 +61,19 @@ export const securityDevicesService = {
                 ip, reqUserAgent)
         if (!securityDevice) return null
 
-        const isCreatedSecurityDevice = await securityDevicesService.createSecurityDeviceSession(securityDevice)
+        const isCreatedSecurityDevice = await this.createSecurityDeviceSession(securityDevice)
         if (!isCreatedSecurityDevice) return null
 
         return {
             accessToken: accessToken,
             refreshToken: refreshToken
         }
-    },
+    }
 
     async updateUserTokens(user: UserDBModel, deviceId: string, ip: string, 
         reqUserAgent: string | undefined): Promise<UpdateTokenModel | null> {
 
-        const deviceIdObject = await securityDevicesService.getDeviceID(deviceId)
+        const deviceIdObject = await this.getDeviceID(deviceId)
         if (!deviceIdObject) return null
 
         const refreshToken = await jwtService.createJWTRefreshToken(user, deviceIdObject)
@@ -88,14 +83,14 @@ export const securityDevicesService = {
             ip, reqUserAgent)
         if (!securityDevice) return null
 
-        const isCreatedSecurityDevice = await securityDevicesService.updateSecurityDeviceSession(securityDevice)
+        const isCreatedSecurityDevice = await this.updateSecurityDeviceSession(securityDevice)
         if (!isCreatedSecurityDevice) return null
 
         return {
             accessToken: accessToken,
             refreshToken: refreshToken
         }
-    },
+    }
     
     async getSecurityDevice(user: UserDBModel, deviceIdObject: ObjectId, refreshToken: string ,ip: string, 
         reqUserAgent: string | undefined): Promise<SecurityDevicesDBModel | null> {
