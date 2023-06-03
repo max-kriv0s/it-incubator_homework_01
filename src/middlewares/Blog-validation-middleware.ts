@@ -1,5 +1,5 @@
 import { body } from "express-validator"
-import { blogsService } from "../domain/blogs-service"
+import { blogsService } from "../composition-root"
 
 const reWebsiteUrl = new RegExp('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$')
 
