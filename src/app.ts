@@ -4,12 +4,12 @@ dotenv.config()
 
 import cookieParser from "cookie-parser";
 import { routerTesting } from "./routes/testing-router";
-import { routerBlogs } from "./routes/blogs-router";
-import { routerPosts } from "./routes/posts-router";
-import { routerUsers } from "./routes/users-router";
-import { routerAuth } from "./routes/auth-router";
-import { commentsRouter } from "./routes/comments-router";
-import { SecurityDevicesRouter } from "./routes/security-devices-router";
+import { routerBlogs } from "./routes/blogs/blogs-router";
+import { routerPosts } from "./routes/posts/posts-router";
+import { routerUsers } from "./routes/users/users-router";
+import { routerAuth } from "./routes/auth-router/auth-router";
+import { commentsRouter } from "./routes/comments-router/comments-router";
+import { SecurityDevicesRouter } from "./routes/security-devices/security-devices-router";
 
 
 export const app = express()
