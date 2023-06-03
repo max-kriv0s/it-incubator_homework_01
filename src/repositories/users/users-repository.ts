@@ -5,45 +5,6 @@ import { UserServiceModel } from "../../models/users/UserServiceModel"
 import { validID } from "../db"
 
 export class UsersRepository {
-    async getAllUsers(
-        searchLoginTerm: string | null,
-        searchEmailTerm: string | null,
-        pageNumber: number,
-        pageSize: number,
-        sortBy: string,
-        sortDirection: string): Promise<PaginatorUserDBModel> {
-
-        let filter: any = {}
-        if (searchLoginTerm && searchEmailTerm) {
-            filter = {
-                $or: [
-                    { "accountData.login": { $regex: searchLoginTerm, $options: 'i' } },
-                    { "accountData.email": { $regex: searchEmailTerm, $options: 'i' } }
-                ]
-            }
-        } else if (searchLoginTerm) {
-            filter = { "accountData.login": { $regex: searchLoginTerm, $options: 'i' } }
-        } else if (searchEmailTerm) {
-            filter = { "accountData.email": { $regex: searchEmailTerm, $options: 'i' } }
-        }
-
-        const totalCount: number = await UserModel.countDocuments(filter)
-        const skip = (pageNumber - 1) * pageSize
-
-        const users: UserDBModel[] = await UserModel.find(filter, null, {
-            sort: { ["accountData." + sortBy]: sortDirection === 'asc' ? 1 : -1 },
-            skip: skip,
-            limit: pageSize
-        }).exec()
-
-        return {
-            pagesCount: Math.ceil(totalCount / pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
-            totalCount: totalCount,
-            items: users
-        }
-    }
 
     async createUser(user: UserServiceModel): Promise<UserDBModel | null> {
         const newUser: UserDBModel = {
@@ -67,7 +28,7 @@ export class UsersRepository {
     }
 
     async deleteUsers() {
-        UserModel.deleteMany({})
+        await UserModel.deleteMany({})
     }
 
     async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBModel | null> {
@@ -80,6 +41,7 @@ export class UsersRepository {
     }
 
     async findUserById(userId: string): Promise<UserDBModel | null> {
+        if (!validID(userId)) return null
         return UserModel.findById(userId)
     }
 

@@ -11,4 +11,4 @@ routerUsers.get('/', BasicAuthValidate, usersController.getUsers.bind(usersContr
 routerUsers.post('/', BasicAuthValidate, UserValidate, ErrorsValidate,
     usersController.createUser.bind(usersController)
 )
-routerUsers.delete('/:id', BasicAuthValidate, usersController.deleteUser.bind(usersController))
+routerUsers.delete('/:id', BasicAuthValidate, usersController.deleteUserByID.bind(usersController))
