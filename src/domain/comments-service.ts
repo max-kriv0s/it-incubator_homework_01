@@ -1,40 +1,29 @@
 import { CommentInputModel } from "../models/comments/CommentInputModel"
 import { CommentDBModel } from "../models/comments/CommentModel"
-import { commentsRepository } from "../repositories/comments-repository"
-import { QueryParamsModels } from "../types/QueryParamsModels"
-import { PaginatorCommentDBModel } from "../types/PaginatorType"
-import { usersService } from "./users-service"
+import { CommentsRepository } from "../repositories/comments-repository/comments-repository"
+import { UsersRepository } from "../repositories/users/users-repository"
 
-export const commentsService = {
+export class CommentsService {
+    constructor(protected commentsRepository: CommentsRepository,
+                protected usersRepository: UsersRepository
+    ) {}
 
     async findCommentByID(id: string): Promise<CommentDBModel | null> {
-        const comment = await commentsRepository.findCommentByID(id)
-        return comment
-    },
+        return this.commentsRepository.findCommentByID(id)
+    }
 
     async updatedComment(id: string, body: CommentInputModel): Promise<boolean> {
-        return await commentsRepository.updatedComment(id, body)
-    },
+        return this.commentsRepository.updatedComment(id, body)
+    }
 
     async deleteCommentByID(id: string): Promise<boolean> {
-        return await commentsRepository.deleteCommentByID(id)
-    },
-
-    async findCommentsByPostId(postId: string, queryParams: QueryParamsModels): Promise<PaginatorCommentDBModel | null> {
-        const pageNumber: number = queryParams.pageNumber ? +queryParams.pageNumber : 1
-        const pageSize: number = queryParams.pageSize ? +queryParams.pageSize : 10
-        const sortBy: string = queryParams.sortBy ? queryParams.sortBy : 'createdAt'
-        const sortDirection = queryParams.sortDirection ? queryParams.sortDirection : 'desc'
-
-        const comments = await commentsRepository.findCommentsByPostId(postId, pageNumber, pageSize, sortBy, sortDirection)
-        return comments
-    },
+        return this.commentsRepository.deleteCommentByID(id)
+    }
 
     async createCommentByPostId(postId: string, userId: string, body: CommentInputModel): Promise<CommentDBModel | null> {
-        const user = await usersService.findUserById(userId)
+        const user = await this.usersRepository.findUserById(userId)
         if (!user) return null
 
-        const comment = await commentsRepository.createCommentByPostId(postId, userId, user.accountData.login, body)
-        return comment
+        return this.commentsRepository.createCommentByPostId(postId, userId, user.accountData.login, body)
     }
 }

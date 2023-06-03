@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { commentsService } from "../domain/comments-service";
 import { URIParamsCommentIdModel } from "../types/URIParamsModel";
 import { StatusCodes } from "http-status-codes";
 import { body } from "express-validator";
+import { commentsService } from "../composition-root";
 
 export const CommentUserIDMiddleware = async (req: Request<URIParamsCommentIdModel>, res: Response, next: NextFunction) => {
     const comment = await commentsService.findCommentByID(req.params.commentId)
