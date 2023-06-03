@@ -1,88 +1,54 @@
 import { PostCreateModel } from "../models/posts/PostCreateModel"
 import { PostUpdateModel } from "../models/posts/PostUpdateModel"
-import { postsRepository } from "../repositories/posts-repository"
-import { blogsService } from "./blogs-service"
-import { QueryParamsModels } from "../types/QueryParamsModels"
 import { BlogPostCreateModel } from "../models/blogs/BlogPostCreateModel"
-import { PaginatorCommentDBModel, PaginatorPostDbTypes } from "../types/PaginatorType"
 import { PostDbModel } from "../models/posts/PostModel"
-import { commentsService } from "./comments-service"
 import { CommentDBModel } from "../models/comments/CommentModel"
 import { CommentInputModel } from "../models/comments/CommentInputModel"
+import { PostsRepository } from "../repositories/posts/posts-repository"
+import { BlogsRepository } from "../repositories/blogs/blogs-repository"
+import { UsersRepository } from "../repositories/users/users-repository"
+import { CommentsRepository } from "../repositories/comments-repository/comments-repository"
 
-export const postsService = {
-
-    async getPosts(queryParams: QueryParamsModels): Promise<PaginatorPostDbTypes> {
-        const pageNumber: number = queryParams.pageNumber ? +queryParams.pageNumber : 1
-        const pageSize: number = queryParams.pageSize ? +queryParams.pageSize : 10
-        const sortBy: string = queryParams.sortBy ? queryParams.sortBy : 'createdAt'
-        const sortDirection = queryParams.sortDirection ? queryParams.sortDirection : 'desc'
-
-        const posts = await postsRepository.getPosts(
-            pageNumber,
-            pageSize,
-            sortBy,
-            sortDirection)
-
-        return posts
-    },
+export class PostsService {
+    constructor(protected postsRepository: PostsRepository,
+                protected blogsRepository: BlogsRepository,
+                protected usersRepository: UsersRepository,
+                protected commentsRepository: CommentsRepository
+    ) {}
 
     async findPostById(id: string): Promise<PostDbModel | null> {
-        const post = await postsRepository.findPostById(id)
-        return post
-    },
+        return this.postsRepository.findPostById(id)
+    }
 
-    async findPostsByBlogId(blogId: string, queryParams: QueryParamsModels): Promise<PaginatorPostDbTypes | null> {
-        const pageNumber: number = queryParams.pageNumber ? +queryParams.pageNumber : 1
-        const pageSize: number = queryParams.pageSize ? +queryParams.pageSize : 10
-        const sortBy: string = queryParams.sortBy ? queryParams.sortBy : 'createdAt'
-        const sortDirection = queryParams.sortDirection ? queryParams.sortDirection : 'desc'
+    async createPost(body: PostCreateModel): Promise<PostDbModel | null> {
+        const blog = await this.blogsRepository.findBlogById(body.blogId)
+        if (!blog) return null
 
-        const posts = await postsRepository.findPostsByBlogId(blogId, pageNumber, pageSize, sortBy, sortDirection)
-        if (!posts) return null
-
-        return posts
-    },
-
-    async createPost(body: PostCreateModel): Promise<PostDbModel> {
-        const blog = await blogsService.findBlogById(body.blogId)
-        const blogName: string = blog ? blog.name : ""
-
-        const createdPost = await postsRepository.createPost(body, blogName)
-        return createdPost
-
-    },
+        return this.postsRepository.createPost(body, blog.name)
+    }
 
     async createPostByBlogId(blogId: string, blogName: string, body: BlogPostCreateModel): Promise<PostDbModel> {
-        const createdPost = await postsRepository.createPostByBlogId(blogId, blogName, body)
-        return createdPost
-    },
+        return this.postsRepository.createPostByBlogId(blogId, blogName, body)
+    }
 
     async updatePost(id: string, body: PostUpdateModel): Promise<boolean> {
-        const blog = await blogsService.findBlogById(body.blogId)
+        const blog = await this.blogsRepository.findBlogById(body.blogId)
         if (!blog) return false
 
-        const blogName = blog ? blog.name : ""
-        return await postsRepository.updatePost(id, body, blog._id, blogName)
-    },
+        return this.postsRepository.updatePost(id, body, blog._id, blog.name)
+    }
 
     async deletePostById(id: string): Promise<boolean> {
-        return await postsRepository.deletePostById(id)
-    },
-
-    async findCommentsByPostId(postId: string, queryParams: QueryParamsModels): Promise<PaginatorCommentDBModel | null> {
-        const post = await this.findPostById(postId)
-        if (!post) return null
-
-        const comments = commentsService.findCommentsByPostId(postId, queryParams)
-        return comments
-    },
+        return this.postsRepository.deletePostById(id)
+    }
 
     async createCommentByPostID(postId: string, userId: string, body: CommentInputModel): Promise<CommentDBModel | null> {
         const post = await this.findPostById(postId)
         if (!post) return null
 
-        const comment = await commentsService.createCommentByPostId(postId, userId, body)
-        return comment
+        const user = await this.usersRepository.findUserById(userId)
+        if (!user) return null
+
+        return this.commentsRepository.createCommentByPostId(postId, userId, user.accountData.login, body)
     }
 }
