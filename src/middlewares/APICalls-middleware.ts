@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { apiCallsRepository } from "../repositories/api-calls-repository";
 import { StatusCodes } from "http-status-codes";
+import { apiCallsRepository } from "../composition-root";
 
 export const APICallsMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const result = await apiCallsRepository.addСallRecord(req.ip, req.originalUrl)

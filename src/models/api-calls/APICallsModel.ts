@@ -1,12 +1,13 @@
 import mongoose from "mongoose"
 
-export type APICallsModel = {
-    IP: string
-    URL: string
-    date: Date
+export class APICalls {
+    constructor(public IP: string,
+        public URL: string,
+        public date: Date
+    ) { }
 }
 
-const APICallsSchema = new mongoose.Schema<APICallsModel>({
+const APICallsSchema = new mongoose.Schema<APICalls>({
     IP: {
         type: String,
         required: true
@@ -21,4 +22,4 @@ const APICallsSchema = new mongoose.Schema<APICallsModel>({
     }
 })
 
-export const APICallsModel = mongoose.model<APICallsModel>('apiCalls', APICallsSchema)
+export const APICallsModel = mongoose.model<APICalls>('apiCalls', APICallsSchema)
