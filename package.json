@@ -10,7 +10,7 @@
     "dev": "yarn nodemon --inspect dist/index.js",
     "jest": "jest -i --detectOpenHandles",
     "jest_coverage": "jest -i --coverage",
-    "jest_file": "jest security-devices.e2e.test.ts"
+    "jest_file": "jest auth.e2e.test.ts"
   },
   "dependencies": {
     "@types/jest": "^29.5.0",

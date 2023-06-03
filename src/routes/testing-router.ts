@@ -1,11 +1,6 @@
 import { Router, Request, Response } from "express";
-import { blogsRepository } from "../repositories/blogs-repository";
-import { postsRepository } from "../repositories/posts-repository";
-import { usersRepository } from "../repositories/users-repository";
-import { commentsRepository } from "../repositories/comments-repository";
-import { securityDevicesRepository } from "../repositories/security-devices-repository";
-import { apiCallsRepository } from "../repositories/api-calls-repository";
 import { StatusCodes } from "http-status-codes";
+import { apiCallsRepository, blogsRepository, commentsRepository, postsRepository, securityDevicesRepository, usersRepository } from "../composition-root";
 
 
 export const routerTesting = Router()
