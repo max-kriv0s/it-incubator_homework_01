@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
-import { securityDevicesService } from "../domain/security-devices-service";
+import { securityDevicesService } from "../composition-root";
 
 export const RefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     
