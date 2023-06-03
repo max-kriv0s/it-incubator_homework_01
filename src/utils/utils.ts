@@ -32,59 +32,6 @@ export function newNumberId() {
     return +(new Date())
 }
 
-export function blogDBToBlogView(blog: BlogDbModel): BlogViewModel {
-    return {
-        id: blog._id.toString(),
-        name: blog.name,
-        description: blog.description,
-        websiteUrl: blog.websiteUrl,
-        createdAt: blog.createdAt,
-        isMembership: blog.isMembership
-    }
-}
-
-export function postDBToPostView(post: PostDbModel): PostViewModel {
-    return {
-        id: post._id.toString(),
-        title: post.title,
-        shortDescription: post.shortDescription,
-        content: post.content,
-        blogId: post.blogId.toString(),
-        blogName: post.blogName,
-        createdAt: post.createdAt
-    }
-}
-
-export function userDBToUserView(user: UserDBModel): UserViewModel {
-    return {
-        id: user._id.toString(),
-        login: user.accountData.login,
-        email: user.accountData.email,
-        createdAt: user.accountData.createdAt
-    }
-}
-
-export function securityDevicesDBTosecurityDevicesView(device: SecurityDevicesDBModel): SecurityDevicesViewModel {
-    return {
-        ip: device.ip,
-        title: device.title,
-        lastActiveDate: device.lastActiveDate,
-        deviceId: device._id.toString()
-    }
-}
-
-export function commentDBToCommentView(comment: CommentDBModel): CommentViewModel {
-    return {
-        id: comment._id.toString(),
-        content: comment.content,
-        commentatorInfo: {
-            userId: comment.commentatorInfo.userId.toString(),
-            userLogin: comment.commentatorInfo.userLogin
-        },
-        createdAt: comment.createdAt
-    }
-}
-
 export function GetDescriptionOfError(message: string, field: string): APIErrorResult {
     return {
         errorsMessages: [
