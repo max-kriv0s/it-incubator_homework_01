@@ -3,7 +3,7 @@ import { BasicAuthValidate } from "../../middlewares/BasicAuth-validation-middle
 import { ErrorsValidate } from "../../middlewares/Errors-middleware"
 import { PostValidate } from "../../middlewares/Post-validation-middleware"
 import { BlogIdValidate } from "../../middlewares/Blog-validation-middleware"
-import { CommentValidate } from "../../middlewares/Comment-validate-middleware"
+import { CommentValidate, CommentsBearerMiddleware } from "../../middlewares/Comment-validate-middleware"
 import { BearerAuthMiddleware } from "../../middlewares/BearerAuth-middleware"
 import { postsController } from "../../composition-root"
 
@@ -19,7 +19,7 @@ routerPosts.put('/:id', BasicAuthValidate, PostValidate, BlogIdValidate, ErrorsV
     postsController.updatePost.bind(postsController)
 )
 routerPosts.delete('/:id', BasicAuthValidate, postsController.deletePost.bind(postsController))
-routerPosts.get('/:postId/comments', postsController.findCommentsByPostId.bind(postsController))
+routerPosts.get('/:postId/comments', CommentsBearerMiddleware, postsController.findCommentsByPostId.bind(postsController))
 routerPosts.post('/:postId/comments', BearerAuthMiddleware, CommentValidate, ErrorsValidate,
     postsController.createCommentByPostID.bind(postsController)
 )
