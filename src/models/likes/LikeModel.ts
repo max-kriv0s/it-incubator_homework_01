@@ -1,14 +1,19 @@
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
+export type LikeInputModel = {
+    likeStatus: string
+}
+
 export enum LikeStatus {
-    None = 0,
-    Like = 1,
-    Dislike = -1
+    None = "None",
+    Like = "Like",
+    Dislike = "Dislike"
 }
 
 export class LikeClass {
     constructor(
+        public _id: ObjectId,
         public commentId: ObjectId,
         public userId: ObjectId,
         public status: LikeStatus
@@ -25,7 +30,7 @@ const LikeShema = new mongoose.Schema<LikeClass>({
         required: true
     },
     status: {
-        type: Number,
+        type: String,
         enum: LikeStatus, 
         required: true,
         default: LikeStatus.None
