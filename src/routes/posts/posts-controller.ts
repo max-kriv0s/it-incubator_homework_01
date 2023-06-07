@@ -9,7 +9,7 @@ import { PostViewModel } from '../../models/posts/PostViewModel';
 import { StatusCodes } from 'http-status-codes';
 import { URIParamsIdModel, URIParamsPostIdCommentsModel } from '../../types/URIParamsModel';
 import { PostUpdateModel } from '../../models/posts/PostUpdateModel';
-import { CommentsQueryRepository } from '../../repositories/comments-repository/comments-query-repository';
+import { CommentsQueryRepository } from '../../repositories/comments/comments-query-repository';
 import { CommentInputModel } from '../../models/comments/CommentInputModel';
 import { CommentViewModel } from '../../models/comments/CommentViewModel';
 
@@ -88,7 +88,9 @@ export class PostsController {
                 const post = await this.postsService.findPostById(req.params.postId)
                 if (!post) return res.sendStatus(StatusCodes.NOT_FOUND)
 
-                const comments = await this.commentsQueryRepository.findCommentsByPostId(req.params.postId, req.query)
+                const userId = req.userId
+
+                const comments = await this.commentsQueryRepository.findCommentsByPostId(req.params.postId, req.query, userId)
                 if (!comments) return res.sendStatus(StatusCodes.NOT_FOUND)
     
                 return res.send(comments)
