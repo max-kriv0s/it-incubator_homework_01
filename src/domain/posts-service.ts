@@ -7,7 +7,7 @@ import { CommentInputModel } from "../models/comments/CommentInputModel"
 import { PostsRepository } from "../repositories/posts/posts-repository"
 import { BlogsRepository } from "../repositories/blogs/blogs-repository"
 import { UsersRepository } from "../repositories/users/users-repository"
-import { CommentsRepository } from "../repositories/comments-repository/comments-repository"
+import { CommentsRepository } from "../repositories/comments/comments-repository"
 
 export class PostsService {
     constructor(protected postsRepository: PostsRepository,
