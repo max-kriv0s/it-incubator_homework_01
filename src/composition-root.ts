@@ -3,11 +3,12 @@ import { CommentsService } from "./domain/comments-service";
 import { PostsService } from "./domain/posts-service";
 import { SecurityDevicesService } from "./domain/security-devices-service";
 import { UsersService } from "./domain/users-service";
-import { ApiCallsRepository } from "./repositories/api-calls-repository/api-calls-repository";
+import { ApiCallsRepository } from "./repositories/api-calls/api-calls-repository";
 import { BlogsQueryRepository } from "./repositories/blogs/blogs-query-repository";
 import { BlogsRepository } from "./repositories/blogs/blogs-repository";
-import { CommentsQueryRepository } from "./repositories/comments-repository/comments-query-repository";
-import { CommentsRepository } from "./repositories/comments-repository/comments-repository";
+import { CommentsQueryRepository } from "./repositories/comments/comments-query-repository";
+import { CommentsRepository } from "./repositories/comments/comments-repository";
+import { LikeRepository } from "./repositories/likes/likes-repository";
 import { PostsQueryRepository } from "./repositories/posts/posts-query-repository";
 import { PostsRepository } from "./repositories/posts/posts-repository";
 import { SecurityDevicesQueryRepository } from "./repositories/security-devices/security-devices-query-repository";
@@ -35,13 +36,14 @@ const postsQueryRepository = new PostsQueryRepository()
 const usersQueryRepository = new UsersQueryRepository()
 const securityDevicesQueryRepository = new SecurityDevicesQueryRepository()
 const commentsQueryRepository = new CommentsQueryRepository()
+const likeRepository = new LikeRepository()
 
 // service
 export const blogsService = new BlogsService(blogsRepository, postsRepository)
 const postsService = new PostsService(postsRepository, blogsRepository, usersRepository, commentsRepository)
 export const securityDevicesService = new SecurityDevicesService(securityDevicesRepository)
 export const usersService = new UsersService(usersRepository, securityDevicesService)
-export const commentsService = new CommentsService(commentsRepository, usersRepository)
+export const commentsService = new CommentsService(commentsRepository, usersRepository, likeRepository)
 
 // controller
 export const blogsController = new BlogsController(blogsService, blogsQueryRepository, postsQueryRepository)
