@@ -1,4 +1,4 @@
-import { ObjectId, WithId } from "mongodb"
+import { ObjectId } from "mongodb"
 import mongoose from "mongoose"
 
 export class CommentDBModel {
@@ -9,7 +9,9 @@ export class CommentDBModel {
             userLogin: string
         },
         public createdAt: string,
-        public postId: ObjectId
+        public postId: ObjectId,
+        public likesCount: number,
+        public dislikesCount: number
     ) { }
 }
 
@@ -20,7 +22,9 @@ const CommentSchema = new mongoose.Schema<CommentDBModel>({
         userLogin: { type: String, required: true }
     },
     createdAt: { type: String, required: true },
-    postId: { type: ObjectId, required: true }
+    postId: { type: ObjectId, required: true },
+    likesCount: {type: Number, default: 0},
+    dislikesCount: {type: Number, default: 0},
 })
 
 export const CommentModel = mongoose.model<CommentDBModel>('comments', CommentSchema)
