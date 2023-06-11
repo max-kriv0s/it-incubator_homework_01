@@ -52,6 +52,7 @@ export class CommentsQueryRepository {
         let statusMyLike = LikeStatus.None
 
         if (userId && validID(userId)) {
+            // тут лучше через репозиторий или напрямую через LikeModel? Точно через модель
             const myLike = await LikeModel.findOne({ commentId: comment._id, userId: userId}).exec()
             if (myLike) statusMyLike = myLike.status
         }

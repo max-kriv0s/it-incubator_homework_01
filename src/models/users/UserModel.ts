@@ -3,7 +3,8 @@ import mongoose from "mongoose"
 
 
 export class UserDBModel {
-    constructor(public _id: ObjectId,
+    constructor(
+                // public _id: ObjectId,
                 public accountData: accountData,
                 public emailConfirmation: UserEmailConfirmationType,
                 public refreshToken: string,

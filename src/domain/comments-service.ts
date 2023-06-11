@@ -32,11 +32,12 @@ export class CommentsService {
         return this.commentsRepository.createCommentByPostId(postId, userId, user.accountData.login, body)
     }
 
-    async likeStatusByCommentID(commentId: string, userId: string, likeStatus: string): Promise<MyResult<LikeClass>> {
+    async likeStatusByCommentID(commentId: string, userId: string, likeStatus: LikeStatus): Promise<MyResult<LikeClass>> {
         const comment = await this.commentsRepository.findCommentByID(commentId)
         if (!comment) return getMyResult<LikeClass>(ResultCode.notFound)
 
-        const status = LikeStatus[likeStatus as keyof typeof LikeStatus]
+        // const status = LikeStatus[likeStatus as keyof typeof LikeStatus]
+        const status = likeStatus
 
         const likeResult = await this.likeRepository.findLike(commentId, userId)
         
@@ -49,10 +50,11 @@ export class CommentsService {
         return getMyResult<LikeClass>(ResultCode.notFound)
     }
 
-    async createLikeByCommentID(commentId: string, userId: string, status: LikeStatus): Promise<MyResult<LikeClass>> {
+    private async createLikeByCommentID(commentId: string, userId: string, status: LikeStatus): Promise<MyResult<LikeClass>> {
         if (status === LikeStatus.None) return getMyResult<LikeClass>(ResultCode.success)
         
-        try {
+        // сделать через swich case
+        // try {
             if (status === LikeStatus.Like) {
                 await this.commentsRepository.incrementLikeOnComment(commentId, 1)
             } else if (status === LikeStatus.Dislike) {
@@ -63,17 +65,19 @@ export class CommentsService {
 
             return this.likeRepository.createLike(commentId, userId, status)
 
-        } catch (error) {
-            console.error(error)
-            return getMyResult<LikeClass>(ResultCode.ServerError)
-        }
+        // } catch (error) {
+        //     console.error(error)
+        //     return getMyResult<LikeClass>(ResultCode.ServerError)
+        // }
     }
 
-    async updateLikeByCommentID(commentId: string, userId: string, status: LikeStatus, like: LikeClass): Promise<MyResult<LikeClass>> {
+    private async updateLikeByCommentID(commentId: string, userId: string, status: LikeStatus, like: LikeClass): Promise<MyResult<LikeClass>> {
         // like status === new status
         if (status === like.status) return getMyResult<LikeClass>(ResultCode.success)
         
-        try {
+        // сделать через swich case
+        // условия сделать переменными
+        // try {
             if (status === LikeStatus.None) {
                 if (like.status === LikeStatus.Like) {
                     // like status = Like, new status None
@@ -85,6 +89,7 @@ export class CommentsService {
                     return getMyResult<LikeClass>(ResultCode.notFound)
                 }
     
+                // обновлять на статус None
                 return this.likeRepository.deleteLike(like._id)
             }
             
@@ -104,9 +109,9 @@ export class CommentsService {
 
             return this.likeRepository.updateLike(like._id, status)
 
-        } catch (error) {
-            console.error(error)
-            return getMyResult<LikeClass>(ResultCode.ServerError)
-        }
+        // } catch (error) {
+        //     console.error(error)
+        //     return getMyResult<LikeClass>(ResultCode.ServerError)
+        // }
     }
 }

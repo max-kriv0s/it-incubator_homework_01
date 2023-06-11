@@ -3,6 +3,7 @@ import { UserDBModel, UserEmailConfirmationType, UserModel, UserPasswordRecovery
 import { PaginatorUserDBModel } from "../../types/PaginatorType"
 import { UserServiceModel } from "../../models/users/UserServiceModel"
 import { validID } from "../db"
+import { HydratedArraySubdocument, HydratedDocument } from "mongoose"
 
 export class UsersRepository {
 
@@ -55,7 +56,7 @@ export class UsersRepository {
         return isUpdated.matchedCount === 1
     }
 
-    async findUserByCodeConfirmation(code: string): Promise<UserDBModel | null> {
+    async findUserByCodeConfirmation(code: string): Promise<HydratedDocument<UserDBModel> | null> {
         const user = await UserModel.findOne({ "emailConfirmation.confirmationCode": code }).exec()
         if (user && user.emailConfirmation.expirationDate > new Date()) {
             return user

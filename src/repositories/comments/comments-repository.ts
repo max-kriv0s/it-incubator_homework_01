@@ -2,6 +2,8 @@ import { ObjectId } from "mongodb";
 import { CommentDBModel, CommentModel } from "../../models/comments/CommentModel";
 import { CommentInputModel } from "../../models/comments/CommentInputModel";
 import { validID } from "../db";
+import { getMyResult } from "../../utils/utils";
+import { ResultCode } from "../../types/types";
 
 export class CommentsRepository {
 
@@ -52,15 +54,15 @@ export class CommentsRepository {
         return newCommetn
     }
 
-    async incrementLikeOnComment(id: string, incValue: number): Promise<boolean> {
+    async incrementLikeOnComment(id: string, incValue: number) {
         if (!validID(id)) return false
         const result = await CommentModel.updateOne({_id: id}, {$inc: {likesCount: incValue}})
-        return result.matchedCount === 1
+        if (result.matchedCount !== 1) throw new Error()
     }
 
-    async incrementDislikeOnComment(id: string, incValue: number): Promise<boolean> {
+    async incrementDislikeOnComment(id: string, incValue: number) {
         if (!validID(id)) return false
         const result = await CommentModel.updateOne({_id: id}, {$inc: {dislikesCount: incValue}})
-        return result.matchedCount === 1
+        if (result.matchedCount !== 1) throw new Error()
     }
 }
