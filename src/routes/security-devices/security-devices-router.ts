@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { RefreshTokenMiddleware } from "../../middlewares/RefreshToken-middleware";
-import { securityDevicesController } from "../../composition-root";
+import { container } from "../../composition-root";
+import { SecurityDevicesController } from "./security-devices-controller";
 
+
+const securityDevicesController = container.resolve(SecurityDevicesController)
 
 export const SecurityDevicesRouter = Router({})
 

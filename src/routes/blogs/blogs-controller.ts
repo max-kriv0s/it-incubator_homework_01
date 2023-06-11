@@ -1,23 +1,26 @@
 import { Request, Response } from 'express'
-import { BlogsService } from "../../domain/blogs-service";
+import { BlogsService } from "../../adapter/blogs-service";
 import { PaginatorBlogViewTypes, PaginatorPostViewTypes } from "../../types/PaginatorType";
 import { QueryParamsModels } from "../../types/QueryParamsModels";
 import { RequestsQuery, RequestsWithBody, RequestsWithParamsAndBody, RequestsWithParamsAndQuery } from "../../types/types";
-import { BlogsQueryRepository } from '../../repositories/blogs/blogs-query-repository';
-import { BlogCreateModel } from '../../models/blogs/BlogCreateModel';
-import { BlogViewModel } from '../../models/blogs/BlogViewModel';
+import { BlogsQueryRepository } from '../../infrastructure/repositories/blogs/blogs-query-repository';
+import { BlogCreateModel } from '../../domain/blogs/BlogCreateModel';
+import { BlogViewModel } from '../../domain/blogs/BlogViewModel';
 import { StatusCodes } from 'http-status-codes';
 import { URIParamsIdModel } from '../../types/URIParamsModel';
-import { BlogPostCreateModel } from '../../models/blogs/BlogPostCreateModel';
-import { PostViewModel } from '../../models/posts/PostViewModel';
-import { PostsQueryRepository } from '../../repositories/posts/posts-query-repository';
-import { BlogUpdateModel } from '../../models/blogs/BlogUpdateModel';
+import { BlogPostCreateModel } from '../../domain/blogs/BlogPostCreateModel';
+import { PostViewModel } from '../../domain/posts/PostViewModel';
+import { PostsQueryRepository } from '../../infrastructure/repositories/posts/posts-query-repository';
+import { BlogUpdateModel } from '../../domain/blogs/BlogUpdateModel';
+import { inject, injectable } from 'inversify';
 
 
+@injectable()
 export class BlogsController {
-    constructor(protected blogsService: BlogsService,
-        protected blogsQueryRepository: BlogsQueryRepository,
-        protected postsQueryRepository: PostsQueryRepository
+    constructor(
+        @inject(BlogsService) protected blogsService: BlogsService,
+        @inject(BlogsQueryRepository) protected blogsQueryRepository: BlogsQueryRepository,
+        @inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository
     ) { }
 
     async getBlogsView(req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorBlogViewTypes>) {

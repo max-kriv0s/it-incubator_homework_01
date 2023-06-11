@@ -1,22 +1,25 @@
 import { Request, Response } from 'express'
-import { SecurityDevicesService } from "../../domain/security-devices-service";
-import { UsersService } from "../../domain/users-service";
-import { LoginInputModel } from "../../models/auth/LoginInputModel";
+import { SecurityDevicesService } from "../../adapter/security-devices-service";
+import { UsersService } from "../../adapter/users-service";
+import { LoginInputModel } from "../../domain/auth/LoginInputModel";
 import { RequestsWithBody } from "../../types/types";
 import { StatusCodes } from 'http-status-codes';
-import { MeViewModel } from '../../models/auth/MeViewModel';
-import { UsersQueryRepository } from '../../repositories/users/users-query-repository';
-import { UserCreateModel } from '../../models/users/UserCreateModel';
-import { RegistrationConfirmationCodeModel } from '../../models/auth/RegistrationConfirmationCodeModel';
-import { RegistrationEmailResendingModel } from '../../models/auth/RegistrationEmailResendingModel';
-import { NewPasswordRecoveryInputModel } from '../../models/auth/NewPasswordRecoveryInputModel';
+import { MeViewModel } from '../../domain/auth/MeViewModel';
+import { UsersQueryRepository } from '../../infrastructure/repositories/users/users-query-repository';
+import { UserCreateModel } from '../../domain/users/UserCreateModel';
+import { RegistrationConfirmationCodeModel } from '../../domain/auth/RegistrationConfirmationCodeModel';
+import { RegistrationEmailResendingModel } from '../../domain/auth/RegistrationEmailResendingModel';
+import { NewPasswordRecoveryInputModel } from '../../domain/auth/NewPasswordRecoveryInputModel';
 import { GetDescriptionOfError } from '../../utils/utils';
+import { inject, injectable } from 'inversify';
 
+
+@injectable()
 export class AuthController {
     constructor(
-        protected usersService: UsersService,
-        protected securityDevicesService: SecurityDevicesService,
-        protected usersQueryRepository: UsersQueryRepository
+        @inject(UsersService) protected usersService: UsersService,
+        @inject(SecurityDevicesService) protected securityDevicesService: SecurityDevicesService,
+        @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository
     ) { }
 
     async loginUser(req: RequestsWithBody<LoginInputModel>, res: Response) {

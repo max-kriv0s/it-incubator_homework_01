@@ -6,8 +6,11 @@ import { UserValidate } from "../../middlewares/Users-validation-middleware";
 import { AuthNewPasswordRecoveryValidate, AuthRegistrationConfirmationCodeValidate, AuthRegistrationEmailResendingValidate } from "../../middlewares/Auth-validation-middleware";
 import { RefreshTokenMiddleware } from "../../middlewares/RefreshToken-middleware";
 import { APICallsMiddleware } from "../../middlewares/APICalls-middleware";
-import { authController } from "../../composition-root";
+import { container } from "../../composition-root";
+import { AuthController } from "./auth-controller";
 
+
+const authController = container.resolve(AuthController)
 
 export const routerAuth = Router({})
 

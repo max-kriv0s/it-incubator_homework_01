@@ -1,5 +1,5 @@
 import { app } from "./app"
-import { runDB } from './repositories/db'
+import { runDB } from './infrastructure/repositories/db'
 import { settings } from "./settings"
 
 const port = settings.PORT

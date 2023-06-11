@@ -1,18 +1,22 @@
 import { Request, Response } from 'express'
-import { UsersService } from "../../domain/users-service";
+import { UsersService } from "../../adapter/users-service";
 import { PaginatorUserViewModel } from "../../types/PaginatorType";
 import { QueryParamsUsersModel } from "../../types/QueryParamsModels";
 import { RequestsQuery, RequestsWithBody } from "../../types/types";
-import { UserViewModel } from '../../models/users/UserViewModel';
-import { UserCreateModel } from '../../models/users/UserCreateModel';
+import { UserViewModel } from '../../domain/users/UserViewModel';
+import { UserCreateModel } from '../../domain/users/UserCreateModel';
 import { StatusCodes } from 'http-status-codes';
 import { URIParamsIdModel } from '../../types/URIParamsModel';
-import { UsersQueryRepository } from '../../repositories/users/users-query-repository';
+import { inject, injectable } from 'inversify';
+import { UsersQueryRepository } from '../../infrastructure/repositories/users/users-query-repository';
 
+
+@injectable()
 export class UsersController {
-    constructor(protected usersService: UsersService,
-                protected usersQueryRepository: UsersQueryRepository
-    ) {}
+    constructor(
+        @inject(UsersService) protected usersService: UsersService,
+        @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository
+    ) { }
 
     async getUsers(req: RequestsQuery<QueryParamsUsersModel>, res: Response<PaginatorUserViewModel>) {
         try {
@@ -44,7 +48,7 @@ export class UsersController {
         try {
             const isDelete = await this.usersService.deleteUserById(req.params.id)
             if (!isDelete) return res.sendStatus(StatusCodes.NOT_FOUND)
-    
+
             res.sendStatus(StatusCodes.NO_CONTENT)
         } catch (error) {
             console.error(error)

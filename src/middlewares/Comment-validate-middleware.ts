@@ -2,8 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { URIParamsCommentIdModel } from "../types/URIParamsModel";
 import { StatusCodes } from "http-status-codes";
 import { body } from "express-validator";
-import { commentsService } from "../composition-root";
+import { container } from "../composition-root";
 import { jwtService } from "../application/jwt-service";
+import { CommentsService } from "../adapter/comments-service";
+
+
+const commentsService = container.resolve(CommentsService)
 
 export const CommentUserIDMiddleware = async (req: Request<URIParamsCommentIdModel>, res: Response, next: NextFunction) => {
     const comment = await commentsService.findCommentByID(req.params.commentId)
@@ -27,18 +31,3 @@ export const CommentValidate = [
         .withMessage('must be between 20 and 300 characters')
     
 ]
-
-export const CommentsBearerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-
-    const authHeader = req.headers.authorization
-    const token = authHeader && authHeader.split(' ')[1]
-  
-    if (!token) return next()
-
-    const dataToken = await jwtService.ReadAndCheckTokenAccessToken(token)
-    if (dataToken && dataToken.userId) {
-        req.userId = dataToken.userId
-    }
-        
-    next()
-}

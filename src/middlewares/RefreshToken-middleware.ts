@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
-import { securityDevicesService } from "../composition-root";
+import { container } from "../composition-root";
+import { SecurityDevicesService } from "../adapter/security-devices-service";
+
+
+const securityDevicesService = container.resolve(SecurityDevicesService)
 
 export const RefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     

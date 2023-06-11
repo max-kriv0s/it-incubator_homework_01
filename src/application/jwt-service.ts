@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
-import { UserDBModel } from "../models/users/UserModel";
+import { UserDBModel } from "../domain/users/UserModel";
 import { settings } from '../settings';
 import { ObjectId } from 'mongodb';
-import { DataTokenModel } from '../models/token/DataTokenModel';
+import { DataTokenModel } from '../domain/token/DataTokenModel';
 
 const JWT_SECRET_ACCESS_TOKEN = settings.JWT_SECRET_ACCESS_TOKEN
 const JWT_SECRET_REFRESH_TOKEN = settings.JWT_SECRET_REFRESH_TOKEN

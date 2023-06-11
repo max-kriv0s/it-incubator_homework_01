@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { LikeStatus } from "../models/likes/LikeModel";
+import { LikeStatus } from "../domain/likes/LikeModel";
 
 export const LikeValidate = [
     body('likeStatus')

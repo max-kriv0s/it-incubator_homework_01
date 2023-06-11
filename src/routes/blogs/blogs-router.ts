@@ -3,8 +3,11 @@ import { BasicAuthValidate } from "../../middlewares/BasicAuth-validation-middle
 import { ErrorsValidate } from "../../middlewares/Errors-middleware"
 import { BlogValidate } from "../../middlewares/Blog-validation-middleware"
 import { PostValidate } from "../../middlewares/Post-validation-middleware"
-import { blogsController } from "../../composition-root"
+import { container } from "../../composition-root"
+import { BlogsController } from "./blogs-controller"
 
+
+const blogsController = container.resolve(BlogsController)
 
 export const routerBlogs = Router()
 

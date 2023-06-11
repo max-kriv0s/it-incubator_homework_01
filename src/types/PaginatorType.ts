@@ -1,11 +1,11 @@
-import { BlogDbModel } from "../models/blogs/BlogModel"
-import { BlogViewModel } from "../models/blogs/BlogViewModel"
-import { CommentDBModel } from "../models/comments/CommentModel"
-import { CommentViewModel } from "../models/comments/CommentViewModel"
-import { PostDbModel } from "../models/posts/PostModel"
-import { PostViewModel } from "../models/posts/PostViewModel"
-import { UserDBModel } from "../models/users/UserModel"
-import { UserViewModel } from "../models/users/UserViewModel"
+import { BlogDbModel } from "../domain/blogs/BlogModel"
+import { BlogViewModel } from "../domain/blogs/BlogViewModel"
+import { CommentDBModel } from "../domain/comments/CommentModel"
+import { CommentViewModel } from "../domain/comments/CommentViewModel"
+import { PostDbModel } from "../domain/posts/PostModel"
+import { PostViewModel } from "../domain/posts/PostViewModel"
+import { UserDBModel } from "../domain/users/UserModel"
+import { UserViewModel } from "../domain/users/UserViewModel"
 
 export type PaginatorTypes<T> = {
     pagesCount: number
