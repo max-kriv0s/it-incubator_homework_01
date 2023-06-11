@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
 export type LikeInputModel = {
-    likeStatus: string
+    likeStatus: LikeStatus
 }
 
 export enum LikeStatus {
