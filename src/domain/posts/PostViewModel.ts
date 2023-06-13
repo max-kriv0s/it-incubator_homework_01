@@ -5,7 +5,7 @@ export type ExtendedLikesInfoViewModel = {
     likesCount: number
     dislikesCount: number
     myStatus: LikeStatus
-
+    newestLikes: LikeDetailsViewModel[]
 }
 
 export type PostViewModel = {
@@ -17,5 +17,4 @@ export type PostViewModel = {
     blogName: string
     createdAt: string
     extendedLikesInfo: ExtendedLikesInfoViewModel
-    newestLikes: LikeDetailsViewModel[]
 }

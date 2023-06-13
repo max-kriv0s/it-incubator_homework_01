@@ -53,7 +53,7 @@ export class BlogsController {
             const newPostDB = await this.blogsService.createPostByBlogId(req.params.id, req.body)
             if (!newPostDB) return res.sendStatus(StatusCodes.NOT_FOUND)
 
-            const newPost = await this.postsQueryRepository.getPostViewById(newPostDB._id)
+            const newPost = await this.postsQueryRepository.getPostViewById(newPostDB._id, req.userId)
             if (!newPost) return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
 
             return res.status(StatusCodes.CREATED).send(newPost)
@@ -77,7 +77,7 @@ export class BlogsController {
 
     async findPostsByBlogId(req: RequestsWithParamsAndQuery<URIParamsIdModel, QueryParamsModels>, res: Response<PaginatorPostViewTypes>) {
         try {
-            const posts = await this.postsQueryRepository.findPostsByBlogId(req.params.id, req.query)
+            const posts = await this.postsQueryRepository.findPostsByBlogId(req.params.id, req.query, req.userId)
             if (!posts) return res.sendStatus(StatusCodes.NOT_FOUND)
 
             return res.send(posts)

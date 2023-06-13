@@ -71,12 +71,12 @@ export class PostsService {
 
         const like = await this.likePostRepository.findLikeByPostIdAndUserId(postId, userId)
         if (like) {
-            this.updateLikeByPost(post, like, likeStatus)
+            await this.updateLikeByPost(post, like, likeStatus)
         } else {
-            this.createLikeByPost(post, userId, likeStatus)
+            await this.createLikeByPost(post, userId, likeStatus)
         }
 
-        this.postsRepository.save(post)
+        await this.postsRepository.save(post)
         return getMyResult(ResultCode.success)
     }
 
@@ -97,7 +97,7 @@ export class PostsService {
         if (likeStatus === oldStatus) return
 
         like.setStatus(likeStatus)
-        this.likePostRepository.save(like)
+        await this.likePostRepository.save(like)
 
         const fromLikeToNone = oldStatus === LikeStatus.None && likeStatus === LikeStatus.Like
         if (fromLikeToNone) post.likesCount -= 1

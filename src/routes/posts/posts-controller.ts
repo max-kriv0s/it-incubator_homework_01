@@ -26,7 +26,7 @@ export class PostsController {
 
     async getPostsView(req: RequestsQuery<QueryParamsModels>, res: Response<PaginatorPostViewTypes>) {
         try {
-            const posts = await this.postsQueryRepository.getPostsView(req.query)
+            const posts = await this.postsQueryRepository.getPostsView(req.query, req.userId)
             return res.send(posts)
         } catch (error) {
             console.error(error)
@@ -40,7 +40,7 @@ export class PostsController {
             const postDB = await this.postsService.createPost(req.body)
             if (!postDB) return res.sendStatus(StatusCodes.BAD_REQUEST)
 
-            const post = await this.postsQueryRepository.getPostViewById(postDB._id)
+            const post = await this.postsQueryRepository.getPostViewById(postDB._id, req.userId)
             if (!post) return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
 
             return res.status(StatusCodes.CREATED).send(post)
@@ -52,7 +52,7 @@ export class PostsController {
 
     async getPostViewById(req: Request<URIParamsIdModel>, res: Response<PostViewModel>) {
         try {
-            const post = await this.postsQueryRepository.getPostViewById(req.params.id)
+            const post = await this.postsQueryRepository.getPostViewById(req.params.id, req.userId)
             if (!post) return res.sendStatus(StatusCodes.NOT_FOUND)
 
             return res.send(post)
