@@ -65,7 +65,7 @@ export class PostsService {
     }
 
     async likeStatusByPostID(postId: string, userId: string, likeStatus: LikeStatus): Promise<MyResult<null>> {
-        
+
         const post = await this.postsRepository.findPostModelById(postId)
         if (!post) return getMyResult(ResultCode.notFound)
 
@@ -84,37 +84,74 @@ export class PostsService {
         const user = await this.usersRepository.findUserById(userId)
         if (!user) return getMyResult(ResultCode.notFound)
 
-        const like = await LikePostModel.createLike(post._id, user._id, user.accountData.login, likeStatus) 
-        
+        const like = await LikePostModel.createLike(post._id, user._id, user.accountData.login, likeStatus)
+
         if (likeStatus === LikeStatus.Like) post.likesCount += 1
-        
+
         if (likeStatus === LikeStatus.Dislike) post.dislikesCount += 1
     }
 
     async updateLikeByPost(post: HydratedDocument<PostDbModel>, like: HydratedLikePost, likeStatus: LikeStatus) {
-        
+
         const oldStatus = like.getStatus()
         if (likeStatus === oldStatus) return
 
         like.setStatus(likeStatus)
         await this.likePostRepository.save(like)
 
-        const fromLikeToNone = oldStatus === LikeStatus.None && likeStatus === LikeStatus.Like
-        if (fromLikeToNone) post.likesCount -= 1
 
-        const fromDislikeToNone = oldStatus === LikeStatus.None && likeStatus === LikeStatus.Dislike
-        if (fromDislikeToNone) post.dislikesCount -= 1
-
+        const fromNoneToLike = oldStatus === LikeStatus.None && likeStatus === LikeStatus.Like
+        const fromNoneToDislike = oldStatus === LikeStatus.None && likeStatus === LikeStatus.Dislike
+        const fromLikeToNone = oldStatus === LikeStatus.Like && likeStatus === LikeStatus.None
+        const fromDislikeToNone = oldStatus === LikeStatus.Dislike && likeStatus === LikeStatus.None
         const fromLikeToDislike = oldStatus === LikeStatus.Like && likeStatus === LikeStatus.Dislike
-        if (fromLikeToDislike) {
-            post.likesCount -= 1
-            post.dislikesCount += 1
+        const fromDislikeToLike = oldStatus === LikeStatus.Dislike && likeStatus === LikeStatus.Like
+
+        switch (true) {
+            case fromNoneToLike:
+                post.likesCount += 1
+                break;
+            case fromNoneToDislike:
+                post.dislikesCount += 1
+                break;
+            case fromLikeToNone:
+                post.likesCount -= 1
+                break;
+            case fromDislikeToNone:
+                post.dislikesCount -= 1
+                break;
+            case fromLikeToDislike:
+                post.likesCount -= 1
+                post.dislikesCount += 1
+                break;
+            case fromDislikeToLike:
+                post.dislikesCount -= 1
+                post.likesCount += 1    
+                break;
         }
 
-        const fromDislikeToLike = oldStatus === LikeStatus.Dislike && likeStatus === LikeStatus.Like
-        if (fromDislikeToLike) {
-            post.dislikesCount -= 1
-            post.likesCount += 1
-        }
+        // const fromNoneToLike = oldStatus === LikeStatus.None && likeStatus === LikeStatus.Like
+        // if (fromNoneToLike) post.likesCount += 1
+
+        // const fromNoneToDislike = oldStatus === LikeStatus.None && likeStatus === LikeStatus.Dislike
+        // if (fromNoneToLike) post.dislikesCount += 1
+
+        // const fromLikeToNone = oldStatus === LikeStatus.Like && likeStatus === LikeStatus.None
+        // if (fromLikeToNone) post.likesCount -= 1
+
+        // const fromDislikeToNone = oldStatus === LikeStatus.Dislike && likeStatus === LikeStatus.None
+        // if (fromDislikeToNone) post.dislikesCount -= 1
+
+        // const fromLikeToDislike = oldStatus === LikeStatus.Like && likeStatus === LikeStatus.Dislike
+        // if (fromLikeToDislike) {
+        //     post.likesCount -= 1
+        //     post.dislikesCount += 1
+        // }
+
+        // const fromDislikeToLike = oldStatus === LikeStatus.Dislike && likeStatus === LikeStatus.Like
+        // if (fromDislikeToLike) {
+        //     post.dislikesCount -= 1
+        //     post.likesCount += 1
+        // }
     }
 }
